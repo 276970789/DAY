@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanFlow - 简化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            background: white;
+        }
+
+        /* 简化的侧边栏 */
+        .sidebar {
+            width: 250px;
+            background: #fafafa;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .nav-item {
+            margin-bottom: 5px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .quick-add {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .quick-add:hover {
+            background: #1565c0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* 统计卡片 - 简化版 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 任务列表 */
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 5px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .task-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .task-item span {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .task-item.completed span {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .task-item button {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* 日历样式 */
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .calendar-nav button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .calendar-nav button:hover {
+            background: #1565c0;
+        }
+
+        .current-month {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-cell {
+            background: white;
+            min-height: 80px;
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .calendar-cell:hover {
+            background: #f5f5f5;
+        }
+
+        .calendar-cell.other-month {
+            background: #fafafa;
+            color: #999;
+        }
+
+        .calendar-cell.today {
+            background: #e3f2fd;
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .calendar-cell.has-tasks {
+            border-left: 4px solid #4caf50;
+        }
+
+        .day-number {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .day-header {
+            background: #1976d2;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .task-dot {
+            width: 6px;
+            height: 6px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin: 1px;
+            display: inline-block;
+        }
+
+        .task-dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-top: 5px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 简化的侧边栏 -->
+        <div class="sidebar">
+            <div class="logo">📋 PlanFlow</div>
+
+            <nav class="nav-menu">
+                <div class="nav-item">
+                    <a href="#" class="nav-link active" data-view="dashboard">📊 今日概览</a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-view="calendar">📅 日历视图</a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-view="tasks">✅ 任务列表</a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-view="projects">📋 项目管理</a>
+                </div>
+            </nav>
+
+            <button class="quick-add" onclick="showAddTaskModal()">➕ 快速添加任务</button>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 今日概览 -->
+            <div id="dashboard" class="view active">
+                <div class="header">
+                    <h2>今日概览</h2>
+                    <span id="current-date"></span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>待办任务</h3>
+                        <div class="stat-number" id="pending-tasks">0</div>
+                        <p>个任务待完成</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>已完成</h3>
+                        <div class="stat-number" id="completed-tasks">0</div>
+                        <p>个任务已完成</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>进行中项目</h3>
+                        <div class="stat-number" id="active-projects">0</div>
+                        <p>个项目进行中</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>完成率</h3>
+                        <div class="stat-number" id="completion-rate">0%</div>
+                        <p>今日完成率</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3>今日重要任务</h3>
+                    <div id="today-task-list"></div>
+                </div>
+            </div>
+
+            <!-- 日历视图 -->
+            <div id="calendar" class="view">
+                <div class="header">
+                    <h2>日历视图</h2>
+                    <button class="btn btn-primary" onclick="showAddTaskModal()">添加任务</button>
+                </div>
+                
+                <div class="calendar-header">
+                    <div class="calendar-nav">
+                        <button onclick="previousMonth()">◀ 上月</button>
+                        <div class="current-month" id="current-month"></div>
+                        <button onclick="nextMonth()">下月 ▶</button>
+                    </div>
+                    <button class="btn" onclick="goToToday()">今天</button>
+                </div>
+
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- 日历将通过JavaScript生成 -->
+                </div>
+            </div>
+
+            <!-- 任务列表 -->
+            <div id="tasks" class="view">
+                <div class="header">
+                    <h2>任务管理</h2>
+                    <button class="btn btn-primary" onclick="showAddTaskModal()">新建任务</button>
+                </div>
+                <div id="task-list"></div>
+            </div>
+
+            <!-- 项目管理 -->
+            <div id="projects" class="view">
+                <div class="header">
+                    <h2>项目管理</h2>
+                    <button class="btn btn-primary" onclick="showAddProjectModal()">新建项目</button>
+                </div>
+                <div id="project-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加任务模态框 -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <h3>添加新任务</h3>
+            <form id="addTaskForm">
+                <div class="form-group">
+                    <label>任务标题</label>
+                    <input type="text" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label>任务描述</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>截止日期</label>
+                    <input type="date" name="dueDate" id="taskDueDate">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn" onclick="closeModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 超简化的数据管理
+        let appData = {
+            tasks: [],
+            projects: []
+        };
+
+        // 日历相关变量
+        let currentDate = new Date();
+        const monthNames = ['一月', '二月', '三月', '四月', '五月', '六月', 
+                           '七月', '八月', '九月', '十月', '十一月', '十二月'];
+        const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+
+        const isElectron = typeof window.electronAPI !== 'undefined';
+
+        // 简化的数据保存
+        async function saveData() {
+            try {
+                if (isElectron) {
+                    await window.electronAPI.invoke('save-data', appData);
+                } else {
+                    localStorage.setItem('planflow-simple', JSON.stringify(appData));
+                }
+            } catch (error) {
+                console.error('保存失败:', error);
+            }
+        }
+
+        // 简化的数据加载
+        async function loadData() {
+            try {
+                if (isElectron) {
+                    const result = await window.electronAPI.invoke('load-data');
+                    if (result.success) {
+                        appData = result.data;
+                        // 转换日期字符串为Date对象
+                        appData.tasks.forEach(task => {
+                            if (task.dueDate) task.dueDate = new Date(task.dueDate);
+                        });
+                    }
+                } else {
+                    const saved = localStorage.getItem('planflow-simple');
+                    if (saved) {
+                        appData = JSON.parse(saved);
+                        // 转换日期字符串为Date对象
+                        appData.tasks.forEach(task => {
+                            if (task.dueDate) task.dueDate = new Date(task.dueDate);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('加载失败:', error);
+            }
+        }
+
+        // 日历功能
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            // 更新月份显示
+            document.getElementById('current-month').textContent = `${year}年 ${monthNames[month]}`;
+            
+            // 生成日历网格
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            // 添加星期标题
+            dayNames.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'day-header';
+                header.textContent = day;
+                grid.appendChild(header);
+            });
+            
+            // 获取本月第一天和最后一天
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            
+            // 生成42个日期格子（6周）
+            for (let i = 0; i < 42; i++) {
+                const cellDate = new Date(startDate);
+                cellDate.setDate(startDate.getDate() + i);
+                
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell';
+                
+                // 判断是否是其他月份
+                if (cellDate.getMonth() !== month) {
+                    cell.classList.add('other-month');
+                }
+                
+                // 判断是否是今天
+                const today = new Date();
+                if (cellDate.toDateString() === today.toDateString()) {
+                    cell.classList.add('today');
+                }
+                
+                // 获取当天的任务
+                const dayTasks = getTasksForDate(cellDate);
+                if (dayTasks.length > 0) {
+                    cell.classList.add('has-tasks');
+                }
+                
+                // 日期数字
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'day-number';
+                dayNumber.textContent = cellDate.getDate();
+                cell.appendChild(dayNumber);
+                
+                // 任务点
+                if (dayTasks.length > 0) {
+                    const taskDots = document.createElement('div');
+                    taskDots.className = 'task-dots';
+                    
+                    // 最多显示3个点
+                    const dotsCount = Math.min(dayTasks.length, 3);
+                    for (let j = 0; j < dotsCount; j++) {
+                        const dot = document.createElement('div');
+                        dot.className = 'task-dot';
+                        taskDots.appendChild(dot);
+                    }
+                    
+                    if (dayTasks.length > 3) {
+                        const more = document.createElement('span');
+                        more.textContent = `+${dayTasks.length - 3}`;
+                        more.style.fontSize = '10px';
+                        more.style.color = '#666';
+                        taskDots.appendChild(more);
+                    }
+                    
+                    cell.appendChild(taskDots);
+                }
+                
+                // 点击事件
+                cell.addEventListener('click', () => selectDate(cellDate));
+                
+                grid.appendChild(cell);
+            }
+        }
+
+        function getTasksForDate(date) {
+            return appData.tasks.filter(task => {
+                if (!task.dueDate) return false;
+                return task.dueDate.toDateString() === date.toDateString();
+            });
+        }
+
+        function selectDate(date) {
+            // 设置添加任务表单的默认日期
+            const dateString = date.toISOString().split('T')[0];
+            document.getElementById('taskDueDate').value = dateString;
+            showAddTaskModal();
+        }
+
+        function previousMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function goToToday() {
+            currentDate = new Date();
+            renderCalendar();
+        }
+
+        // 简化的渲染函数
+        function renderDashboard() {
+            const pending = appData.tasks.filter(t => t.status !== 'completed').length;
+            const completed = appData.tasks.filter(t => t.status === 'completed').length;
+            const total = appData.tasks.length;
+            const rate = total ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('pending-tasks').textContent = pending;
+            document.getElementById('completed-tasks').textContent = completed;
+            document.getElementById('active-projects').textContent = appData.projects.length;
+            document.getElementById('completion-rate').textContent = rate + '%';
+
+            // 显示今日任务
+            const today = new Date();
+            const todayTasks = appData.tasks.filter(task => {
+                if (!task.dueDate) return false;
+                return task.dueDate.toDateString() === today.toDateString();
+            }).slice(0, 5);
+            
+            const html = todayTasks.map(task => `
+                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}">
+                    <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
+                           onchange="toggleTask('${task.id}')">
+                    <span>${task.title}</span>
+                    <button onclick="deleteTask('${task.id}')">删除</button>
+                </div>
+            `).join('');
+            document.getElementById('today-task-list').innerHTML = html || '<p style="color: #999;">今天暂无任务</p>';
+        }
+
+        function renderTasks() {
+            const html = appData.tasks.map(task => `
+                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}">
+                    <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
+                           onchange="toggleTask('${task.id}')">
+                    <span>${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}</span>
+                    <button onclick="deleteTask('${task.id}')">删除</button>
+                </div>
+            `).join('');
+            document.getElementById('task-list').innerHTML = html || '<p style="color: #999;">暂无任务</p>';
+        }
+
+        function renderProjects() {
+            const html = appData.projects.map(project => `
+                <div class="task-item">
+                    <span>📋 ${project.title}</span>
+                    <button onclick="deleteProject('${project.id}')">删除</button>
+                </div>
+            `).join('');
+            document.getElementById('project-list').innerHTML = html || '<p style="color: #999;">暂无项目</p>';
+        }
+
+        // 事件处理
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            document.querySelector(`[data-view="${viewId}"]`).classList.add('active');
+
+            // 根据视图渲染内容
+            if (viewId === 'dashboard') renderDashboard();
+            else if (viewId === 'calendar') renderCalendar();
+            else if (viewId === 'tasks') renderTasks();
+            else if (viewId === 'projects') renderProjects();
+        }
+
+        function showAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('addTaskModal').classList.remove('show');
+            document.getElementById('addTaskForm').reset();
+        }
+
+        function addTask(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            const task = {
+                id: Date.now().toString(),
+                title: formData.get('title'),
+                description: formData.get('description'),
+                dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate')) : null,
+                status: 'pending'
+            };
+            
+            appData.tasks.push(task);
+            saveData();
+            closeModal();
+            renderDashboard();
+            renderTasks();
+            renderCalendar(); // 刷新日历
+        }
+
+        function toggleTask(id) {
+            const task = appData.tasks.find(t => t.id === id);
+            if (task) {
+                task.status = task.status === 'completed' ? 'pending' : 'completed';
+                saveData();
+                renderDashboard();
+                renderTasks();
+                renderCalendar(); // 刷新日历
+            }
+        }
+
+        function deleteTask(id) {
+            if (confirm('确定删除？')) {
+                appData.tasks = appData.tasks.filter(t => t.id !== id);
+                saveData();
+                renderDashboard();
+                renderTasks();
+                renderCalendar(); // 刷新日历
+            }
+        }
+
+        function showAddProjectModal() {
+            const title = prompt('项目名称:');
+            if (title) {
+                const project = {
+                    id: Date.now().toString(),
+                    title: title
+                };
+                appData.projects.push(project);
+                saveData();
+                renderProjects();
+            }
+        }
+
+        function deleteProject(id) {
+            if (confirm('确定删除？')) {
+                appData.projects = appData.projects.filter(p => p.id !== id);
+                saveData();
+                renderProjects();
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadData();
+            
+            // 设置当前日期
+            document.getElementById('current-date').textContent = 
+                new Date().toLocaleDateString('zh-CN');
+
+            // 导航事件
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showView(this.dataset.view);
+                });
+            });
+
+            // 表单事件
+            document.getElementById('addTaskForm').addEventListener('submit', addTask);
+
+            // 点击模态框外部关闭
+            document.getElementById('addTaskModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            renderDashboard();
+        });
+    </script>
+</body>
+</html> 
