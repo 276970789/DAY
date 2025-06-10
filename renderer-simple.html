@@ -514,6 +514,33 @@
             background: #e3f2fd;
             border-color: #1976d2;
         }
+
+        /* 任务自动补全样式 */
+        .task-autocomplete {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-autocomplete-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .task-autocomplete-item:hover {
+            background: #f5f5f5;
+        }
+
+        .task-autocomplete-item.selected {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -797,35 +824,48 @@
             try {
                 if (isElectron) {
                     const result = await window.electronAPI.invoke('load-data');
-                    if (result.success) {
+                    if (result.success && result.data) {
                         appData = result.data;
+                        // 确保数据结构完整
+                        if (!appData.tasks) appData.tasks = [];
+                        if (!appData.projects) appData.projects = [];
+                        if (!appData.diaries) appData.diaries = [];
+                        
                         // 转换日期字符串为Date对象
                         appData.tasks.forEach(task => {
                             if (task.dueDate) task.dueDate = new Date(task.dueDate);
                         });
-                        if (appData.diaries) {
-                            appData.diaries.forEach(diary => {
-                                if (diary.date) diary.date = new Date(diary.date);
-                            });
-                        }
+                        appData.diaries.forEach(diary => {
+                            if (diary.date) diary.date = new Date(diary.date);
+                        });
+                        console.log('数据加载成功:', appData);
+                    } else {
+                        console.log('没有保存的数据，使用默认数据');
                     }
                 } else {
                     const saved = localStorage.getItem('planflow-simple');
                     if (saved) {
                         appData = JSON.parse(saved);
+                        // 确保数据结构完整
+                        if (!appData.tasks) appData.tasks = [];
+                        if (!appData.projects) appData.projects = [];
+                        if (!appData.diaries) appData.diaries = [];
+                        
                         // 转换日期字符串为Date对象
                         appData.tasks.forEach(task => {
                             if (task.dueDate) task.dueDate = new Date(task.dueDate);
                         });
-                        if (appData.diaries) {
-                            appData.diaries.forEach(diary => {
-                                if (diary.date) diary.date = new Date(diary.date);
-                            });
-                        }
+                        appData.diaries.forEach(diary => {
+                            if (diary.date) diary.date = new Date(diary.date);
+                        });
+                        console.log('从localStorage加载数据成功:', appData);
+                    } else {
+                        console.log('没有本地数据，使用默认数据');
                     }
                 }
             } catch (error) {
                 console.error('加载失败:', error);
+                console.log('使用默认数据结构');
             }
         }
 
@@ -903,8 +943,34 @@
                         const taskElement = document.createElement('div');
                         taskElement.className = 'task-mini';
                         taskElement.textContent = task.title.length > 8 ? task.title.substring(0, 8) + '...' : task.title;
-                        taskElement.title = task.title + ' (点击编辑)'; // 鼠标悬停显示完整标题
-                        taskElement.onclick = () => editTask(task.id); // 点击编辑
+                        taskElement.title = task.title + ' (拖拽改变日期，点击编辑)';
+                        taskElement.draggable = true;
+                        taskElement.dataset.taskId = task.id;
+                        
+                        // 拖拽事件
+                        taskElement.addEventListener('dragstart', (e) => {
+                            e.stopPropagation();
+                            draggedTaskId = task.id;
+                            taskElement.style.opacity = '0.5';
+                        });
+                        
+                        taskElement.addEventListener('dragend', (e) => {
+                            e.stopPropagation();
+                            taskElement.style.opacity = '1';
+                            draggedTaskId = null;
+                        });
+                        
+                        // 点击编辑（防止拖拽时触发）
+                        let dragTimeout;
+                        taskElement.addEventListener('mousedown', () => {
+                            dragTimeout = setTimeout(() => {
+                                editTask(task.id);
+                            }, 200);
+                        });
+                        taskElement.addEventListener('dragstart', () => {
+                            clearTimeout(dragTimeout);
+                        });
+                        
                         if (task.status === 'completed') {
                             taskElement.classList.add('completed');
                         }
@@ -937,9 +1003,39 @@
                     cell.appendChild(diaryIcon);
                 }
                 
+                // 拖拽接收功能
+                cell.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    if (draggedTaskId) {
+                        cell.style.backgroundColor = '#e3f2fd';
+                    }
+                });
+                
+                cell.addEventListener('dragleave', (e) => {
+                    cell.style.backgroundColor = '';
+                });
+                
+                cell.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    cell.style.backgroundColor = '';
+                    
+                    if (draggedTaskId) {
+                        // 更改任务日期
+                        const task = appData.tasks.find(t => t.id === draggedTaskId);
+                        if (task) {
+                            task.dueDate = new Date(cellDate);
+                            saveData();
+                            renderCalendar();
+                            renderDashboard();
+                            renderTasks();
+                        }
+                    }
+                });
+
                 // 点击事件 - 修改为支持日记写作
                 cell.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('diary-icon')) return;
+                    if (e.target.classList.contains('diary-icon') || 
+                        e.target.classList.contains('task-mini')) return;
                     
                     // 如果已有日记，编辑日记；否则可以选择创建任务或日记
                     if (dayDiary) {
@@ -968,25 +1064,52 @@
         }
 
         function selectDateAction(date) {
-            // 选择要执行的操作
-            const options = [
-                '📝 写今日日记',
-                '➕ 添加任务',
-                '❌ 取消'
-            ];
+            // 创建操作选择模态框
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px; text-align: center;">
+                    <h3>📅 ${date.toLocaleDateString('zh-CN')}</h3>
+                    <p style="margin: 20px 0; color: #666;">选择要执行的操作：</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <button class="btn btn-primary" onclick="selectDiaryAction('${date.toISOString()}', this)" style="padding: 15px;">
+                            📝 写今日日记
+                        </button>
+                        <button class="btn" onclick="selectTaskAction('${date.toISOString()}', this)" style="padding: 15px;">
+                            ➕ 添加任务
+                        </button>
+                        <button class="btn" onclick="cancelDateAction(this)" style="padding: 10px;">
+                            ❌ 取消
+                        </button>
+                    </div>
+                </div>
+            `;
             
-            const choice = prompt(`${date.toLocaleDateString('zh-CN')} - 选择操作：\n\n1. ${options[0]}\n2. ${options[1]}\n3. ${options[2]}\n\n请输入数字 (1-3):`);
+            document.body.appendChild(modal);
             
-            switch (choice) {
-                case '1':
-                    showAddDiaryModal(date);
-                    break;
-                case '2':
-                    selectDate(date);
-                    break;
-                default:
-                    break;
-            }
+            // 点击外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    cancelDateAction(this);
+                }
+            });
+        }
+
+        function selectDiaryAction(dateStr, element) {
+            const date = new Date(dateStr);
+            showAddDiaryModal(date);
+            element.closest('.modal').remove();
+        }
+
+        function selectTaskAction(dateStr, element) {
+            const date = new Date(dateStr);
+            selectDate(date);
+            element.closest('.modal').remove();
+        }
+
+        function cancelDateAction(element) {
+            element.closest('.modal').remove();
         }
 
         function previousMonth() {
@@ -1224,6 +1347,166 @@
             });
         }
 
+        // 任务自动补全功能
+        let autocompleteContainer = null;
+        let selectedAutocompleteIndex = -1;
+
+        function setupTaskAutocomplete(textarea) {
+            textarea.addEventListener('input', handleAutocompleteInput);
+            textarea.addEventListener('keydown', handleAutocompleteKeydown);
+            document.addEventListener('click', hideAutocomplete);
+        }
+
+        function handleAutocompleteInput(e) {
+            const textarea = e.target;
+            const text = textarea.value;
+            const cursorPos = textarea.selectionStart;
+            
+            // 找到光标前的@符号
+            let atPos = -1;
+            for (let i = cursorPos - 1; i >= 0; i--) {
+                if (text[i] === '@') {
+                    atPos = i;
+                    break;
+                }
+                if (text[i] === ' ' || text[i] === '\n') {
+                    break;
+                }
+            }
+            
+            if (atPos !== -1) {
+                const searchTerm = text.substring(atPos + 1, cursorPos).toLowerCase();
+                showTaskAutocomplete(textarea, atPos, searchTerm);
+            } else {
+                hideAutocomplete();
+            }
+        }
+
+        function showTaskAutocomplete(textarea, atPos, searchTerm) {
+            const matchingTasks = appData.tasks.filter(task => 
+                task.title.toLowerCase().includes(searchTerm) && searchTerm.length > 0
+            );
+
+            if (matchingTasks.length === 0) {
+                hideAutocomplete();
+                return;
+            }
+
+            // 创建自动补全容器
+            if (!autocompleteContainer) {
+                autocompleteContainer = document.createElement('div');
+                autocompleteContainer.className = 'task-autocomplete';
+                document.body.appendChild(autocompleteContainer);
+            }
+
+            // 计算位置
+            const rect = textarea.getBoundingClientRect();
+            const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20;
+            const lines = textarea.value.substring(0, atPos).split('\n').length;
+            
+            autocompleteContainer.style.left = rect.left + 'px';
+            autocompleteContainer.style.top = (rect.top + lines * lineHeight + 20) + 'px';
+            autocompleteContainer.style.display = 'block';
+
+            // 填充选项
+            autocompleteContainer.innerHTML = matchingTasks.map((task, index) => 
+                `<div class="task-autocomplete-item" data-task-title="${task.title}" data-index="${index}">
+                    ${task.title}
+                </div>`
+            ).join('');
+
+            // 绑定点击事件
+            autocompleteContainer.querySelectorAll('.task-autocomplete-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    insertTaskReference(textarea, atPos, item.dataset.taskTitle);
+                });
+            });
+
+            selectedAutocompleteIndex = -1;
+        }
+
+        function handleAutocompleteKeydown(e) {
+            if (!autocompleteContainer || autocompleteContainer.style.display === 'none') return;
+
+            const items = autocompleteContainer.querySelectorAll('.task-autocomplete-item');
+            
+            switch (e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.min(selectedAutocompleteIndex + 1, items.length - 1);
+                    updateAutocompleteSelection(items);
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.max(selectedAutocompleteIndex - 1, -1);
+                    updateAutocompleteSelection(items);
+                    break;
+                case 'Enter':
+                case 'Tab':
+                    if (selectedAutocompleteIndex >= 0) {
+                        e.preventDefault();
+                        const selectedItem = items[selectedAutocompleteIndex];
+                        const textarea = e.target;
+                        const atPos = findAtPosition(textarea);
+                        insertTaskReference(textarea, atPos, selectedItem.dataset.taskTitle);
+                    }
+                    break;
+                case 'Escape':
+                    hideAutocomplete();
+                    break;
+            }
+        }
+
+        function updateAutocompleteSelection(items) {
+            items.forEach((item, index) => {
+                item.classList.toggle('selected', index === selectedAutocompleteIndex);
+            });
+        }
+
+        function findAtPosition(textarea) {
+            const text = textarea.value;
+            const cursorPos = textarea.selectionStart;
+            
+            for (let i = cursorPos - 1; i >= 0; i--) {
+                if (text[i] === '@') {
+                    return i;
+                }
+                if (text[i] === ' ' || text[i] === '\n') {
+                    break;
+                }
+            }
+            return -1;
+        }
+
+        function insertTaskReference(textarea, atPos, taskTitle) {
+            const text = textarea.value;
+            const cursorPos = textarea.selectionStart;
+            
+            // 找到要替换的文本范围
+            let endPos = cursorPos;
+            while (endPos < text.length && text[endPos] !== ' ' && text[endPos] !== '\n') {
+                endPos++;
+            }
+            
+            // 替换文本
+            const newText = text.substring(0, atPos) + '@' + taskTitle + text.substring(endPos);
+            textarea.value = newText;
+            
+            // 设置光标位置
+            const newCursorPos = atPos + taskTitle.length + 1;
+            textarea.selectionStart = textarea.selectionEnd = newCursorPos;
+            
+            hideAutocomplete();
+            textarea.focus();
+        }
+
+        function hideAutocomplete() {
+            if (autocompleteContainer) {
+                autocompleteContainer.style.display = 'none';
+            }
+            selectedAutocompleteIndex = -1;
+        }
+
         // 事件处理
         function showView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1394,6 +1677,7 @@
 
         // 拖拽功能
         let draggedTaskIndex = null;
+        let draggedTaskId = null;
 
         function handleDragStart(event) {
             draggedTaskIndex = parseInt(event.target.dataset.taskIndex);
@@ -1504,6 +1788,12 @@
                     updateMoodWeatherUI();
                 });
             });
+
+            // 启用日记内容的任务自动补全
+            const diaryContentTextarea = document.getElementById('diaryContent');
+            if (diaryContentTextarea) {
+                setupTaskAutocomplete(diaryContentTextarea);
+            }
 
             renderDashboard();
         });
