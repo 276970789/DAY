@@ -200,6 +200,18 @@
             font-size: 14px;
         }
 
+        .task-title {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+
+        .task-title:hover {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
         .task-item.completed span {
             text-decoration: line-through;
             color: #999;
@@ -514,6 +526,38 @@
         </div>
     </div>
 
+    <!-- 编辑任务模态框 -->
+    <div id="editTaskModal" class="modal">
+        <div class="modal-content">
+            <h3>编辑任务</h3>
+            <form id="editTaskForm">
+                <div class="form-group">
+                    <label>任务标题</label>
+                    <input type="text" name="title" id="editTaskTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>任务描述</label>
+                    <textarea name="description" id="editTaskDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>截止日期</label>
+                    <input type="date" name="dueDate" id="editTaskDueDate">
+                </div>
+                <div class="form-group">
+                    <label>任务状态</label>
+                    <select name="status" id="editTaskStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="pending">待完成</option>
+                        <option value="completed">已完成</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn" onclick="closeEditModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // 超简化的数据管理
         let appData = {
@@ -637,7 +681,8 @@
                         const taskElement = document.createElement('div');
                         taskElement.className = 'task-mini';
                         taskElement.textContent = task.title.length > 8 ? task.title.substring(0, 8) + '...' : task.title;
-                        taskElement.title = task.title; // 鼠标悬停显示完整标题
+                        taskElement.title = task.title + ' (点击编辑)'; // 鼠标悬停显示完整标题
+                        taskElement.onclick = () => editTask(task.id); // 点击编辑
                         if (task.status === 'completed') {
                             taskElement.classList.add('completed');
                         }
@@ -715,7 +760,9 @@
                 <div class="task-item ${task.status === 'completed' ? 'completed' : ''}">
                     <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
                            onchange="toggleTask('${task.id}')">
-                    <span>${task.title}</span>
+                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
+                        ${task.title}
+                    </span>
                     <button onclick="deleteTask('${task.id}')">删除</button>
                 </div>
             `).join('');
@@ -734,7 +781,9 @@
                      ondragend="handleDragEnd(event)">
                     <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
                            onchange="toggleTask('${task.id}')">
-                    <span>${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}</span>
+                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
+                        ${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}
+                    </span>
                     <button onclick="deleteTask('${task.id}')">删除</button>
                 </div>
             `).join('');
@@ -773,6 +822,53 @@
         function closeModal() {
             document.getElementById('addTaskModal').classList.remove('show');
             document.getElementById('addTaskForm').reset();
+        }
+
+        function closeEditModal() {
+            document.getElementById('editTaskModal').classList.remove('show');
+            document.getElementById('editTaskForm').reset();
+        }
+
+        let currentEditingTaskId = null;
+
+        function editTask(taskId) {
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            currentEditingTaskId = taskId;
+            
+            // 填充表单数据
+            document.getElementById('editTaskTitle').value = task.title;
+            document.getElementById('editTaskDescription').value = task.description || '';
+            document.getElementById('editTaskDueDate').value = task.dueDate ? 
+                task.dueDate.toISOString().split('T')[0] : '';
+            document.getElementById('editTaskStatus').value = task.status || 'pending';
+            
+            // 显示编辑模态框
+            document.getElementById('editTaskModal').classList.add('show');
+        }
+
+        function updateTask(event) {
+            event.preventDefault();
+            if (!currentEditingTaskId) return;
+
+            const formData = new FormData(event.target);
+            const task = appData.tasks.find(t => t.id === currentEditingTaskId);
+            
+            if (task) {
+                task.title = formData.get('title');
+                task.description = formData.get('description');
+                task.dueDate = formData.get('dueDate') ? new Date(formData.get('dueDate')) : null;
+                task.status = formData.get('status');
+                
+                saveData();
+                closeEditModal();
+                renderDashboard();
+                renderTasks();
+                renderCalendar();
+                
+                currentEditingTaskId = null;
+            }
         }
 
         function addTask(event) {
@@ -909,11 +1005,18 @@
 
             // 表单事件
             document.getElementById('addTaskForm').addEventListener('submit', addTask);
+            document.getElementById('editTaskForm').addEventListener('submit', updateTask);
 
             // 点击模态框外部关闭
             document.getElementById('addTaskModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeModal();
+                }
+            });
+
+            document.getElementById('editTaskModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEditModal();
                 }
             });
 
