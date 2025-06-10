@@ -171,6 +171,24 @@
             background: #f9f9f9;
             border-radius: 5px;
             border: 1px solid #e0e0e0;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .task-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+            cursor: grabbing;
+        }
+
+        .task-item.drag-over {
+            border: 2px dashed #1976d2;
+            background: #e3f2fd;
         }
 
         .task-item input[type="checkbox"] {
@@ -285,20 +303,41 @@
             font-size: 14px;
         }
 
-        .task-dot {
-            width: 6px;
-            height: 6px;
-            background: #4caf50;
-            border-radius: 50%;
-            margin: 1px;
-            display: inline-block;
+        .day-tasks {
+            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
-        .task-dots {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2px;
-            margin-top: 5px;
+        .task-mini {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 10px;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-left: 3px solid #4caf50;
+        }
+
+        .task-mini:hover {
+            background: #bbdefb;
+        }
+
+        .task-mini.completed {
+            background: #f1f8e9;
+            color: #689f38;
+            text-decoration: line-through;
+            border-left-color: #8bc34a;
+        }
+
+        .task-mini.more {
+            background: #f5f5f5;
+            color: #999;
+            border-left-color: #ddd;
+            font-style: italic;
         }
 
         /* 表单样式 */
@@ -587,28 +626,34 @@
                 dayNumber.textContent = cellDate.getDate();
                 cell.appendChild(dayNumber);
                 
-                // 任务点
+                // 任务显示
                 if (dayTasks.length > 0) {
-                    const taskDots = document.createElement('div');
-                    taskDots.className = 'task-dots';
+                    const tasksContainer = document.createElement('div');
+                    tasksContainer.className = 'day-tasks';
                     
-                    // 最多显示3个点
-                    const dotsCount = Math.min(dayTasks.length, 3);
-                    for (let j = 0; j < dotsCount; j++) {
-                        const dot = document.createElement('div');
-                        dot.className = 'task-dot';
-                        taskDots.appendChild(dot);
+                    // 显示前2个任务名称
+                    const visibleTasks = dayTasks.slice(0, 2);
+                    visibleTasks.forEach(task => {
+                        const taskElement = document.createElement('div');
+                        taskElement.className = 'task-mini';
+                        taskElement.textContent = task.title.length > 8 ? task.title.substring(0, 8) + '...' : task.title;
+                        taskElement.title = task.title; // 鼠标悬停显示完整标题
+                        if (task.status === 'completed') {
+                            taskElement.classList.add('completed');
+                        }
+                        tasksContainer.appendChild(taskElement);
+                    });
+                    
+                    // 如果任务数量超过2个，显示更多提示
+                    if (dayTasks.length > 2) {
+                        const more = document.createElement('div');
+                        more.className = 'task-mini more';
+                        more.textContent = `+${dayTasks.length - 2}更多`;
+                        more.title = `共${dayTasks.length}个任务`;
+                        tasksContainer.appendChild(more);
                     }
                     
-                    if (dayTasks.length > 3) {
-                        const more = document.createElement('span');
-                        more.textContent = `+${dayTasks.length - 3}`;
-                        more.style.fontSize = '10px';
-                        more.style.color = '#666';
-                        taskDots.appendChild(more);
-                    }
-                    
-                    cell.appendChild(taskDots);
+                    cell.appendChild(tasksContainer);
                 }
                 
                 // 点击事件
@@ -678,8 +723,15 @@
         }
 
         function renderTasks() {
-            const html = appData.tasks.map(task => `
-                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}">
+            const html = appData.tasks.map((task, index) => `
+                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
+                     draggable="true" 
+                     data-task-id="${task.id}"
+                     data-task-index="${index}"
+                     ondragstart="handleDragStart(event)"
+                     ondragover="handleDragOver(event)"
+                     ondrop="handleDrop(event)"
+                     ondragend="handleDragEnd(event)">
                     <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
                            onchange="toggleTask('${task.id}')">
                     <span>${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}</span>
@@ -783,6 +835,60 @@
                 saveData();
                 renderProjects();
             }
+        }
+
+        // 拖拽功能
+        let draggedTaskIndex = null;
+
+        function handleDragStart(event) {
+            draggedTaskIndex = parseInt(event.target.dataset.taskIndex);
+            event.target.classList.add('dragging');
+            event.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+            
+            const target = event.target.closest('.task-item');
+            if (target && !target.classList.contains('dragging')) {
+                target.classList.add('drag-over');
+            }
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            
+            const target = event.target.closest('.task-item');
+            if (target && draggedTaskIndex !== null) {
+                const targetIndex = parseInt(target.dataset.taskIndex);
+                
+                if (draggedTaskIndex !== targetIndex) {
+                    // 重新排序任务数组
+                    const draggedTask = appData.tasks[draggedTaskIndex];
+                    appData.tasks.splice(draggedTaskIndex, 1);
+                    appData.tasks.splice(targetIndex, 0, draggedTask);
+                    
+                    saveData();
+                    renderTasks();
+                    renderDashboard();
+                }
+            }
+            
+            // 清理所有拖拽样式
+            document.querySelectorAll('.task-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+        }
+
+        function handleDragEnd(event) {
+            event.target.classList.remove('dragging');
+            draggedTaskIndex = null;
+            
+            // 清理所有拖拽样式
+            document.querySelectorAll('.task-item').forEach(item => {
+                item.classList.remove('drag-over', 'dragging');
+            });
         }
 
         // 初始化
