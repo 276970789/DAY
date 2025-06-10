@@ -396,6 +396,124 @@
             width: 90%;
             max-width: 500px;
         }
+
+        /* 日记样式 */
+        .diary-toolbar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .diary-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .diary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .diary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .diary-date {
+            font-weight: bold;
+            color: #1976d2;
+            font-size: 16px;
+        }
+
+        .diary-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .diary-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .diary-preview {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            max-height: 60px;
+            overflow: hidden;
+        }
+
+        .diary-tags {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .diary-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .task-reference {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 1px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .task-reference:hover {
+            background: #c8e6c9;
+        }
+
+        .diary-with-calendar {
+            border-left: 4px solid #ff9800;
+        }
+
+        .mood-weather {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mood-selector, .weather-selector {
+            display: flex;
+            gap: 5px;
+        }
+
+        .mood-option, .weather-option {
+            padding: 5px 8px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .mood-option.selected, .weather-option.selected {
+            background: #e3f2fd;
+            border-color: #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -416,6 +534,9 @@
                 </div>
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-view="projects">📋 项目管理</a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-view="diary">📝 我的日记</a>
                 </div>
             </nav>
 
@@ -498,6 +619,27 @@
                 </div>
                 <div id="project-list"></div>
             </div>
+
+            <!-- 我的日记 -->
+            <div id="diary" class="view">
+                <div class="header">
+                    <h2>我的日记</h2>
+                    <button class="btn btn-primary" onclick="showAddDiaryModal()">✏️ 写日记</button>
+                </div>
+                
+                <div class="diary-toolbar">
+                    <input type="text" placeholder="🔍 搜索日记..." id="diarySearch" 
+                           style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 300px; margin-right: 10px;">
+                    <select id="diaryFilter" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="all">全部日记</option>
+                        <option value="recent">最近7天</option>
+                        <option value="month">本月</option>
+                        <option value="hasTask">包含任务引用</option>
+                    </select>
+                </div>
+                
+                <div id="diary-list" style="margin-top: 20px;"></div>
+            </div>
         </div>
     </div>
 
@@ -558,11 +700,75 @@
         </div>
     </div>
 
+    <!-- 日记写作模态框 -->
+    <div id="addDiaryModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <h3 id="diaryModalTitle">✏️ 写日记</h3>
+            <form id="addDiaryForm">
+                <div class="form-group">
+                    <label>日记标题</label>
+                    <input type="text" name="title" id="diaryTitle" placeholder="今日感想...">
+                </div>
+                
+                <div class="mood-weather">
+                    <div>
+                        <label style="margin-right: 10px;">心情：</label>
+                        <div class="mood-selector">
+                            <span class="mood-option" data-mood="happy">😊</span>
+                            <span class="mood-option" data-mood="normal">😐</span>
+                            <span class="mood-option" data-mood="sad">😞</span>
+                            <span class="mood-option" data-mood="excited">🎉</span>
+                            <span class="mood-option" data-mood="tired">😴</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label style="margin-right: 10px;">天气：</label>
+                        <div class="weather-selector">
+                            <span class="weather-option" data-weather="sunny">☀️</span>
+                            <span class="weather-option" data-weather="cloudy">⛅</span>
+                            <span class="weather-option" data-weather="rainy">🌧️</span>
+                            <span class="weather-option" data-weather="snowy">❄️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>日记内容 (支持@任务引用)</label>
+                    <textarea name="content" id="diaryContent" rows="6" 
+                              placeholder="今天完成了@任务名，感觉很不错...
+
+使用@符号可以引用任务，例如：
+@给张哥准备数据
+@完成项目报告
+
+还可以添加标签：#工作 #生活 #学习"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>标签 (用#分隔，如: #工作 #学习)</label>
+                    <input type="text" name="tags" id="diaryTags" placeholder="#工作 #生活 #学习">
+                </div>
+
+                <div class="form-group">
+                    <label>日期</label>
+                    <input type="date" name="date" id="diaryDate">
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn" onclick="closeDiaryModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存日记</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // 超简化的数据管理
         let appData = {
             tasks: [],
-            projects: []
+            projects: [],
+            diaries: []
         };
 
         // 日历相关变量
@@ -597,6 +803,11 @@
                         appData.tasks.forEach(task => {
                             if (task.dueDate) task.dueDate = new Date(task.dueDate);
                         });
+                        if (appData.diaries) {
+                            appData.diaries.forEach(diary => {
+                                if (diary.date) diary.date = new Date(diary.date);
+                            });
+                        }
                     }
                 } else {
                     const saved = localStorage.getItem('planflow-simple');
@@ -606,6 +817,11 @@
                         appData.tasks.forEach(task => {
                             if (task.dueDate) task.dueDate = new Date(task.dueDate);
                         });
+                        if (appData.diaries) {
+                            appData.diaries.forEach(diary => {
+                                if (diary.date) diary.date = new Date(diary.date);
+                            });
+                        }
                     }
                 }
             } catch (error) {
@@ -658,10 +874,16 @@
                     cell.classList.add('today');
                 }
                 
-                // 获取当天的任务
+                // 获取当天的任务和日记
                 const dayTasks = getTasksForDate(cellDate);
+                const dayDiary = getDiaryForDate(cellDate);
+                
                 if (dayTasks.length > 0) {
                     cell.classList.add('has-tasks');
+                }
+                
+                if (dayDiary) {
+                    cell.classList.add('diary-with-calendar');
                 }
                 
                 // 日期数字
@@ -701,8 +923,31 @@
                     cell.appendChild(tasksContainer);
                 }
                 
-                // 点击事件
-                cell.addEventListener('click', () => selectDate(cellDate));
+                // 添加日记图标
+                if (dayDiary) {
+                    const diaryIcon = document.createElement('div');
+                    diaryIcon.className = 'diary-icon';
+                    diaryIcon.innerHTML = '📝';
+                    diaryIcon.style.cssText = 'position: absolute; top: 2px; right: 2px; font-size: 12px; cursor: pointer;';
+                    diaryIcon.title = '点击查看/编辑日记';
+                    diaryIcon.onclick = (e) => {
+                        e.stopPropagation();
+                        editDiary(dayDiary.id);
+                    };
+                    cell.appendChild(diaryIcon);
+                }
+                
+                // 点击事件 - 修改为支持日记写作
+                cell.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('diary-icon')) return;
+                    
+                    // 如果已有日记，编辑日记；否则可以选择创建任务或日记
+                    if (dayDiary) {
+                        editDiary(dayDiary.id);
+                    } else {
+                        selectDateAction(cellDate);
+                    }
+                });
                 
                 grid.appendChild(cell);
             }
@@ -720,6 +965,28 @@
             const dateString = date.toISOString().split('T')[0];
             document.getElementById('taskDueDate').value = dateString;
             showAddTaskModal();
+        }
+
+        function selectDateAction(date) {
+            // 选择要执行的操作
+            const options = [
+                '📝 写今日日记',
+                '➕ 添加任务',
+                '❌ 取消'
+            ];
+            
+            const choice = prompt(`${date.toLocaleDateString('zh-CN')} - 选择操作：\n\n1. ${options[0]}\n2. ${options[1]}\n3. ${options[2]}\n\n请输入数字 (1-3):`);
+            
+            switch (choice) {
+                case '1':
+                    showAddDiaryModal(date);
+                    break;
+                case '2':
+                    selectDate(date);
+                    break;
+                default:
+                    break;
+            }
         }
 
         function previousMonth() {
@@ -800,6 +1067,163 @@
             document.getElementById('project-list').innerHTML = html || '<p style="color: #999;">暂无项目</p>';
         }
 
+        // 日记功能
+        function getDiaryForDate(date) {
+            return appData.diaries.find(diary => {
+                if (!diary.date) return false;
+                return diary.date.toDateString() === date.toDateString();
+            });
+        }
+
+        function renderDiaries() {
+            const searchTerm = document.getElementById('diarySearch').value.toLowerCase();
+            const filterType = document.getElementById('diaryFilter').value;
+            
+            let filteredDiaries = appData.diaries.slice();
+            
+            // 应用搜索过滤
+            if (searchTerm) {
+                filteredDiaries = filteredDiaries.filter(diary => 
+                    diary.title.toLowerCase().includes(searchTerm) ||
+                    diary.content.toLowerCase().includes(searchTerm) ||
+                    (diary.tags && diary.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
+                );
+            }
+            
+            // 应用类型过滤
+            const today = new Date();
+            const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            switch (filterType) {
+                case 'recent':
+                    filteredDiaries = filteredDiaries.filter(diary => diary.date >= weekAgo);
+                    break;
+                case 'month':
+                    filteredDiaries = filteredDiaries.filter(diary => diary.date >= monthStart);
+                    break;
+                case 'hasTask':
+                    filteredDiaries = filteredDiaries.filter(diary => 
+                        diary.content && diary.content.includes('@')
+                    );
+                    break;
+            }
+            
+            // 按日期降序排序
+            filteredDiaries.sort((a, b) => b.date - a.date);
+            
+            const html = filteredDiaries.map(diary => {
+                const moodEmoji = {
+                    happy: '😊', normal: '😐', sad: '😞', excited: '🎉', tired: '😴'
+                };
+                const weatherEmoji = {
+                    sunny: '☀️', cloudy: '⛅', rainy: '🌧️', snowy: '❄️'
+                };
+                
+                // 处理@任务引用
+                let contentWithRefs = diary.content;
+                if (contentWithRefs && contentWithRefs.includes('@')) {
+                    contentWithRefs = contentWithRefs.replace(/@([^@\s]+)/g, 
+                        '<span class="task-reference" onclick="jumpToTask(\'$1\')">@$1</span>'
+                    );
+                }
+                
+                const preview = contentWithRefs ? 
+                    (contentWithRefs.length > 100 ? contentWithRefs.substring(0, 100) + '...' : contentWithRefs) : '';
+                
+                return `
+                    <div class="diary-card" onclick="editDiary('${diary.id}')">
+                        <div class="diary-header">
+                            <div class="diary-date">
+                                📅 ${diary.date.toLocaleDateString('zh-CN')}
+                                ${moodEmoji[diary.mood] || ''} ${weatherEmoji[diary.weather] || ''}
+                            </div>
+                            <div class="diary-meta">
+                                <span>📝 ${diary.content ? diary.content.length : 0}字</span>
+                                ${diary.tags && diary.tags.length ? `<span>🏷️ ${diary.tags.length}个标签</span>` : ''}
+                            </div>
+                        </div>
+                        ${diary.title ? `<div class="diary-title">${diary.title}</div>` : ''}
+                        <div class="diary-preview">${preview}</div>
+                        ${diary.tags && diary.tags.length ? `
+                            <div class="diary-tags">
+                                ${diary.tags.map(tag => `<span class="diary-tag">${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('diary-list').innerHTML = html || 
+                '<p style="color: #999; text-align: center; padding: 40px;">暂无日记，点击"写日记"开始记录 ✏️</p>';
+        }
+
+        function showAddDiaryModal(date = null) {
+            const targetDate = date || new Date();
+            document.getElementById('diaryDate').value = targetDate.toISOString().split('T')[0];
+            document.getElementById('diaryModalTitle').textContent = '✏️ 写日记';
+            document.getElementById('addDiaryModal').classList.add('show');
+        }
+
+        function closeDiaryModal() {
+            document.getElementById('addDiaryModal').classList.remove('show');
+            document.getElementById('addDiaryForm').reset();
+            clearMoodWeatherSelection();
+            currentEditingDiaryId = null;
+        }
+
+        function jumpToTask(taskTitle) {
+            // 跳转到任务列表并高亮任务
+            showView('tasks');
+            const task = appData.tasks.find(t => t.title.includes(taskTitle.replace('@', '')));
+            if (task) {
+                setTimeout(() => editTask(task.id), 300);
+            } else {
+                alert(`未找到任务："${taskTitle}"\n\n可能该任务已被删除或名称已更改。`);
+            }
+        }
+
+        let currentEditingDiaryId = null;
+        let selectedMood = null;
+        let selectedWeather = null;
+
+        function editDiary(diaryId) {
+            const diary = appData.diaries.find(d => d.id === diaryId);
+            if (!diary) return;
+
+            currentEditingDiaryId = diaryId;
+            
+            // 填充表单
+            document.getElementById('diaryTitle').value = diary.title || '';
+            document.getElementById('diaryContent').value = diary.content || '';
+            document.getElementById('diaryTags').value = diary.tags ? diary.tags.join(' ') : '';
+            document.getElementById('diaryDate').value = diary.date ? 
+                diary.date.toISOString().split('T')[0] : '';
+            
+            // 设置心情和天气
+            selectedMood = diary.mood;
+            selectedWeather = diary.weather;
+            updateMoodWeatherUI();
+            
+            document.getElementById('diaryModalTitle').textContent = '✏️ 编辑日记';
+            document.getElementById('addDiaryModal').classList.add('show');
+        }
+
+        function clearMoodWeatherSelection() {
+            selectedMood = null;
+            selectedWeather = null;
+            updateMoodWeatherUI();
+        }
+
+        function updateMoodWeatherUI() {
+            document.querySelectorAll('.mood-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.mood === selectedMood);
+            });
+            document.querySelectorAll('.weather-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.weather === selectedWeather);
+            });
+        }
+
         // 事件处理
         function showView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -813,6 +1237,7 @@
             else if (viewId === 'calendar') renderCalendar();
             else if (viewId === 'tasks') renderTasks();
             else if (viewId === 'projects') renderProjects();
+            else if (viewId === 'diary') renderDiaries();
         }
 
         function showAddTaskModal() {
@@ -933,6 +1358,40 @@
             }
         }
 
+        function saveDiary(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            const diaryData = {
+                title: formData.get('title'),
+                content: formData.get('content'),
+                date: new Date(formData.get('date')),
+                mood: selectedMood,
+                weather: selectedWeather,
+                tags: formData.get('tags') ? 
+                    formData.get('tags').split(/\s+/).filter(tag => tag.startsWith('#')).map(tag => tag.substring(1)) : []
+            };
+
+            if (currentEditingDiaryId) {
+                // 编辑现有日记
+                const diary = appData.diaries.find(d => d.id === currentEditingDiaryId);
+                if (diary) {
+                    Object.assign(diary, diaryData);
+                }
+            } else {
+                // 创建新日记
+                const diary = {
+                    id: Date.now().toString(),
+                    ...diaryData
+                };
+                appData.diaries.push(diary);
+            }
+
+            saveData();
+            closeDiaryModal();
+            renderDiaries();
+        }
+
         // 拖拽功能
         let draggedTaskIndex = null;
 
@@ -1006,6 +1465,7 @@
             // 表单事件
             document.getElementById('addTaskForm').addEventListener('submit', addTask);
             document.getElementById('editTaskForm').addEventListener('submit', updateTask);
+            document.getElementById('addDiaryForm').addEventListener('submit', saveDiary);
 
             // 点击模态框外部关闭
             document.getElementById('addTaskModal').addEventListener('click', function(e) {
@@ -1018,6 +1478,31 @@
                 if (e.target === this) {
                     closeEditModal();
                 }
+            });
+
+            document.getElementById('addDiaryModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeDiaryModal();
+                }
+            });
+
+            // 日记搜索和过滤
+            document.getElementById('diarySearch').addEventListener('input', renderDiaries);
+            document.getElementById('diaryFilter').addEventListener('change', renderDiaries);
+
+            // 心情和天气选择
+            document.querySelectorAll('.mood-option').forEach(el => {
+                el.addEventListener('click', function() {
+                    selectedMood = this.dataset.mood;
+                    updateMoodWeatherUI();
+                });
+            });
+
+            document.querySelectorAll('.weather-option').forEach(el => {
+                el.addEventListener('click', function() {
+                    selectedWeather = this.dataset.weather;
+                    updateMoodWeatherUI();
+                });
             });
 
             renderDashboard();
