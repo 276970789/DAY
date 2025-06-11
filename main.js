@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, Tray, nativeImage, ipcMain, dialog, shell, Notification } = require('electron');
 const path = require('path');
-const Store = require('electron-store');
+const fs = require('fs');
 
 // 性能优化配置
 app.commandLine.appendSwitch('--enable-gpu-rasterization');
@@ -8,7 +8,36 @@ app.commandLine.appendSwitch('--enable-zero-copy');
 app.commandLine.appendSwitch('--disable-software-rasterizer');
 app.commandLine.appendSwitch('--max_old_space_size', '512'); // 限制内存使用
 
-const store = new Store();
+// 使用文件系统代替electron-store
+const dataPath = path.join(app.getPath('userData'), 'planflow-data.json');
+
+const store = {
+    get: (key, defaultValue) => {
+        try {
+            if (fs.existsSync(dataPath)) {
+                const data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+                return data[key] !== undefined ? data[key] : defaultValue;
+            }
+            return defaultValue;
+        } catch (error) {
+            console.error('读取数据失败:', error);
+            return defaultValue;
+        }
+    },
+    set: (key, value) => {
+        try {
+            let data = {};
+            if (fs.existsSync(dataPath)) {
+                data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+            }
+            data[key] = value;
+            fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), 'utf8');
+            console.log(`数据保存成功: ${key}`, typeof value === 'object' ? Object.keys(value) : value);
+        } catch (error) {
+            console.error('保存数据失败:', error);
+        }
+    }
+};
 let mainWindow;
 let tray;
 let isQuitting = false;
@@ -33,7 +62,7 @@ function createWindow() {
         height: 800,
         minWidth: 800,
         minHeight: 600,
-        icon: path.join(__dirname, 'assets', 'icon.png'),
+        icon: path.join(__dirname, 'assets', '图标.png'),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
@@ -106,8 +135,8 @@ function createWindow() {
 
 // 简化的托盘
 function createTray() {
-    // 使用更简单的图标
-    const iconPath = path.join(__dirname, 'assets', 'icon.png');
+    // 使用图标.png文件
+    const iconPath = path.join(__dirname, 'assets', '图标.png');
     let trayIcon;
     
     try {

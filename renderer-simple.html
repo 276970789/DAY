@@ -810,7 +810,12 @@
         async function saveData() {
             try {
                 if (isElectron) {
-                    await window.electronAPI.invoke('save-data', appData);
+                    const result = await window.electronAPI.saveData(appData);
+                    if (result && result.success) {
+                        console.log('数据保存成功');
+                    } else {
+                        console.error('保存失败:', result ? result.error : '未知错误');
+                    }
                 } else {
                     localStorage.setItem('planflow-simple', JSON.stringify(appData));
                 }
@@ -823,7 +828,7 @@
         async function loadData() {
             try {
                 if (isElectron) {
-                    const result = await window.electronAPI.invoke('load-data');
+                    const result = await window.electronAPI.loadData();
                     if (result.success && result.data) {
                         appData = result.data;
                         // 确保数据结构完整
