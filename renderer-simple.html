@@ -773,17 +773,40 @@
 
         /* 实时编辑器 (Typora风格) */
         .wysiwyg-editor {
-            width: 100%;
-            min-height: 200px;
-            padding: 24px;
-            border: none;
-            outline: none;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 16px;
-            line-height: 1.7;
-            color: #374151;
-            resize: none;
-            background: transparent;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            min-height: 150px;
+            max-height: 300px; /* 控制最大高度 */
+            overflow-y: auto; /* 超出高度时显示滚动条 */
+            background-color: #fff;
+            color: #333;
+            line-height: 1.6;
+            transition: border-color 0.3s ease;
+            -webkit-overflow-scrolling: touch; /* for smooth scrolling on mobile */
+        }
+
+        /* 美化滚动条 */
+        .wysiwyg-editor::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .wysiwyg-editor::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .wysiwyg-editor::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        .wysiwyg-editor::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+        .wysiwyg-editor:focus-within {
+            border-color: #1976d2;
         }
 
         /* 源码编辑器 */
@@ -1335,22 +1358,23 @@
                 if (isElectron) {
                     const result = await window.electronAPI.saveData(dataToSave);
                     if (result && result.success) {
-                        console.log('数据保存成功');
+                        console.log('✅ 数据已通过Electron安全保存');
                     } else {
-                        console.error('保存失败:', result ? result.error : '未知错误');
+                        console.error('❌ Electron保存失败:', result ? result.error : '未知错误');
                     }
                 } else {
-                    localStorage.setItem('day-simple', JSON.stringify(dataToSave));
+                    // 移除localStorage，确保单一数据源
+                    console.warn('⚠️ 非Electron环境，数据无法保存');
                 }
             } catch (error) {
-                console.error('保存失败:', error);
+                console.error('❌ 保存函数异常:', error);
             }
         }
 
         // 别名函数，方便主题切换时调用
         const saveToStorage = saveData;
 
-        // 简化的数据加载
+        // 简化的数据加载 - 只使用Electron存储（彻底修复版）
         async function loadData() {
             try {
                 let savedData = null;
@@ -1359,24 +1383,19 @@
                     const result = await window.electronAPI.loadData();
                     if (result.success && result.data) {
                         savedData = result.data;
-                        console.log('数据加载成功:', savedData);
+                        console.log('✅ Electron数据加载成功:', savedData);
                     } else {
-                        console.log('没有保存的数据，使用默认数据');
+                        console.log('⚠️ 未找到Electron数据文件，使用默认数据');
                     }
                 } else {
-                    const saved = localStorage.getItem('day-simple');
-                    if (saved) {
-                        savedData = JSON.parse(saved);
-                        console.log('从localStorage加载数据成功:', savedData);
-                    } else {
-                        console.log('没有本地数据，使用默认数据');
-                    }
+                    // 移除localStorage，确保单一数据源
+                    console.warn('⚠️ 非Electron环境，数据无法加载');
                 }
 
                 if (savedData) {
-                    // 恢复主题设置
+                    // 恢复主题设置 (增加参数true，防止在加载时触发意外保存)
                     if (savedData.theme) {
-                        changeTheme(savedData.theme);
+                        changeTheme(savedData.theme, true);
                     }
 
                     // 恢复应用数据
@@ -2614,44 +2633,28 @@
         // 主题切换功能
         let currentTheme = 'blue';
 
-        function changeTheme(theme) {
-            // 移除所有主题类
-            document.body.classList.remove('theme-orange-mode', 'theme-green-mode', 'theme-purple-mode', 'theme-red-mode');
+        // 主题切换 (增加preventSave参数，修复加载时的逻辑冲突)
+        function changeTheme(theme, preventSave = false) {
+            document.body.className = '';
+            document.body.classList.add(`theme-${theme}-mode`);
             
-            // 添加新主题类
-            if (theme !== 'blue') {
-                document.body.classList.add(`theme-${theme}-mode`);
-            }
-            
-            // 更新主题按钮状态
-            document.querySelectorAll('.theme-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.theme-button').forEach(b => b.classList.remove('active'));
             document.querySelector(`.theme-${theme}`).classList.add('active');
             
             currentTheme = theme;
             
-            // 保存主题设置
-            if (typeof saveToStorage === 'function') {
+            // 仅在非加载数据时保存主题
+            if (!preventSave && typeof saveToStorage === 'function') {
                 saveToStorage();
             }
             
             console.log(`主题已切换到: ${theme}`);
         }
 
-        // 从本地存储加载主题设置
+        // 移除该函数，因为localStorage不再使用
         function loadThemeFromStorage() {
-            try {
-                const saved = localStorage.getItem('day-simple');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    if (data.theme) {
-                        changeTheme(data.theme);
-                    }
-                }
-            } catch (error) {
-                console.log('加载主题设置失败:', error);
-            }
+            // 主题加载已集成到loadData中，此函数已废弃。
+            console.log('主题加载已集成到loadData中，此函数已废弃。');
         }
 
         // 事件处理
@@ -2675,6 +2678,9 @@
         }
 
         function closeModal() {
+            if (isAddTaskDirty && !confirm('您有未保存的更改，确定要关闭吗？')) {
+                return;
+            }
             document.getElementById('addTaskModal').classList.remove('show');
             document.getElementById('addTaskForm').reset();
             
@@ -2684,7 +2690,7 @@
             const sourceEditor = document.getElementById('taskDescription');
             const toggleBtn = document.querySelector('#addTaskModal .mode-toggle');
             
-            wysiwygEditor.innerHTML = '<p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>';
+            wysiwygEditor.innerHTML = ''; // 移除预设文字
             sourceEditor.value = '';
             wysiwygEditor.style.display = 'block';
             sourceEditor.style.display = 'none';
@@ -2693,9 +2699,13 @@
             // 重新初始化历史
             taskEditorHistories.task.history = [wysiwygEditor.innerHTML];
             taskEditorHistories.task.index = 0;
+            isAddTaskDirty = false; // 重置脏状态
         }
 
         function closeEditModal() {
+            if (isEditTaskDirty && !confirm('您有未保存的更改，确定要关闭吗？')) {
+                return;
+            }
             document.getElementById('editTaskModal').classList.remove('show');
             document.getElementById('editTaskForm').reset();
             
@@ -2705,7 +2715,7 @@
             const sourceEditor = document.getElementById('editTaskDescription');
             const toggleBtn = document.querySelector('#editTaskModal .mode-toggle');
             
-            wysiwygEditor.innerHTML = '<p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>';
+            wysiwygEditor.innerHTML = ''; // 移除预设文字
             sourceEditor.value = '';
             wysiwygEditor.style.display = 'block';
             sourceEditor.style.display = 'none';
@@ -2714,6 +2724,7 @@
             // 重新初始化历史
             taskEditorHistories.editTask.history = [wysiwygEditor.innerHTML];
             taskEditorHistories.editTask.index = 0;
+            isEditTaskDirty = false; // 重置脏状态
         }
 
         let currentEditingTaskId = null;
@@ -2750,6 +2761,7 @@
             // 重新初始化编辑器历史
             taskEditorHistories.editTask.history = [wysiwygEditor.innerHTML];
             taskEditorHistories.editTask.index = 0;
+            isEditTaskDirty = false; // 重置脏状态
             
             // 显示编辑模态框
             document.getElementById('editTaskModal').classList.add('show');
@@ -3056,6 +3068,10 @@
 
             renderDashboard();
         });
+
+        // --- 标记修改状态 ---
+        document.getElementById('addTaskForm').addEventListener('input', () => isAddTaskDirty = true);
+        document.getElementById('editTaskForm').addEventListener('input', () => isEditTaskDirty = true);
     </script>
 </body>
 </html> 
