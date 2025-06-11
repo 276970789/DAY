@@ -1631,9 +1631,19 @@
             const todayTasks = appData.tasks.filter(task => {
                 if (!task.dueDate) return false;
                 return task.dueDate.toDateString() === today.toDateString();
+            });
+
+            // 对今日任务进行排序：未完成的在前，已完成的在后
+            const sortedTodayTasks = [...todayTasks].sort((a, b) => {
+                // 首先按状态排序（pending在前，completed在后）
+                if (a.status !== b.status) {
+                    return a.status === 'pending' ? -1 : 1;
+                }
+                // 同状态内按创建时间排序（新的在前）
+                return parseInt(b.id) - parseInt(a.id);
             }).slice(0, 5);
             
-            const html = todayTasks.map(task => `
+            const html = sortedTodayTasks.map(task => `
                 <div class="task-item ${task.status === 'completed' ? 'completed' : ''}">
                     <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
                            onchange="toggleTask('${task.id}')">
@@ -1647,7 +1657,17 @@
         }
 
         function renderTasks() {
-            const html = appData.tasks.map((task, index) => {
+            // 对任务进行排序：未完成的在前，已完成的在后
+            const sortedTasks = [...appData.tasks].sort((a, b) => {
+                // 首先按状态排序（pending在前，completed在后）
+                if (a.status !== b.status) {
+                    return a.status === 'pending' ? -1 : 1;
+                }
+                // 同状态内按创建时间排序（新的在前）
+                return parseInt(b.id) - parseInt(a.id);
+            });
+
+            const html = sortedTasks.map((task, index) => {
                 const description = task.description ? renderMarkdown(task.description) : '';
                 return `
                     <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
