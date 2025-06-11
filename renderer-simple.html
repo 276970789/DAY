@@ -1000,6 +1000,28 @@
             margin-top: 4px;
             line-height: 1.4;
         }
+
+        .modal-body .form-input,
+        .modal-body .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+        }
+
+        .modal-body textarea.form-input {
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .modal-body .form-input:focus,
+        .modal-body .form-select:focus {
+            border-color: #1976d2;
+        }
     </style>
 </head>
 <body>
@@ -1148,55 +1170,14 @@
         <div class="modal-content">
             <h3>添加新任务</h3>
             <form id="addTaskForm">
-                <div class="form-group">
-                    <label>任务标题</label>
-                    <input type="text" name="title" required>
+                <div class="modal-body">
+                    <input type="text" id="addTaskTitle" name="title" class="form-input" placeholder="任务标题" required>
+                    <textarea id="taskDescription" name="description" class="form-input" placeholder="任务描述..."></textarea>
+                    <input type="date" id="addTaskDueDate" name="dueDate" class="form-input">
                 </div>
-                <div class="form-group">
-                    <label>任务描述 (支持Markdown格式)</label>
-                    <div class="markdown-editor">
-                        <div class="markdown-toolbar">
-                            <div class="toolbar-group">
-                                <button type="button" onclick="undoTask()" title="撤销 (Ctrl+Z)">↶</button>
-                                <button type="button" onclick="redoTask()" title="重做 (Ctrl+Y)">↷</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" onclick="insertTaskFormatting('**', '**', '粗体文字')" title="粗体">𝐁</button>
-                                <button type="button" onclick="insertTaskFormatting('*', '*', '斜体文字')" title="斜体">𝐼</button>
-                                <button type="button" onclick="insertTaskFormatting('`', '`', '代码')" title="行内代码">‹/›</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" onclick="insertTaskTodo(false)" title="待办事项">☐</button>
-                                <button type="button" onclick="insertTaskTodo(true)" title="已完成">☑</button>
-                                <button type="button" onclick="insertTaskList(false)" title="无序列表">•</button>
-                                <button type="button" onclick="insertTaskList(true)" title="有序列表">1.</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" onclick="insertTaskQuote()" title="引用">❝</button>
-                                <button type="button" onclick="insertTaskDivider()" title="分隔线">―</button>
-                            </div>
-                            <button type="button" class="mode-toggle" onclick="toggleTaskMode()" title="切换编辑模式">源码</button>
-                        </div>
-                        
-                        <div class="editor-area">
-                            <div id="taskWysiwygEditor" class="wysiwyg-editor" contenteditable="true" placeholder="开始输入任务描述...">
-                                <p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>
-                            </div>
-                            <textarea name="description" id="taskDescription" class="source-editor" style="display: none;" placeholder="支持Markdown语法：
-- [ ] 待办事项
-- [x] 已完成事项
-- 普通列表
-**粗体** *斜体*"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>截止日期</label>
-                    <input type="date" name="dueDate" id="taskDueDate">
-                </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeModal()">取消</button>
-                    <button type="submit" class="btn btn-primary">添加</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">新建任务</button>
                 </div>
             </form>
         </div>
@@ -1207,61 +1188,17 @@
         <div class="modal-content">
             <h3>编辑任务</h3>
             <form id="editTaskForm">
-                <div class="form-group">
-                    <label>任务标题</label>
-                    <input type="text" name="title" id="editTaskTitle" required>
-                </div>
-                <div class="form-group">
-                    <label>任务描述 (支持Markdown格式)</label>
-                    <div class="markdown-editor">
-                        <div class="markdown-toolbar">
-                            <div class="toolbar-group">
-                                <button type="button" onclick="undoEditTask()" title="撤销 (Ctrl+Z)">↶</button>
-                                <button type="button" onclick="redoEditTask()" title="重做 (Ctrl+Y)">↷</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" onclick="insertEditTaskFormatting('**', '**', '粗体文字')" title="粗体">𝐁</button>
-                                <button type="button" onclick="insertEditTaskFormatting('*', '*', '斜体文字')" title="斜体">𝐼</button>
-                                <button type="button" onclick="insertEditTaskFormatting('`', '`', '代码')" title="行内代码">‹/›</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" onclick="insertEditTaskTodo(false)" title="待办事项">☐</button>
-                                <button type="button" onclick="insertEditTaskTodo(true)" title="已完成">☑</button>
-                                <button type="button" onclick="insertEditTaskList(false)" title="无序列表">•</button>
-                                <button type="button" onclick="insertEditTaskList(true)" title="有序列表">1.</button>
-                            </div>
-                            <div class="toolbar-group">
-                                <button type="button" onclick="insertEditTaskQuote()" title="引用">❝</button>
-                                <button type="button" onclick="insertEditTaskDivider()" title="分隔线">―</button>
-                            </div>
-                            <button type="button" class="mode-toggle" onclick="toggleEditTaskMode()" title="切换编辑模式">源码</button>
-                        </div>
-                        
-                        <div class="editor-area">
-                            <div id="editTaskWysiwygEditor" class="wysiwyg-editor" contenteditable="true" placeholder="开始输入任务描述...">
-                                <p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>
-                            </div>
-                            <textarea name="description" id="editTaskDescription" class="source-editor" style="display: none;" placeholder="支持Markdown语法：
-- [ ] 待办事项
-- [x] 已完成事项
-- 普通列表
-**粗体** *斜体*"></textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>截止日期</label>
-                    <input type="date" name="dueDate" id="editTaskDueDate">
-                </div>
-                <div class="form-group">
-                    <label>任务状态</label>
-                    <select name="status" id="editTaskStatus" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-                        <option value="pending">待完成</option>
+                <div class="modal-body">
+                    <input type="text" id="editTaskTitle" name="title" class="form-input" placeholder="任务标题" required>
+                    <textarea id="editTaskDescription" name="description" class="form-input" placeholder="任务描述..."></textarea>
+                    <input type="date" id="editTaskDueDate" name="dueDate" class="form-input">
+                    <select id="editTaskStatus" name="status" class="form-select">
+                        <option value="pending">待处理</option>
                         <option value="completed">已完成</option>
                     </select>
                 </div>
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" class="btn" onclick="closeEditModal()">取消</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
                     <button type="submit" class="btn btn-primary">保存修改</button>
                 </div>
             </form>
@@ -2683,22 +2620,6 @@
             }
             document.getElementById('addTaskModal').classList.remove('show');
             document.getElementById('addTaskForm').reset();
-            
-            // 重置任务编辑器
-            taskEditorModes.task = false;
-            const wysiwygEditor = document.getElementById('taskWysiwygEditor');
-            const sourceEditor = document.getElementById('taskDescription');
-            const toggleBtn = document.querySelector('#addTaskModal .mode-toggle');
-            
-            wysiwygEditor.innerHTML = ''; // 移除预设文字
-            sourceEditor.value = '';
-            wysiwygEditor.style.display = 'block';
-            sourceEditor.style.display = 'none';
-            toggleBtn.textContent = '源码';
-            
-            // 重新初始化历史
-            taskEditorHistories.task.history = [wysiwygEditor.innerHTML];
-            taskEditorHistories.task.index = 0;
             isAddTaskDirty = false; // 重置脏状态
         }
 
@@ -2708,22 +2629,6 @@
             }
             document.getElementById('editTaskModal').classList.remove('show');
             document.getElementById('editTaskForm').reset();
-            
-            // 重置编辑任务编辑器
-            taskEditorModes.editTask = false;
-            const wysiwygEditor = document.getElementById('editTaskWysiwygEditor');
-            const sourceEditor = document.getElementById('editTaskDescription');
-            const toggleBtn = document.querySelector('#editTaskModal .mode-toggle');
-            
-            wysiwygEditor.innerHTML = ''; // 移除预设文字
-            sourceEditor.value = '';
-            wysiwygEditor.style.display = 'block';
-            sourceEditor.style.display = 'none';
-            toggleBtn.textContent = '源码';
-            
-            // 重新初始化历史
-            taskEditorHistories.editTask.history = [wysiwygEditor.innerHTML];
-            taskEditorHistories.editTask.index = 0;
             isEditTaskDirty = false; // 重置脏状态
         }
 
@@ -2737,30 +2642,11 @@
             
             // 填充表单数据
             document.getElementById('editTaskTitle').value = task.title;
-            
-            // 重置编辑器到WYSIWYG模式
-            taskEditorModes.editTask = false;
-            const wysiwygEditor = document.getElementById('editTaskWysiwygEditor');
-            const sourceEditor = document.getElementById('editTaskDescription');
-            const toggleBtn = document.querySelector('#editTaskModal .mode-toggle');
-            
-            // 加载内容到编辑器
-            const description = task.description || '';
-            wysiwygEditor.innerHTML = renderMarkdownToHtml(description);
-            sourceEditor.value = description;
-            
-            // 显示WYSIWYG编辑器
-            wysiwygEditor.style.display = 'block';
-            sourceEditor.style.display = 'none';
-            toggleBtn.textContent = '源码';
-            
+            document.getElementById('editTaskDescription').value = task.description || '';
             document.getElementById('editTaskDueDate').value = task.dueDate ? 
                 task.dueDate.toISOString().split('T')[0] : '';
             document.getElementById('editTaskStatus').value = task.status || 'pending';
             
-            // 重新初始化编辑器历史
-            taskEditorHistories.editTask.history = [wysiwygEditor.innerHTML];
-            taskEditorHistories.editTask.index = 0;
             isEditTaskDirty = false; // 重置脏状态
             
             // 显示编辑模态框
@@ -2775,18 +2661,8 @@
             const task = appData.tasks.find(t => t.id === currentEditingTaskId);
             
             if (task) {
-                // 从编辑器获取内容
-                let description = '';
-                if (taskEditorModes.editTask) {
-                    // 源码模式
-                    description = document.getElementById('editTaskDescription').value;
-                } else {
-                    // WYSIWYG模式，转换为Markdown
-                    description = htmlToMarkdown(document.getElementById('editTaskWysiwygEditor').innerHTML);
-                }
-                
                 task.title = formData.get('title');
-                task.description = description;
+                task.description = formData.get('description');
                 task.dueDate = formData.get('dueDate') ? new Date(formData.get('dueDate')) : null;
                 task.status = formData.get('status');
                 
@@ -2804,20 +2680,10 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             
-            // 从编辑器获取内容
-            let description = '';
-            if (taskEditorModes.task) {
-                // 源码模式
-                description = document.getElementById('taskDescription').value;
-            } else {
-                // WYSIWYG模式，转换为Markdown
-                description = htmlToMarkdown(document.getElementById('taskWysiwygEditor').innerHTML);
-            }
-            
             const task = {
                 id: Date.now().toString(),
                 title: formData.get('title'),
-                description: description,
+                description: formData.get('description'),
                 dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate')) : null,
                 status: 'pending'
             };
@@ -3025,9 +2891,6 @@
             if (diaryContentTextarea) {
                 setupTaskAutocomplete(diaryContentTextarea);
             }
-
-            // 初始化Typora风格编辑器
-            initTaskEditors();
 
             // 处理待办事项点击
             document.addEventListener('change', function(e) {
