@@ -1,6 +1,6 @@
-# PlanFlow - 智能日程管理桌面应用
+# DAY - 智能日程管理桌面应用
 
-PlanFlow 是一个基于 Electron 开发的简洁高效的日程管理桌面应用程序，专为提高个人和团队生产力而设计。
+DAY 是一个基于 Electron 开发的简洁高效的日程管理桌面应用程序，专为提高个人和团队生产力而设计。
 
 ## 主要功能
 
@@ -76,7 +76,7 @@ npm run build
 ## 项目结构
 
 ```
-PlanFlow/
+DAY/
 ├── main.js                 # Electron 主进程
 ├── renderer-simple.html    # 前端界面
 ├── preload.js             # 预加载脚本
@@ -102,7 +102,7 @@ MIT License
 
 ## 作者
 
-PlanFlow Team - 专注于提高工作效率的桌面应用开发
+DAY Team - 专注于提高工作效率的桌面应用开发
 
 ## 技术支持
 

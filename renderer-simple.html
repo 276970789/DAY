@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlanFlow - 简化版</title>
+    <title>DAY</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, var(--primary-light) 0%, #f0f7ff 100%);
             height: 100vh;
             overflow: hidden;
         }
@@ -21,24 +21,162 @@
         .app-container {
             display: flex;
             height: 100vh;
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            box-shadow: 0 0 20px var(--primary-accent);
+            position: relative;
         }
 
-        /* 简化的侧边栏 */
+        /* 优化的侧边栏 */
         .sidebar {
-            width: 250px;
-            background: #fafafa;
-            border-right: 1px solid #e0e0e0;
-            padding: 20px;
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            border-right: none;
+            padding: 25px;
+            box-shadow: 2px 0 10px var(--primary-accent);
         }
 
         .logo {
-            font-size: 20px;
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 35px;
+            padding: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-icon img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* 主题切换器 - 缩小并移到右下角 */
+        .theme-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 5px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-button {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .theme-button:hover {
+            transform: scale(1.2);
+            border-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-button.active {
+            border-color: rgba(0, 0, 0, 0.6);
+            transform: scale(1.3);
+        }
+
+        .theme-button.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
             font-weight: bold;
-            color: #333;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
+            font-size: 8px;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+
+        .theme-blue {
+            background: linear-gradient(135deg, #7BB3F0, #5A9BD4);
+        }
+
+        .theme-orange {
+            background: linear-gradient(135deg, #E8B86D, #D4A561);
+        }
+
+        .theme-green {
+            background: linear-gradient(135deg, #81C784, #66BB6A);
+        }
+
+        .theme-purple {
+            background: linear-gradient(135deg, #BA68C8, #AB47BC);
+        }
+
+        .theme-red {
+            background: linear-gradient(135deg, #EF5350, #E53935);
+        }
+
+        /* CSS变量用于主题切换 - 柔和色调 */
+        :root {
+            --primary-color: #7BB3F0;
+            --primary-dark: #5A9BD4;
+            --primary-light: #F0F7FF;
+            --primary-accent: rgba(123, 179, 240, 0.15);
+        }
+
+        /* 橙色主题 - 柔和 */
+        .theme-orange-mode {
+            --primary-color: #E8B86D;
+            --primary-dark: #D4A561;
+            --primary-light: #FFF8F0;
+            --primary-accent: rgba(232, 184, 109, 0.15);
+        }
+
+        /* 绿色主题 - 柔和 */
+        .theme-green-mode {
+            --primary-color: #81C784;
+            --primary-dark: #66BB6A;
+            --primary-light: #F1F8E9;
+            --primary-accent: rgba(129, 199, 132, 0.15);
+        }
+
+        /* 紫色主题 - 柔和 */
+        .theme-purple-mode {
+            --primary-color: #BA68C8;
+            --primary-dark: #AB47BC;
+            --primary-light: #F8F3FF;
+            --primary-accent: rgba(186, 104, 200, 0.15);
+        }
+
+        /* 红色主题 - 柔和 */
+        .theme-red-mode {
+            --primary-color: #EF5350;
+            --primary-dark: #E53935;
+            --primary-light: #FFEBEE;
+            --primary-accent: rgba(239, 83, 80, 0.15);
         }
 
         .nav-menu {
@@ -52,40 +190,49 @@
 
         .nav-link {
             display: block;
-            padding: 10px 15px;
+            padding: 12px 20px;
             text-decoration: none;
-            color: #666;
-            border-radius: 5px;
+            color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-bottom: 5px;
         }
 
         .nav-link:hover, .nav-link.active {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .quick-add {
-            background: #1976d2;
-            color: white;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-dark);
             border: none;
-            padding: 12px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
             width: 100%;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .quick-add:hover {
-            background: #1565c0;
+            background: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
 
         /* 主内容区 */
         .main-content {
             flex: 1;
-            padding: 20px;
+            padding: 30px;
             overflow-y: auto;
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
         }
 
         .view {
@@ -138,23 +285,32 @@
         }
 
         .stat-card {
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--primary-accent);
+            box-shadow: 0 4px 20px var(--primary-accent);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--primary-accent);
         }
 
         .stat-card h3 {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
+            font-size: 16px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+            font-weight: 600;
         }
 
         .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1976d2;
-            margin-bottom: 5px;
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px var(--primary-accent);
         }
 
         .stat-card p {
@@ -541,13 +697,307 @@
             background: #e3f2fd;
             color: #1976d2;
         }
+
+        /* Typora风格Markdown编辑器样式 */
+        .markdown-editor {
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .markdown-toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 4px;
+            padding-right: 12px;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .toolbar-group:last-child {
+            border-right: none;
+        }
+
+        .markdown-toolbar button {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .markdown-toolbar button:hover {
+            background: #f1f5f9;
+            border-color: var(--primary-color);
+            color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .mode-toggle {
+            margin-left: auto;
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .mode-toggle:hover {
+            background: var(--primary-dark) !important;
+        }
+
+        /* 编辑器容器 */
+        .editor-area {
+            position: relative;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        /* 实时编辑器 (Typora风格) */
+        .wysiwyg-editor {
+            width: 100%;
+            min-height: 200px;
+            padding: 24px;
+            border: none;
+            outline: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            line-height: 1.7;
+            color: #374151;
+            resize: none;
+            background: transparent;
+        }
+
+        /* 源码编辑器 */
+        .source-editor {
+            width: 100%;
+            min-height: 200px;
+            padding: 24px;
+            border: none;
+            outline: none;
+            font-family: 'JetBrains Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #374151;
+            resize: none;
+            background: #fafbfc;
+            display: none;
+            tab-size: 4;
+            white-space: pre;
+            word-wrap: break-word;
+        }
+
+        /* Markdown渲染样式 */
+        .wysiwyg-editor h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 20px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .wysiwyg-editor h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 16px 0 10px 0;
+        }
+
+        .wysiwyg-editor h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 14px 0 8px 0;
+        }
+
+        .wysiwyg-editor p {
+            margin-bottom: 12px;
+            color: #374151;
+        }
+
+        .wysiwyg-editor ul, .wysiwyg-editor ol {
+            margin: 12px 0;
+            padding-left: 24px;
+        }
+
+        .wysiwyg-editor li {
+            margin-bottom: 6px;
+            color: #374151;
+        }
+
+        .wysiwyg-editor .todo-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .wysiwyg-editor .todo-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 4px 0;
+            margin-bottom: 6px;
+        }
+
+        .wysiwyg-editor .todo-checkbox {
+            margin-right: 12px;
+            margin-top: 4px;
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+
+        .wysiwyg-editor .todo-completed {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+
+        .wysiwyg-editor strong {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .wysiwyg-editor em {
+            font-style: italic;
+            color: var(--primary-color);
+        }
+
+        .wysiwyg-editor code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #7c3aed;
+        }
+
+        .wysiwyg-editor blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 16px;
+            margin: 16px 0;
+            color: #64748b;
+            font-style: italic;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .wysiwyg-editor hr {
+            border: none;
+            border-top: 2px solid #e2e8f0;
+            margin: 20px 0;
+        }
+
+        .markdown-preview {
+            display: none;
+        }
+
+        .preview-toggle {
+            display: none;
+        }
+
+        /* Markdown渲染样式 */
+        .markdown-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .markdown-content ul li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 4px;
+        }
+
+        .markdown-content ul li::before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .markdown-content .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .markdown-content .todo-item::before {
+            display: none;
+        }
+
+        .markdown-content .todo-checkbox {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .markdown-content .todo-completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .markdown-content strong {
+            font-weight: bold;
+            color: var(--primary-dark);
+        }
+
+        .markdown-content em {
+            font-style: italic;
+            color: var(--primary-color);
+        }
+
+        .markdown-content ol {
+            padding-left: 20px;
+        }
+
+        .markdown-content ol li {
+            margin-bottom: 4px;
+        }
+
+        /* 任务描述在任务列表中的渲染 */
+        .task-description {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- 简化的侧边栏 -->
+        <!-- 主题切换器 -->
+        <div class="theme-switcher">
+            <div class="theme-button theme-blue active" onclick="changeTheme('blue')" title="蓝色主题"></div>
+            <div class="theme-button theme-orange" onclick="changeTheme('orange')" title="橙色主题"></div>
+            <div class="theme-button theme-green" onclick="changeTheme('green')" title="绿色主题"></div>
+            <div class="theme-button theme-purple" onclick="changeTheme('purple')" title="紫色主题"></div>
+            <div class="theme-button theme-red" onclick="changeTheme('red')" title="红色主题"></div>
+        </div>
+
+        <!-- 优化的侧边栏 -->
         <div class="sidebar">
-            <div class="logo">📋 PlanFlow</div>
+            <div class="logo">
+                <div class="logo-icon">
+                    <img src="assets/图标.png" alt="DAY Logo" />
+                </div>
+                <span>DAY</span>
+            </div>
 
             <nav class="nav-menu">
                 <div class="nav-item">
@@ -680,8 +1130,42 @@
                     <input type="text" name="title" required>
                 </div>
                 <div class="form-group">
-                    <label>任务描述</label>
-                    <textarea name="description" rows="3"></textarea>
+                    <label>任务描述 (支持Markdown格式)</label>
+                    <div class="markdown-editor">
+                        <div class="markdown-toolbar">
+                            <div class="toolbar-group">
+                                <button type="button" onclick="undoTask()" title="撤销 (Ctrl+Z)">↶</button>
+                                <button type="button" onclick="redoTask()" title="重做 (Ctrl+Y)">↷</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button type="button" onclick="insertTaskFormatting('**', '**', '粗体文字')" title="粗体">𝐁</button>
+                                <button type="button" onclick="insertTaskFormatting('*', '*', '斜体文字')" title="斜体">𝐼</button>
+                                <button type="button" onclick="insertTaskFormatting('`', '`', '代码')" title="行内代码">‹/›</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button type="button" onclick="insertTaskTodo(false)" title="待办事项">☐</button>
+                                <button type="button" onclick="insertTaskTodo(true)" title="已完成">☑</button>
+                                <button type="button" onclick="insertTaskList(false)" title="无序列表">•</button>
+                                <button type="button" onclick="insertTaskList(true)" title="有序列表">1.</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button type="button" onclick="insertTaskQuote()" title="引用">❝</button>
+                                <button type="button" onclick="insertTaskDivider()" title="分隔线">―</button>
+                            </div>
+                            <button type="button" class="mode-toggle" onclick="toggleTaskMode()" title="切换编辑模式">源码</button>
+                        </div>
+                        
+                        <div class="editor-area">
+                            <div id="taskWysiwygEditor" class="wysiwyg-editor" contenteditable="true" placeholder="开始输入任务描述...">
+                                <p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>
+                            </div>
+                            <textarea name="description" id="taskDescription" class="source-editor" style="display: none;" placeholder="支持Markdown语法：
+- [ ] 待办事项
+- [x] 已完成事项
+- 普通列表
+**粗体** *斜体*"></textarea>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>截止日期</label>
@@ -705,8 +1189,42 @@
                     <input type="text" name="title" id="editTaskTitle" required>
                 </div>
                 <div class="form-group">
-                    <label>任务描述</label>
-                    <textarea name="description" id="editTaskDescription" rows="3"></textarea>
+                    <label>任务描述 (支持Markdown格式)</label>
+                    <div class="markdown-editor">
+                        <div class="markdown-toolbar">
+                            <div class="toolbar-group">
+                                <button type="button" onclick="undoEditTask()" title="撤销 (Ctrl+Z)">↶</button>
+                                <button type="button" onclick="redoEditTask()" title="重做 (Ctrl+Y)">↷</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button type="button" onclick="insertEditTaskFormatting('**', '**', '粗体文字')" title="粗体">𝐁</button>
+                                <button type="button" onclick="insertEditTaskFormatting('*', '*', '斜体文字')" title="斜体">𝐼</button>
+                                <button type="button" onclick="insertEditTaskFormatting('`', '`', '代码')" title="行内代码">‹/›</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button type="button" onclick="insertEditTaskTodo(false)" title="待办事项">☐</button>
+                                <button type="button" onclick="insertEditTaskTodo(true)" title="已完成">☑</button>
+                                <button type="button" onclick="insertEditTaskList(false)" title="无序列表">•</button>
+                                <button type="button" onclick="insertEditTaskList(true)" title="有序列表">1.</button>
+                            </div>
+                            <div class="toolbar-group">
+                                <button type="button" onclick="insertEditTaskQuote()" title="引用">❝</button>
+                                <button type="button" onclick="insertEditTaskDivider()" title="分隔线">―</button>
+                            </div>
+                            <button type="button" class="mode-toggle" onclick="toggleEditTaskMode()" title="切换编辑模式">源码</button>
+                        </div>
+                        
+                        <div class="editor-area">
+                            <div id="editTaskWysiwygEditor" class="wysiwyg-editor" contenteditable="true" placeholder="开始输入任务描述...">
+                                <p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>
+                            </div>
+                            <textarea name="description" id="editTaskDescription" class="source-editor" style="display: none;" placeholder="支持Markdown语法：
+- [ ] 待办事项
+- [x] 已完成事项
+- 普通列表
+**粗体** *斜体*"></textarea>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>截止日期</label>
@@ -809,64 +1327,72 @@
         // 简化的数据保存
         async function saveData() {
             try {
+                const dataToSave = {
+                    ...appData,
+                    theme: currentTheme // 保存当前主题
+                };
+                
                 if (isElectron) {
-                    const result = await window.electronAPI.saveData(appData);
+                    const result = await window.electronAPI.saveData(dataToSave);
                     if (result && result.success) {
                         console.log('数据保存成功');
                     } else {
                         console.error('保存失败:', result ? result.error : '未知错误');
                     }
                 } else {
-                    localStorage.setItem('planflow-simple', JSON.stringify(appData));
+                    localStorage.setItem('day-simple', JSON.stringify(dataToSave));
                 }
             } catch (error) {
                 console.error('保存失败:', error);
             }
         }
 
+        // 别名函数，方便主题切换时调用
+        const saveToStorage = saveData;
+
         // 简化的数据加载
         async function loadData() {
             try {
+                let savedData = null;
+                
                 if (isElectron) {
                     const result = await window.electronAPI.loadData();
                     if (result.success && result.data) {
-                        appData = result.data;
-                        // 确保数据结构完整
-                        if (!appData.tasks) appData.tasks = [];
-                        if (!appData.projects) appData.projects = [];
-                        if (!appData.diaries) appData.diaries = [];
-                        
-                        // 转换日期字符串为Date对象
-                        appData.tasks.forEach(task => {
-                            if (task.dueDate) task.dueDate = new Date(task.dueDate);
-                        });
-                        appData.diaries.forEach(diary => {
-                            if (diary.date) diary.date = new Date(diary.date);
-                        });
-                        console.log('数据加载成功:', appData);
+                        savedData = result.data;
+                        console.log('数据加载成功:', savedData);
                     } else {
                         console.log('没有保存的数据，使用默认数据');
                     }
                 } else {
-                    const saved = localStorage.getItem('planflow-simple');
+                    const saved = localStorage.getItem('day-simple');
                     if (saved) {
-                        appData = JSON.parse(saved);
-                        // 确保数据结构完整
-                        if (!appData.tasks) appData.tasks = [];
-                        if (!appData.projects) appData.projects = [];
-                        if (!appData.diaries) appData.diaries = [];
-                        
-                        // 转换日期字符串为Date对象
-                        appData.tasks.forEach(task => {
-                            if (task.dueDate) task.dueDate = new Date(task.dueDate);
-                        });
-                        appData.diaries.forEach(diary => {
-                            if (diary.date) diary.date = new Date(diary.date);
-                        });
-                        console.log('从localStorage加载数据成功:', appData);
+                        savedData = JSON.parse(saved);
+                        console.log('从localStorage加载数据成功:', savedData);
                     } else {
                         console.log('没有本地数据，使用默认数据');
                     }
+                }
+
+                if (savedData) {
+                    // 恢复主题设置
+                    if (savedData.theme) {
+                        changeTheme(savedData.theme);
+                    }
+
+                    // 恢复应用数据
+                    appData = {
+                        tasks: savedData.tasks || [],
+                        projects: savedData.projects || [],
+                        diaries: savedData.diaries || []
+                    };
+                    
+                    // 转换日期字符串为Date对象
+                    appData.tasks.forEach(task => {
+                        if (task.dueDate) task.dueDate = new Date(task.dueDate);
+                    });
+                    appData.diaries.forEach(diary => {
+                        if (diary.date) diary.date = new Date(diary.date);
+                    });
                 }
             } catch (error) {
                 console.error('加载失败:', error);
@@ -1165,23 +1691,29 @@
         }
 
         function renderTasks() {
-            const html = appData.tasks.map((task, index) => `
-                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
-                     draggable="true" 
-                     data-task-id="${task.id}"
-                     data-task-index="${index}"
-                     ondragstart="handleDragStart(event)"
-                     ondragover="handleDragOver(event)"
-                     ondrop="handleDrop(event)"
-                     ondragend="handleDragEnd(event)">
-                    <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                           onchange="toggleTask('${task.id}')">
-                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                        ${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}
-                    </span>
-                    <button onclick="deleteTask('${task.id}')">删除</button>
-                </div>
-            `).join('');
+            const html = appData.tasks.map((task, index) => {
+                const description = task.description ? renderMarkdown(task.description) : '';
+                return `
+                    <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
+                         draggable="true" 
+                         data-task-id="${task.id}"
+                         data-task-index="${index}"
+                         ondragstart="handleDragStart(event)"
+                         ondragover="handleDragOver(event)"
+                         ondrop="handleDrop(event)"
+                         ondragend="handleDragEnd(event)">
+                        <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
+                               onchange="toggleTask('${task.id}')">
+                        <div style="flex: 1;">
+                            <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
+                                ${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}
+                            </span>
+                            ${description ? `<div class="task-description">${description}</div>` : ''}
+                        </div>
+                        <button onclick="deleteTask('${task.id}')">删除</button>
+                    </div>
+                `;
+            }).join('');
             document.getElementById('task-list').innerHTML = html || '<p style="color: #999;">暂无任务</p>';
         }
 
@@ -1512,6 +2044,616 @@
             selectedAutocompleteIndex = -1;
         }
 
+        // Typora风格编辑器功能
+        let taskEditorModes = {
+            task: false,  // false = WYSIWYG, true = Source
+            editTask: false
+        };
+        
+        let taskEditorHistories = {
+            task: { history: [], index: -1, isUndoRedo: false },
+            editTask: { history: [], index: -1, isUndoRedo: false }
+        };
+
+        // 初始化任务编辑器
+        function initTaskEditors() {
+            // 初始化新建任务编辑器
+            const taskWysiwyg = document.getElementById('taskWysiwygEditor');
+            const taskSource = document.getElementById('taskDescription');
+            if (taskWysiwyg) {
+                taskEditorHistories.task.history.push(taskWysiwyg.innerHTML);
+                taskEditorHistories.task.index = 0;
+                
+                // 监听内容变化
+                let saveTimeout;
+                taskWysiwyg.addEventListener('input', function() {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => saveTaskHistory('task'), 500);
+                });
+                
+                taskSource.addEventListener('input', function() {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => saveTaskHistory('task'), 500);
+                });
+            }
+            
+            // 初始化编辑任务编辑器
+            const editTaskWysiwyg = document.getElementById('editTaskWysiwygEditor');
+            const editTaskSource = document.getElementById('editTaskDescription');
+            if (editTaskWysiwyg) {
+                taskEditorHistories.editTask.history.push(editTaskWysiwyg.innerHTML);
+                taskEditorHistories.editTask.index = 0;
+                
+                // 监听内容变化
+                let saveTimeout;
+                editTaskWysiwyg.addEventListener('input', function() {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => saveTaskHistory('editTask'), 500);
+                });
+                
+                editTaskSource.addEventListener('input', function() {
+                    clearTimeout(saveTimeout);
+                    saveTimeout = setTimeout(() => saveTaskHistory('editTask'), 500);
+                });
+            }
+        }
+
+        // 保存编辑器历史
+        function saveTaskHistory(editorType) {
+            const history = taskEditorHistories[editorType];
+            if (history.isUndoRedo) return;
+            
+            const isSourceMode = taskEditorModes[editorType];
+            const content = isSourceMode ? 
+                document.getElementById(editorType === 'task' ? 'taskDescription' : 'editTaskDescription').value :
+                document.getElementById(editorType === 'task' ? 'taskWysiwygEditor' : 'editTaskWysiwygEditor').innerHTML;
+            
+            if (history.history[history.index] === content) return;
+            
+            history.history = history.history.slice(0, history.index + 1);
+            history.history.push(content);
+            history.index++;
+            
+            if (history.history.length > 50) {
+                history.history.shift();
+                history.index--;
+            }
+        }
+
+        // 任务编辑器撤销功能
+        function undoTask() {
+            const history = taskEditorHistories.task;
+            if (history.index > 0) {
+                history.index--;
+                history.isUndoRedo = true;
+                
+                if (taskEditorModes.task) {
+                    document.getElementById('taskDescription').value = history.history[history.index];
+                } else {
+                    document.getElementById('taskWysiwygEditor').innerHTML = history.history[history.index];
+                }
+                
+                setTimeout(() => { history.isUndoRedo = false; }, 100);
+            }
+        }
+
+        function redoTask() {
+            const history = taskEditorHistories.task;
+            if (history.index < history.history.length - 1) {
+                history.index++;
+                history.isUndoRedo = true;
+                
+                if (taskEditorModes.task) {
+                    document.getElementById('taskDescription').value = history.history[history.index];
+                } else {
+                    document.getElementById('taskWysiwygEditor').innerHTML = history.history[history.index];
+                }
+                
+                setTimeout(() => { history.isUndoRedo = false; }, 100);
+            }
+        }
+
+        // 编辑任务编辑器撤销功能
+        function undoEditTask() {
+            const history = taskEditorHistories.editTask;
+            if (history.index > 0) {
+                history.index--;
+                history.isUndoRedo = true;
+                
+                if (taskEditorModes.editTask) {
+                    document.getElementById('editTaskDescription').value = history.history[history.index];
+                } else {
+                    document.getElementById('editTaskWysiwygEditor').innerHTML = history.history[history.index];
+                }
+                
+                setTimeout(() => { history.isUndoRedo = false; }, 100);
+            }
+        }
+
+        function redoEditTask() {
+            const history = taskEditorHistories.editTask;
+            if (history.index < history.history.length - 1) {
+                history.index++;
+                history.isUndoRedo = true;
+                
+                if (taskEditorModes.editTask) {
+                    document.getElementById('editTaskDescription').value = history.history[history.index];
+                } else {
+                    document.getElementById('editTaskWysiwygEditor').innerHTML = history.history[history.index];
+                }
+                
+                setTimeout(() => { history.isUndoRedo = false; }, 100);
+            }
+        }
+
+        // 切换编辑模式
+        function toggleTaskMode() {
+            const wysiwygEditor = document.getElementById('taskWysiwygEditor');
+            const sourceEditor = document.getElementById('taskDescription');
+            const toggleBtn = document.querySelector('#addTaskModal .mode-toggle');
+            
+            if (taskEditorModes.task) {
+                // 切换到WYSIWYG模式
+                const markdownText = sourceEditor.value;
+                wysiwygEditor.innerHTML = renderMarkdownToHtml(markdownText);
+                wysiwygEditor.style.display = 'block';
+                sourceEditor.style.display = 'none';
+                toggleBtn.textContent = '源码';
+                taskEditorModes.task = false;
+            } else {
+                // 切换到源码模式
+                const htmlContent = wysiwygEditor.innerHTML;
+                sourceEditor.value = htmlToMarkdown(htmlContent);
+                wysiwygEditor.style.display = 'none';
+                sourceEditor.style.display = 'block';
+                toggleBtn.textContent = '预览';
+                taskEditorModes.task = true;
+            }
+        }
+
+        function toggleEditTaskMode() {
+            const wysiwygEditor = document.getElementById('editTaskWysiwygEditor');
+            const sourceEditor = document.getElementById('editTaskDescription');
+            const toggleBtn = document.querySelector('#editTaskModal .mode-toggle');
+            
+            if (taskEditorModes.editTask) {
+                // 切换到WYSIWYG模式
+                const markdownText = sourceEditor.value;
+                wysiwygEditor.innerHTML = renderMarkdownToHtml(markdownText);
+                wysiwygEditor.style.display = 'block';
+                sourceEditor.style.display = 'none';
+                toggleBtn.textContent = '源码';
+                taskEditorModes.editTask = false;
+            } else {
+                // 切换到源码模式
+                const htmlContent = wysiwygEditor.innerHTML;
+                sourceEditor.value = htmlToMarkdown(htmlContent);
+                wysiwygEditor.style.display = 'none';
+                sourceEditor.style.display = 'block';
+                toggleBtn.textContent = '预览';
+                taskEditorModes.editTask = true;
+            }
+        }
+
+        // 任务编辑器插入格式化文本
+        function insertTaskFormatting(before, after, placeholder) {
+            if (taskEditorModes.task) {
+                insertIntoTaskTextarea('taskDescription', before, after, placeholder);
+            } else {
+                insertIntoTaskContentEditable('taskWysiwygEditor', before, after, placeholder);
+            }
+        }
+
+        function insertEditTaskFormatting(before, after, placeholder) {
+            if (taskEditorModes.editTask) {
+                insertIntoTaskTextarea('editTaskDescription', before, after, placeholder);
+            } else {
+                insertIntoTaskContentEditable('editTaskWysiwygEditor', before, after, placeholder);
+            }
+        }
+
+        // 其他插入函数
+        function insertTaskTodo(completed) {
+            const prefix = completed ? '- [x] ' : '- [ ] ';
+            if (taskEditorModes.task) {
+                insertIntoTaskTextarea('taskDescription', prefix, '', '待办事项');
+            } else {
+                insertTaskTodoIntoEditor('taskWysiwygEditor', completed);
+            }
+        }
+
+        function insertEditTaskTodo(completed) {
+            const prefix = completed ? '- [x] ' : '- [ ] ';
+            if (taskEditorModes.editTask) {
+                insertIntoTaskTextarea('editTaskDescription', prefix, '', '待办事项');
+            } else {
+                insertTaskTodoIntoEditor('editTaskWysiwygEditor', completed);
+            }
+        }
+
+        function insertTaskList(ordered) {
+            const prefix = ordered ? '1. ' : '- ';
+            if (taskEditorModes.task) {
+                insertIntoTaskTextarea('taskDescription', prefix, '', '列表项');
+            } else {
+                insertIntoTaskContentEditable('taskWysiwygEditor', prefix, '', '列表项');
+            }
+        }
+
+        function insertEditTaskList(ordered) {
+            const prefix = ordered ? '1. ' : '- ';
+            if (taskEditorModes.editTask) {
+                insertIntoTaskTextarea('editTaskDescription', prefix, '', '列表项');
+            } else {
+                insertIntoTaskContentEditable('editTaskWysiwygEditor', prefix, '', '列表项');
+            }
+        }
+
+        function insertTaskQuote() {
+            if (taskEditorModes.task) {
+                insertIntoTaskTextarea('taskDescription', '> ', '', '引用文字');
+            } else {
+                insertIntoTaskContentEditable('taskWysiwygEditor', '> ', '', '引用文字');
+            }
+        }
+
+        function insertEditTaskQuote() {
+            if (taskEditorModes.editTask) {
+                insertIntoTaskTextarea('editTaskDescription', '> ', '', '引用文字');
+            } else {
+                insertIntoTaskContentEditable('editTaskWysiwygEditor', '> ', '', '引用文字');
+            }
+        }
+
+        function insertTaskDivider() {
+            if (taskEditorModes.task) {
+                insertIntoTaskTextarea('taskDescription', '\n---\n', '', '');
+            } else {
+                insertIntoTaskContentEditable('taskWysiwygEditor', '\n---\n', '', '');
+            }
+        }
+
+        function insertEditTaskDivider() {
+            if (taskEditorModes.editTask) {
+                insertIntoTaskTextarea('editTaskDescription', '\n---\n', '', '');
+            } else {
+                insertIntoTaskContentEditable('editTaskWysiwygEditor', '\n---\n', '', '');
+            }
+        }
+
+        // 辅助函数
+        function insertIntoTaskTextarea(textareaId, before, after, placeholder) {
+            const textarea = document.getElementById(textareaId);
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            
+            let insertText;
+            if (selectedText) {
+                insertText = before + selectedText + after;
+            } else {
+                insertText = before + placeholder + after;
+            }
+            
+            textarea.value = textarea.value.substring(0, start) + insertText + textarea.value.substring(end);
+            
+            if (selectedText) {
+                textarea.selectionStart = start;
+                textarea.selectionEnd = start + insertText.length;
+            } else {
+                const newPos = start + before.length;
+                textarea.selectionStart = newPos;
+                textarea.selectionEnd = newPos + placeholder.length;
+            }
+            
+            textarea.focus();
+            textarea.dispatchEvent(new Event('input'));
+        }
+
+        function insertIntoTaskContentEditable(editorId, before, after, placeholder) {
+            const editor = document.getElementById(editorId);
+            editor.focus();
+            
+            const selection = window.getSelection();
+            const selectedText = selection.toString();
+            
+            let insertText;
+            if (selectedText) {
+                insertText = before + selectedText + after;
+            } else {
+                insertText = before + placeholder + after;
+            }
+            
+            document.execCommand('insertText', false, insertText);
+            editor.dispatchEvent(new Event('input'));
+        }
+
+        function insertTaskTodoIntoEditor(editorId, completed) {
+            const editor = document.getElementById(editorId);
+            editor.focus();
+            
+            const todoHtml = `
+                <ul class="todo-list">
+                    <li class="todo-item">
+                        <input type="checkbox" class="todo-checkbox" ${completed ? 'checked' : ''}> 
+                        <span ${completed ? 'class="todo-completed"' : ''}>待办事项</span>
+                    </li>
+                </ul>
+            `;
+            
+            document.execCommand('insertHTML', false, todoHtml);
+            editor.dispatchEvent(new Event('input'));
+        }
+
+        // Markdown转换函数
+        function renderMarkdownToHtml(markdown) {
+            if (!markdown.trim()) return '';
+            
+            let html = markdown
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                
+                // 处理标题
+                .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+                
+                // 处理分隔线
+                .replace(/^---$/gm, '<hr>')
+                
+                // 处理引用
+                .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+                
+                // 处理待办事项
+                .replace(/^- \[ \] (.+)$/gm, '<li class="todo-item"><input type="checkbox" class="todo-checkbox"> <span>$1</span></li>')
+                .replace(/^- \[x\] (.+)$/gm, '<li class="todo-item"><input type="checkbox" class="todo-checkbox" checked> <span class="todo-completed">$1</span></li>')
+                
+                // 处理普通列表
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                .replace(/^(\d+)\. (.+)$/gm, '<li>$2</li>')
+                
+                // 处理行内代码
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                
+                // 处理粗体
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                
+                // 处理斜体
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                
+                // 处理段落
+                .split('\n\n').map(paragraph => {
+                    if (paragraph.includes('<h1>') || paragraph.includes('<h2>') || paragraph.includes('<h3>') ||
+                        paragraph.includes('<li>') || paragraph.includes('<blockquote>') || 
+                        paragraph.includes('<hr>')) {
+                        return paragraph;
+                    }
+                    return paragraph.trim() ? `<p>${paragraph.replace(/\n/g, '<br>')}</p>` : '';
+                }).join('\n');
+            
+            // 包装列表
+            html = html.replace(/(<li(?:[^>]*)>.*?<\/li>)(\s*<li(?:[^>]*)>.*?<\/li>)*/gs, function(match) {
+                if (match.includes('todo-item')) {
+                    return '<ul class="todo-list">' + match.replace(/\s*(?=<li)/g, '') + '</ul>';
+                } else {
+                    return '<ul>' + match.replace(/\s*(?=<li)/g, '') + '</ul>';
+                }
+            });
+            
+            return html;
+        }
+
+        function htmlToMarkdown(html) {
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            
+            let markdown = '';
+            
+            function processNode(node) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    return node.textContent;
+                }
+                
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    switch (node.tagName.toLowerCase()) {
+                        case 'h1':
+                            return '# ' + node.textContent + '\n\n';
+                        case 'h2':
+                            return '## ' + node.textContent + '\n\n';
+                        case 'h3':
+                            return '### ' + node.textContent + '\n\n';
+                        case 'p':
+                            return node.textContent + '\n\n';
+                        case 'strong':
+                            return '**' + node.textContent + '**';
+                        case 'em':
+                            return '*' + node.textContent + '*';
+                        case 'code':
+                            return '`' + node.textContent + '`';
+                        case 'blockquote':
+                            return '> ' + node.textContent + '\n\n';
+                        case 'hr':
+                            return '---\n\n';
+                        case 'ul':
+                            let result = '';
+                            for (let child of node.children) {
+                                if (child.classList.contains('todo-item')) {
+                                    const checkbox = child.querySelector('input[type="checkbox"]');
+                                    const checked = checkbox && checkbox.checked;
+                                    const text = child.querySelector('span').textContent;
+                                    result += (checked ? '- [x] ' : '- [ ] ') + text + '\n';
+                                } else {
+                                    result += '- ' + child.textContent + '\n';
+                                }
+                            }
+                            return result + '\n';
+                        case 'ol':
+                            let olResult = '';
+                            let index = 1;
+                            for (let child of node.children) {
+                                olResult += index + '. ' + child.textContent + '\n';
+                                index++;
+                            }
+                            return olResult + '\n';
+                        default:
+                            let content = '';
+                            for (let child of node.childNodes) {
+                                content += processNode(child);
+                            }
+                            return content;
+                    }
+                }
+                return '';
+            }
+            
+            for (let child of temp.childNodes) {
+                markdown += processNode(child);
+            }
+            
+            return markdown.trim();
+        }
+
+        // Markdown功能
+        function insertMarkdown(before, after = '', placeholder = '', targetId = 'taskDescription') {
+            const textarea = document.getElementById(targetId);
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            
+            let insertText;
+            if (selectedText) {
+                insertText = before + selectedText + after;
+            } else {
+                insertText = before + placeholder + after;
+            }
+            
+            // 对于新行项目，确保在新行开始
+            if (before.includes('\n') || before.startsWith('- ') || before.match(/^\d+\. /)) {
+                const beforeCursor = textarea.value.substring(0, start);
+                if (beforeCursor && !beforeCursor.endsWith('\n')) {
+                    insertText = '\n' + insertText;
+                }
+            }
+            
+            textarea.value = textarea.value.substring(0, start) + insertText + textarea.value.substring(end);
+            
+            // 设置光标位置
+            if (selectedText) {
+                textarea.selectionStart = start;
+                textarea.selectionEnd = start + insertText.length;
+            } else {
+                const newPos = start + before.length + (before.includes('\n') ? 1 : 0);
+                textarea.selectionStart = newPos;
+                textarea.selectionEnd = newPos + placeholder.length;
+            }
+            
+            textarea.focus();
+        }
+
+        function togglePreview(textareaId) {
+            const textarea = document.getElementById(textareaId);
+            const preview = document.getElementById(textareaId + 'Preview');
+            const button = textarea.parentNode.querySelector('.preview-toggle');
+            
+            if (preview.style.display === 'none') {
+                // 显示预览
+                preview.innerHTML = renderMarkdown(textarea.value);
+                preview.style.display = 'block';
+                textarea.style.display = 'none';
+                button.textContent = '编辑';
+            } else {
+                // 显示编辑
+                preview.style.display = 'none';
+                textarea.style.display = 'block';
+                button.textContent = '预览';
+                textarea.focus();
+            }
+        }
+
+        function renderMarkdown(text) {
+            if (!text) return '<p style="color: #999;">暂无内容</p>';
+            
+            let html = text
+                // 转义HTML
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                
+                // 处理待办事项
+                .replace(/^- \[ \] (.+)$/gm, '<div class="todo-item"><input type="checkbox" class="todo-checkbox" disabled> <span>$1</span></div>')
+                .replace(/^- \[x\] (.+)$/gm, '<div class="todo-item"><input type="checkbox" class="todo-checkbox" checked disabled> <span class="todo-completed">$1</span></div>')
+                
+                // 处理普通列表
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                
+                // 处理有序列表
+                .replace(/^(\d+)\. (.+)$/gm, '<li data-num="$1">$2</li>')
+                
+                // 处理粗体
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                
+                // 处理斜体
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                
+                // 处理换行
+                .replace(/\n/g, '<br>');
+            
+            // 包装列表
+            html = html.replace(/(<li.*?<\/li>)(?:\s*<br>\s*<li.*?<\/li>)*/g, function(match) {
+                if (match.includes('data-num=')) {
+                    return '<ol>' + match.replace(/<br>\s*/g, '') + '</ol>';
+                } else {
+                    return '<ul>' + match.replace(/<br>\s*/g, '') + '</ul>';
+                }
+            });
+            
+            return '<div class="markdown-content">' + html + '</div>';
+        }
+
+        // 主题切换功能
+        let currentTheme = 'blue';
+
+        function changeTheme(theme) {
+            // 移除所有主题类
+            document.body.classList.remove('theme-orange-mode', 'theme-green-mode', 'theme-purple-mode', 'theme-red-mode');
+            
+            // 添加新主题类
+            if (theme !== 'blue') {
+                document.body.classList.add(`theme-${theme}-mode`);
+            }
+            
+            // 更新主题按钮状态
+            document.querySelectorAll('.theme-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.theme-${theme}`).classList.add('active');
+            
+            currentTheme = theme;
+            
+            // 保存主题设置
+            if (typeof saveToStorage === 'function') {
+                saveToStorage();
+            }
+            
+            console.log(`主题已切换到: ${theme}`);
+        }
+
+        // 从本地存储加载主题设置
+        function loadThemeFromStorage() {
+            try {
+                const saved = localStorage.getItem('day-simple');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.theme) {
+                        changeTheme(data.theme);
+                    }
+                }
+            } catch (error) {
+                console.log('加载主题设置失败:', error);
+            }
+        }
+
         // 事件处理
         function showView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1535,11 +2677,43 @@
         function closeModal() {
             document.getElementById('addTaskModal').classList.remove('show');
             document.getElementById('addTaskForm').reset();
+            
+            // 重置任务编辑器
+            taskEditorModes.task = false;
+            const wysiwygEditor = document.getElementById('taskWysiwygEditor');
+            const sourceEditor = document.getElementById('taskDescription');
+            const toggleBtn = document.querySelector('#addTaskModal .mode-toggle');
+            
+            wysiwygEditor.innerHTML = '<p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>';
+            sourceEditor.value = '';
+            wysiwygEditor.style.display = 'block';
+            sourceEditor.style.display = 'none';
+            toggleBtn.textContent = '源码';
+            
+            // 重新初始化历史
+            taskEditorHistories.task.history = [wysiwygEditor.innerHTML];
+            taskEditorHistories.task.index = 0;
         }
 
         function closeEditModal() {
             document.getElementById('editTaskModal').classList.remove('show');
             document.getElementById('editTaskForm').reset();
+            
+            // 重置编辑任务编辑器
+            taskEditorModes.editTask = false;
+            const wysiwygEditor = document.getElementById('editTaskWysiwygEditor');
+            const sourceEditor = document.getElementById('editTaskDescription');
+            const toggleBtn = document.querySelector('#editTaskModal .mode-toggle');
+            
+            wysiwygEditor.innerHTML = '<p>支持Markdown语法：待办事项、列表、粗体、斜体等</p>';
+            sourceEditor.value = '';
+            wysiwygEditor.style.display = 'block';
+            sourceEditor.style.display = 'none';
+            toggleBtn.textContent = '源码';
+            
+            // 重新初始化历史
+            taskEditorHistories.editTask.history = [wysiwygEditor.innerHTML];
+            taskEditorHistories.editTask.index = 0;
         }
 
         let currentEditingTaskId = null;
@@ -1552,10 +2726,30 @@
             
             // 填充表单数据
             document.getElementById('editTaskTitle').value = task.title;
-            document.getElementById('editTaskDescription').value = task.description || '';
+            
+            // 重置编辑器到WYSIWYG模式
+            taskEditorModes.editTask = false;
+            const wysiwygEditor = document.getElementById('editTaskWysiwygEditor');
+            const sourceEditor = document.getElementById('editTaskDescription');
+            const toggleBtn = document.querySelector('#editTaskModal .mode-toggle');
+            
+            // 加载内容到编辑器
+            const description = task.description || '';
+            wysiwygEditor.innerHTML = renderMarkdownToHtml(description);
+            sourceEditor.value = description;
+            
+            // 显示WYSIWYG编辑器
+            wysiwygEditor.style.display = 'block';
+            sourceEditor.style.display = 'none';
+            toggleBtn.textContent = '源码';
+            
             document.getElementById('editTaskDueDate').value = task.dueDate ? 
                 task.dueDate.toISOString().split('T')[0] : '';
             document.getElementById('editTaskStatus').value = task.status || 'pending';
+            
+            // 重新初始化编辑器历史
+            taskEditorHistories.editTask.history = [wysiwygEditor.innerHTML];
+            taskEditorHistories.editTask.index = 0;
             
             // 显示编辑模态框
             document.getElementById('editTaskModal').classList.add('show');
@@ -1569,8 +2763,18 @@
             const task = appData.tasks.find(t => t.id === currentEditingTaskId);
             
             if (task) {
+                // 从编辑器获取内容
+                let description = '';
+                if (taskEditorModes.editTask) {
+                    // 源码模式
+                    description = document.getElementById('editTaskDescription').value;
+                } else {
+                    // WYSIWYG模式，转换为Markdown
+                    description = htmlToMarkdown(document.getElementById('editTaskWysiwygEditor').innerHTML);
+                }
+                
                 task.title = formData.get('title');
-                task.description = formData.get('description');
+                task.description = description;
                 task.dueDate = formData.get('dueDate') ? new Date(formData.get('dueDate')) : null;
                 task.status = formData.get('status');
                 
@@ -1588,10 +2792,20 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             
+            // 从编辑器获取内容
+            let description = '';
+            if (taskEditorModes.task) {
+                // 源码模式
+                description = document.getElementById('taskDescription').value;
+            } else {
+                // WYSIWYG模式，转换为Markdown
+                description = htmlToMarkdown(document.getElementById('taskWysiwygEditor').innerHTML);
+            }
+            
             const task = {
                 id: Date.now().toString(),
                 title: formData.get('title'),
-                description: formData.get('description'),
+                description: description,
                 dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate')) : null,
                 status: 'pending'
             };
@@ -1799,6 +3013,46 @@
             if (diaryContentTextarea) {
                 setupTaskAutocomplete(diaryContentTextarea);
             }
+
+            // 初始化Typora风格编辑器
+            initTaskEditors();
+
+            // 处理待办事项点击
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('todo-checkbox')) {
+                    const span = e.target.nextElementSibling;
+                    if (e.target.checked) {
+                        span.classList.add('todo-completed');
+                    } else {
+                        span.classList.remove('todo-completed');
+                    }
+                }
+            });
+
+            // 全局键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                // 只在模态框打开时处理任务编辑器快捷键
+                if (document.querySelector('.modal.show')) {
+                    // Ctrl+Z 撤销
+                    if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+                        e.preventDefault();
+                        if (document.getElementById('addTaskModal').classList.contains('show')) {
+                            undoTask();
+                        } else if (document.getElementById('editTaskModal').classList.contains('show')) {
+                            undoEditTask();
+                        }
+                    }
+                    // Ctrl+Y 或 Ctrl+Shift+Z 重做
+                    else if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'Z')) {
+                        e.preventDefault();
+                        if (document.getElementById('addTaskModal').classList.contains('show')) {
+                            redoTask();
+                        } else if (document.getElementById('editTaskModal').classList.contains('show')) {
+                            redoEditTask();
+                        }
+                    }
+                }
+            });
 
             renderDashboard();
         });

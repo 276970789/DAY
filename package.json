@@ -1,7 +1,7 @@
 {
-  "name": "planflow",
+  "name": "day",
   "version": "1.0.0",
-  "description": "PlanFlow - 智能日程管理桌面软件",
+  "description": "DAY - 智能日程管理桌面软件",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -20,8 +20,8 @@
     "效率工具"
   ],
   "author": {
-    "name": "PlanFlow Team",
-    "email": "contact@planflow.app"
+    "name": "DAY Team",
+    "email": "contact@day.app"
   },
   "license": "MIT",
   "devDependencies": {
@@ -33,8 +33,8 @@
     "node-notifier": "^10.0.1"
   },
   "build": {
-    "appId": "com.planflow.app",
-    "productName": "PlanFlow",
+    "appId": "com.day.app",
+    "productName": "DAY",
     "directories": {
       "output": "dist"
     },
@@ -70,16 +70,16 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "PlanFlow"
+      "shortcutName": "DAY"
     },
     "dmg": {
-      "title": "PlanFlow ${version}",
+      "title": "DAY ${version}",
       "icon": "assets/icon.icns"
     }
   },
-  "homepage": "https://planflow.app",
+  "homepage": "https://day.app",
   "repository": {
     "type": "git",
-    "url": "https://github.com/planflow/desktop"
+    "url": "https://github.com/day/desktop"
   }
 } 
