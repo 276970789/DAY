@@ -276,6 +276,36 @@
             opacity: 0.9;
         }
 
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 3px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+            border-color: #17a2b8;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+            border-color: #ffc107;
+        }
+
         /* 统计卡片 - 简化版 */
         .stats-grid {
             display: grid;
@@ -345,6 +375,45 @@
         .task-item.drag-over {
             border: 2px dashed #1976d2;
             background: #e3f2fd;
+        }
+        
+        /* 项目卡片样式 */
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f0f7ff;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .project-header span {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .task-count {
+            font-size: 12px;
+            color: #666;
+            margin-right: 10px;
+        }
+        
+        .project-tasks {
+            padding: 10px;
+        }
+        
+        .no-tasks {
+            padding: 15px;
+            text-align: center;
+            color: #999;
         }
 
         .task-item input[type="checkbox"] {
@@ -621,11 +690,71 @@
         }
 
         .diary-tag {
-            background: #e3f2fd;
-            color: #1976d2;
+            display: inline-block;
             padding: 2px 8px;
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
             border-radius: 12px;
             font-size: 12px;
+            margin-right: 5px;
+        }
+
+        /* 日记操作按钮样式 */
+        .diary-actions {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .diary-actions button {
+            padding: 4px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .diary-actions .btn-danger {
+            background: #ff5252;
+            color: white;
+        }
+
+        .diary-actions .btn-danger:hover {
+            background: #ff1744;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(255, 23, 68, 0.3);
+        }
+
+        /* 日历中的日记标记 */
+        .diary-with-calendar {
+            position: relative;
+        }
+
+        /* 通知动画 */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
         }
 
         .task-reference {
@@ -640,10 +769,6 @@
 
         .task-reference:hover {
             background: #c8e6c9;
-        }
-
-        .diary-with-calendar {
-            border-left: 4px solid #ff9800;
         }
 
         .mood-weather {
@@ -1060,6 +1185,9 @@
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-view="diary">📝 我的日记</a>
                 </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link" data-view="backup">💾 数据备份</a>
+                </div>
             </nav>
 
             <button class="quick-add" onclick="showAddTaskModal()">➕ 快速添加任务</button>
@@ -1076,19 +1204,19 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <h3>待办任务</h3>
+                        <h3>今日待办</h3>
                         <div class="stat-number" id="pending-tasks">0</div>
-                        <p>个任务待完成</p>
+                        <p>个今日任务待完成</p>
                     </div>
                     <div class="stat-card">
-                        <h3>已完成</h3>
+                        <h3>今日已完成</h3>
                         <div class="stat-number" id="completed-tasks">0</div>
-                        <p>个任务已完成</p>
+                        <p>个今日任务已完成</p>
                     </div>
                     <div class="stat-card">
                         <h3>进行中项目</h3>
                         <div class="stat-number" id="active-projects">0</div>
-                        <p>个项目进行中</p>
+                        <p>个项目有待办任务</p>
                     </div>
                     <div class="stat-card">
                         <h3>完成率</h3>
@@ -1107,7 +1235,7 @@
             <div id="calendar" class="view">
                 <div class="header">
                     <h2>日历视图</h2>
-                    <button class="btn btn-primary" onclick="showAddTaskModal()">添加任务</button>
+                    <button class="btn btn-primary" onclick="showAddTaskModal(new Date())">添加任务</button>
                 </div>
                 
                 <div class="calendar-header">
@@ -1162,6 +1290,67 @@
                 
                 <div id="diary-list" style="margin-top: 20px;"></div>
             </div>
+
+            <!-- 数据备份 -->
+            <div id="backup" class="view">
+                <div class="header">
+                    <h2>数据备份</h2>
+                    <button class="btn btn-primary" onclick="createManualBackup()">💾 立即备份</button>
+                </div>
+                
+                <!-- 数据统计卡片 -->
+                <div class="stats-grid" style="margin-bottom: 30px;">
+                    <div class="stat-card">
+                        <h3>数据文件</h3>
+                        <div class="stat-number" id="data-file-size">0 KB</div>
+                        <p id="data-file-status">状态检查中...</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>自动备份</h3>
+                        <div class="stat-number" id="auto-backup-count">0</div>
+                        <p>每30分钟自动备份</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>手动备份</h3>
+                        <div class="stat-number" id="manual-backup-count">0</div>
+                        <p>手动创建的备份</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>最后更新</h3>
+                        <div class="stat-number" id="last-modified-date">--</div>
+                        <p>数据最后修改时间</p>
+                    </div>
+                </div>
+
+                <!-- 备份操作区 -->
+                <div class="backup-actions" style="margin-bottom: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h3 style="margin-bottom: 15px;">快速操作</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="createManualBackup()">
+                            💾 创建备份
+                        </button>
+                        <button class="btn btn-secondary" onclick="refreshBackupList()">
+                            🔄 刷新列表
+                        </button>
+                        <button class="btn btn-info" onclick="showDataStats()">
+                            📊 数据统计
+                        </button>
+                        <button class="btn btn-warning" onclick="cleanupOldBackups()">
+                            🧹 清理旧备份
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 备份列表 -->
+                <div class="backup-list-container">
+                    <h3>备份文件列表</h3>
+                    <div id="backup-list" style="margin-top: 15px;">
+                        <div class="loading-indicator" style="text-align: center; padding: 40px; color: #666;">
+                            正在加载备份列表...
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1174,6 +1363,10 @@
                     <input type="text" id="addTaskTitle" name="title" class="form-input" placeholder="任务标题" required>
                     <textarea id="taskDescription" name="description" class="form-input" placeholder="任务描述..."></textarea>
                     <input type="date" id="addTaskDueDate" name="dueDate" class="form-input">
+                    <select id="addTaskProject" name="projectId" class="form-select">
+                        <option value="">-- 选择项目（可选）--</option>
+                        <!-- 项目选项将通过JavaScript动态添加 -->
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
@@ -1195,6 +1388,10 @@
                     <select id="editTaskStatus" name="status" class="form-select">
                         <option value="pending">待处理</option>
                         <option value="completed">已完成</option>
+                    </select>
+                    <select id="editTaskProject" name="projectId" class="form-select">
+                        <option value="">-- 选择项目（可选）--</option>
+                        <!-- 项目选项将通过JavaScript动态添加 -->
                     </select>
                 </div>
                 <div class="modal-footer">
@@ -1376,16 +1573,16 @@
                 grid.appendChild(header);
             });
             
-            // 获取本月第一天和最后一天
+            // 获取本月第一天
             const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            const startDate = new Date(firstDay);
-            startDate.setDate(startDate.getDate() - firstDay.getDay());
+            // 计算日历起始日期（本月第一天所在周的周日）
+            const startDay = new Date(year, month, 1 - firstDay.getDay());
             
             // 生成42个日期格子（6周）
             for (let i = 0; i < 42; i++) {
-                const cellDate = new Date(startDate);
-                cellDate.setDate(startDate.getDate() + i);
+                // 创建一个完全新的日期对象，直接指定年、月、日
+                const targetDate = new Date(startDay.getFullYear(), startDay.getMonth(), startDay.getDate() + i);
+                const cellDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
                 
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell';
@@ -1510,7 +1707,10 @@
                         // 更改任务日期
                         const task = appData.tasks.find(t => t.id === draggedTaskId);
                         if (task) {
-                            task.dueDate = new Date(cellDate);
+                            // 创建新的日期对象避免引用问题
+                            const exactDate = new Date(cellDate.getTime());
+                            console.log('拖放到日期:', exactDate.toLocaleDateString(), '日:', exactDate.getDate());
+                            task.dueDate = exactDate;
                             saveData();
                             renderCalendar();
                             renderDashboard();
@@ -1524,11 +1724,21 @@
                     if (e.target.classList.contains('diary-icon') || 
                         e.target.classList.contains('task-mini')) return;
                     
+                    // 确保使用正确的日期，创建新的日期对象避免引用问题
+                    const exactDate = new Date(cellDate.getTime());
+                    console.log('点击日期:', exactDate.toLocaleDateString(), '日:', exactDate.getDate());
+                    
                     // 如果已有日记，编辑日记；否则可以选择创建任务或日记
                     if (dayDiary) {
                         editDiary(dayDiary.id);
                     } else {
-                        selectDateAction(cellDate);
+                        // 确保使用正确的年、月、日创建新日期对象
+                        const clickedDate = new Date(
+                            cellDate.getFullYear(),
+                            cellDate.getMonth(),
+                            cellDate.getDate()
+                        );
+                        selectDateAction(clickedDate);
                     }
                 });
                 
@@ -1544,26 +1754,28 @@
         }
 
         function selectDate(date) {
-            // 设置添加任务表单的默认日期
-            const dateString = date.toISOString().split('T')[0];
-            document.getElementById('taskDueDate').value = dateString;
-            showAddTaskModal();
+            // 直接调用带日期参数的showAddTaskModal函数
+            showAddTaskModal(date);
         }
 
         function selectDateAction(date) {
+            // 确保日期是一个有效的Date对象
+            const selectedDate = new Date(date.getTime());
+            console.log('操作选择 - 日期:', selectedDate.toLocaleDateString(), '日:', selectedDate.getDate());
+            
             // 创建操作选择模态框
             const modal = document.createElement('div');
             modal.className = 'modal';
             modal.style.display = 'flex';
             modal.innerHTML = `
                 <div class="modal-content" style="max-width: 400px; text-align: center;">
-                    <h3>📅 ${date.toLocaleDateString('zh-CN')}</h3>
+                    <h3>📅 ${selectedDate.toLocaleDateString('zh-CN')} (${selectedDate.getDate()}日)</h3>
                     <p style="margin: 20px 0; color: #666;">选择要执行的操作：</p>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <button class="btn btn-primary" onclick="selectDiaryAction('${date.toISOString()}', this)" style="padding: 15px;">
+                        <button class="btn btn-primary" onclick="selectDiaryAction('${selectedDate.toISOString()}', this)" style="padding: 15px;">
                             📝 写今日日记
                         </button>
-                        <button class="btn" onclick="selectTaskAction('${date.toISOString()}', this)" style="padding: 15px;">
+                        <button class="btn" onclick="selectTaskAction('${selectedDate.toISOString()}', this)" style="padding: 15px;">
                             ➕ 添加任务
                         </button>
                         <button class="btn" onclick="cancelDateAction(this)" style="padding: 10px;">
@@ -1584,13 +1796,17 @@
         }
 
         function selectDiaryAction(dateStr, element) {
+            // 解析ISO字符串为Date对象
             const date = new Date(dateStr);
+            console.log('创建日记 - 日期:', date.toLocaleDateString(), '日:', date.getDate());
             showAddDiaryModal(date);
             element.closest('.modal').remove();
         }
 
         function selectTaskAction(dateStr, element) {
+            // 解析ISO字符串为Date对象
             const date = new Date(dateStr);
+            console.log('创建任务 - 日期:', date.toLocaleDateString(), '日:', date.getDate());
             selectDate(date);
             element.closest('.modal').remove();
         }
@@ -1614,23 +1830,54 @@
             renderCalendar();
         }
 
-        // 简化的渲染函数
+        // 优化的仪表板渲染函数
         function renderDashboard() {
-            const pending = appData.tasks.filter(t => t.status !== 'completed').length;
-            const completed = appData.tasks.filter(t => t.status === 'completed').length;
-            const total = appData.tasks.length;
-            const rate = total ? Math.round((completed / total) * 100) : 0;
-
-            document.getElementById('pending-tasks').textContent = pending;
-            document.getElementById('completed-tasks').textContent = completed;
-            document.getElementById('active-projects').textContent = appData.projects.length;
-            document.getElementById('completion-rate').textContent = rate + '%';
-
-            // 显示今日任务
             const today = new Date();
+            
+            // 区分今日任务和所有任务
             const todayTasks = appData.tasks.filter(task => {
                 if (!task.dueDate) return false;
                 return task.dueDate.toDateString() === today.toDateString();
+            });
+            
+            // 今日待办任务数量
+            const todayPending = todayTasks.filter(t => t.status !== 'completed').length;
+            
+            // 今日已完成任务数量
+            const todayCompleted = todayTasks.filter(t => t.status === 'completed').length;
+            
+            // 今日任务总数
+            const todayTotal = todayTasks.length;
+            
+            // 今日完成率
+            const todayRate = todayTotal ? Math.round((todayCompleted / todayTotal) * 100) : 0;
+            
+            // 活跃项目：有关联的未完成任务的项目
+            // 首先检查每个项目是否有关联任务
+            const projectsWithTasks = appData.projects.filter(project => {
+                // 假设任务中有projectId字段关联到项目
+                // 如果没有这个字段，我们需要添加这个关联机制
+                const projectTasks = appData.tasks.filter(task => 
+                    task.projectId === project.id && task.status !== 'completed'
+                );
+                return projectTasks.length > 0;
+            });
+            
+            // 如果尚未实现项目-任务关联，则显示所有项目数量
+            const activeProjects = projectsWithTasks.length || appData.projects.length;
+
+            // 更新统计卡片
+            document.getElementById('pending-tasks').textContent = todayPending;
+            document.getElementById('completed-tasks').textContent = todayCompleted;
+            document.getElementById('active-projects').textContent = activeProjects;
+            document.getElementById('completion-rate').textContent = todayRate + '%';
+            
+            // 显示当前日期
+            document.getElementById('current-date').textContent = today.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
             });
 
             // 对今日任务进行排序：未完成的在前，已完成的在后
@@ -1682,7 +1929,9 @@
                                onchange="toggleTask('${task.id}')">
                         <div style="flex: 1;">
                             <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                ${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}
+                                ${task.title} 
+                                ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}
+                                ${task.projectId ? '📋 ' + getProjectName(task.projectId) : ''}
                             </span>
                             ${description ? `<div class="task-description">${description}</div>` : ''}
                         </div>
@@ -1694,12 +1943,38 @@
         }
 
         function renderProjects() {
-            const html = appData.projects.map(project => `
-                <div class="task-item">
-                    <span>📋 ${project.title}</span>
-                    <button onclick="deleteProject('${project.id}')">删除</button>
-                </div>
-            `).join('');
+            const html = appData.projects.map(project => {
+                // 获取关联到此项目的任务
+                const projectTasks = appData.tasks.filter(task => task.projectId === project.id);
+                const pendingTasks = projectTasks.filter(task => task.status !== 'completed');
+                
+                return `
+                    <div class="project-card">
+                        <div class="project-header">
+                            <span>📋 ${project.title}</span>
+                            <div>
+                                <span class="task-count">${pendingTasks.length}个待办 / ${projectTasks.length}个任务</span>
+                                <button onclick="deleteProject('${project.id}')">删除</button>
+                            </div>
+                        </div>
+                        
+                        ${projectTasks.length > 0 ? `
+                            <div class="project-tasks">
+                                ${projectTasks.map(task => `
+                                    <div class="task-item ${task.status === 'completed' ? 'completed' : ''}">
+                                        <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
+                                            onchange="toggleTask('${task.id}')">
+                                        <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
+                                            ${task.title} ${task.dueDate ? '📅 ' + task.dueDate.toLocaleDateString() : ''}
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div class="no-tasks">暂无任务</div>'}
+                    </div>
+                `;
+            }).join('');
+            
             document.getElementById('project-list').innerHTML = html || '<p style="color: #999;">暂无项目</p>';
         }
 
@@ -1775,17 +2050,20 @@
                                 ${moodEmoji[diary.mood] || ''} ${weatherEmoji[diary.weather] || ''}
                             </div>
                             <div class="diary-meta">
-                                <span>📝 ${diary.content ? diary.content.length : 0}字</span>
-                                ${diary.tags && diary.tags.length ? `<span>🏷️ ${diary.tags.length}个标签</span>` : ''}
+                                <h3 class="diary-title">${diary.title || '无标题'}</h3>
                             </div>
                         </div>
-                        ${diary.title ? `<div class="diary-title">${diary.title}</div>` : ''}
                         <div class="diary-preview">${preview}</div>
-                        ${diary.tags && diary.tags.length ? `
+                        ${diary.tags && diary.tags.length > 0 ? `
                             <div class="diary-tags">
-                                ${diary.tags.map(tag => `<span class="diary-tag">${tag}</span>`).join('')}
+                                ${diary.tags.map(tag => `<span class="diary-tag">#${tag}</span>`).join('')}
                             </div>
                         ` : ''}
+                        <div class="diary-actions" onclick="event.stopPropagation()">
+                            <button class="btn btn-sm btn-danger" onclick="deleteDiary('${diary.id}')">
+                                🗑️ 删除
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
@@ -1796,16 +2074,25 @@
 
         function showAddDiaryModal(date = null) {
             const targetDate = date || new Date();
+            // 重置表单
+            document.getElementById('addDiaryForm').reset();
+            clearMoodWeatherSelection();
             document.getElementById('diaryDate').value = targetDate.toISOString().split('T')[0];
             document.getElementById('diaryModalTitle').textContent = '✏️ 写日记';
             document.getElementById('addDiaryModal').classList.add('show');
+            isDiaryDirty = false; // 重置脏状态
+            currentEditingDiaryId = null; // 新增日记模式
         }
 
         function closeDiaryModal() {
+            if (isDiaryDirty && !confirm('您有未保存的更改，确定要关闭吗？')) {
+                return;
+            }
             document.getElementById('addDiaryModal').classList.remove('show');
             document.getElementById('addDiaryForm').reset();
             clearMoodWeatherSelection();
             currentEditingDiaryId = null;
+            isDiaryDirty = false; // 重置脏状态
         }
 
         function jumpToTask(taskTitle) {
@@ -1822,12 +2109,14 @@
         let currentEditingDiaryId = null;
         let selectedMood = null;
         let selectedWeather = null;
+        let isDiaryDirty = false;
 
         function editDiary(diaryId) {
             const diary = appData.diaries.find(d => d.id === diaryId);
             if (!diary) return;
 
             currentEditingDiaryId = diaryId;
+            isDiaryDirty = false; // 打开编辑时重置脏状态
             
             // 填充表单
             document.getElementById('diaryTitle').value = diary.title || '';
@@ -2628,10 +2917,43 @@
             else if (viewId === 'tasks') renderTasks();
             else if (viewId === 'projects') renderProjects();
             else if (viewId === 'diary') renderDiaries();
+            else if (viewId === 'backup') renderBackupView();
         }
 
-        function showAddTaskModal() {
+        function showAddTaskModal(date = null) {
             document.getElementById('addTaskModal').classList.add('show');
+            document.getElementById('addTaskForm').reset();
+            isAddTaskDirty = false; // 打开时重置脏状态
+            
+            // 填充项目选择器
+            const projectSelect = document.getElementById('addTaskProject');
+            populateProjectSelect(projectSelect);
+            
+            // 如果指定了日期参数，则设置任务截止日期
+            if (date) {
+                const dateString = date.toISOString().split('T')[0];
+                document.getElementById('addTaskDueDate').value = dateString;
+            }
+        }
+        
+        // 填充项目选择器的公共函数
+        function populateProjectSelect(selectElement) {
+            // 保留第一个默认选项
+            selectElement.innerHTML = '<option value="">-- 选择项目（可选）--</option>';
+            
+            // 添加项目选项
+            appData.projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.title;
+                selectElement.appendChild(option);
+            });
+        }
+        
+        // 根据项目ID获取项目名称
+        function getProjectName(projectId) {
+            const project = appData.projects.find(p => p.id === projectId);
+            return project ? project.title : '未知项目';
         }
 
         function closeModal() {
@@ -2653,6 +2975,8 @@
         }
 
         let currentEditingTaskId = null;
+        let isAddTaskDirty = false;
+        let isEditTaskDirty = false;
 
         function editTask(taskId) {
             const task = appData.tasks.find(t => t.id === taskId);
@@ -2666,6 +2990,15 @@
             document.getElementById('editTaskDueDate').value = task.dueDate ? 
                 task.dueDate.toISOString().split('T')[0] : '';
             document.getElementById('editTaskStatus').value = task.status || 'pending';
+            
+            // 填充项目选择器
+            const projectSelect = document.getElementById('editTaskProject');
+            populateProjectSelect(projectSelect);
+            
+            // 如果任务已关联项目，选择对应项目
+            if (task.projectId) {
+                projectSelect.value = task.projectId;
+            }
             
             isEditTaskDirty = false; // 重置脏状态
             
@@ -2685,8 +3018,10 @@
                 task.description = formData.get('description');
                 task.dueDate = formData.get('dueDate') ? new Date(formData.get('dueDate')) : null;
                 task.status = formData.get('status');
+                task.projectId = formData.get('projectId') || null; // 更新项目关联
                 
                 saveData();
+                isEditTaskDirty = false; // 重置脏状态，防止关闭时提示
                 closeEditModal();
                 renderDashboard();
                 renderTasks();
@@ -2700,16 +3035,20 @@
             event.preventDefault();
             const formData = new FormData(event.target);
             
+            const projectId = formData.get('projectId');
+            
             const task = {
                 id: Date.now().toString(),
                 title: formData.get('title'),
                 description: formData.get('description'),
                 dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate')) : null,
-                status: 'pending'
+                status: 'pending',
+                projectId: projectId || null // 保存项目关联
             };
             
             appData.tasks.push(task);
             saveData();
+            isAddTaskDirty = false; // 重置脏状态，防止关闭时提示
             closeModal();
             renderDashboard();
             renderTasks();
@@ -2758,38 +3097,131 @@
             }
         }
 
+        function deleteDiary(id) {
+            if (confirm('确定要删除这篇日记吗？')) {
+                appData.diaries = appData.diaries.filter(d => d.id !== id);
+                saveData();
+                renderDiaries();
+                renderCalendar(); // 刷新日历视图
+                
+                // 显示删除成功提示
+                const notification = document.createElement('div');
+                notification.className = 'notification success';
+                notification.textContent = '日记已删除';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4caf50;
+                    color: white;
+                    padding: 12px 24px;
+                    border-radius: 4px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    animation: slideIn 0.3s ease;
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 2000);
+            }
+        }
+
         function saveDiary(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
+            isDiaryDirty = false; // 保存时重置脏状态
+            
+            // 数据验证
+            const title = formData.get('title').trim();
+            const content = formData.get('content').trim();
+            const dateStr = formData.get('date');
+            
+            if (!title && !content) {
+                alert('请至少填写标题或内容');
+                return;
+            }
+            
+            if (!dateStr) {
+                alert('请选择日期');
+                return;
+            }
             
             const diaryData = {
-                title: formData.get('title'),
-                content: formData.get('content'),
-                date: new Date(formData.get('date')),
+                title: title || '无标题',
+                content: content || '',
+                date: new Date(dateStr),
                 mood: selectedMood,
                 weather: selectedWeather,
                 tags: formData.get('tags') ? 
                     formData.get('tags').split(/\s+/).filter(tag => tag.startsWith('#')).map(tag => tag.substring(1)) : []
             };
 
-            if (currentEditingDiaryId) {
-                // 编辑现有日记
-                const diary = appData.diaries.find(d => d.id === currentEditingDiaryId);
-                if (diary) {
-                    Object.assign(diary, diaryData);
+            try {
+                if (currentEditingDiaryId) {
+                    // 编辑现有日记
+                    const diaryIndex = appData.diaries.findIndex(d => d.id === currentEditingDiaryId);
+                    if (diaryIndex !== -1) {
+                        // 保留原有ID，更新其他数据
+                        appData.diaries[diaryIndex] = {
+                            id: currentEditingDiaryId,
+                            ...diaryData
+                        };
+                        console.log('日记已更新:', currentEditingDiaryId);
+                    } else {
+                        console.error('未找到要编辑的日记:', currentEditingDiaryId);
+                        alert('编辑失败：未找到日记');
+                        return;
+                    }
+                } else {
+                    // 创建新日记
+                    const diary = {
+                        id: Date.now().toString(),
+                        ...diaryData
+                    };
+                    appData.diaries.push(diary);
+                    console.log('新日记已创建:', diary.id);
                 }
-            } else {
-                // 创建新日记
-                const diary = {
-                    id: Date.now().toString(),
-                    ...diaryData
-                };
-                appData.diaries.push(diary);
-            }
 
-            saveData();
-            closeDiaryModal();
-            renderDiaries();
+                // 立即保存数据
+                saveData().then(() => {
+                    console.log('日记数据已保存');
+                    closeDiaryModal();
+                    renderDiaries();
+                    renderCalendar();
+                    
+                    // 显示保存成功提示
+                    const notification = document.createElement('div');
+                    notification.className = 'notification success';
+                    notification.textContent = currentEditingDiaryId ? '日记已更新' : '日记已保存';
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #4caf50;
+                        color: white;
+                        padding: 12px 24px;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                        z-index: 10000;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.style.animation = 'slideOut 0.3s ease';
+                        setTimeout(() => notification.remove(), 300);
+                    }, 2000);
+                }).catch(error => {
+                    console.error('保存日记时出错:', error);
+                    alert('保存失败，请重试');
+                });
+            } catch (error) {
+                console.error('处理日记数据时出错:', error);
+                alert('保存失败：' + error.message);
+            }
         }
 
         // 拖拽功能
@@ -2952,9 +3384,312 @@
             renderDashboard();
         });
 
+        // 备份管理功能
+        async function renderBackupView() {
+            await refreshBackupList();
+            await updateDataStats();
+        }
+
+        // 创建手动备份
+        async function createManualBackup() {
+            try {
+                const result = await window.electronAPI.createBackup(appData);
+                if (result.success) {
+                    showNotification('备份创建成功', `备份文件: ${result.fileName}`);
+                    await refreshBackupList();
+                } else {
+                    alert('创建备份失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('创建备份失败:', error);
+                alert('创建备份失败: ' + error.message);
+            }
+        }
+
+        // 刷新备份列表
+        async function refreshBackupList() {
+            try {
+                const result = await window.electronAPI.getBackups();
+                if (result.success) {
+                    renderBackupList(result.backups);
+                    updateBackupStats(result.backups);
+                } else {
+                    console.error('获取备份列表失败:', result.error);
+                }
+            } catch (error) {
+                console.error('刷新备份列表失败:', error);
+            }
+        }
+
+        // 渲染备份列表
+        function renderBackupList(backups) {
+            const container = document.getElementById('backup-list');
+            
+            if (backups.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666;">
+                        <p>还没有备份文件</p>
+                        <p>点击"立即备份"创建第一个备份</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = backups.map(backup => {
+                const size = formatFileSize(backup.size);
+                const date = new Date(backup.createdTime).toLocaleString('zh-CN');
+                const isAuto = backup.fileName.includes('auto-backup');
+                
+                return `
+                    <div class="backup-item" style="
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center; 
+                        padding: 15px; 
+                        margin-bottom: 10px; 
+                        background: white; 
+                        border: 1px solid #ddd; 
+                        border-radius: 8px;
+                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    ">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="
+                                    background: ${isAuto ? '#17a2b8' : '#28a745'}; 
+                                    color: white; 
+                                    padding: 2px 8px; 
+                                    border-radius: 12px; 
+                                    font-size: 12px;
+                                ">
+                                    ${isAuto ? '自动' : '手动'}
+                                </span>
+                                <strong>${backup.fileName}</strong>
+                            </div>
+                            <div style="color: #666; font-size: 14px; margin-top: 5px;">
+                                📅 ${date} • 📦 ${size}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-sm btn-primary" onclick="restoreBackup('${backup.filePath.replace(/\\/g, '\\\\')}')">
+                                🔄 恢复
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBackup('${backup.filePath.replace(/\\/g, '\\\\')}')">
+                                🗑️ 删除
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = html;
+        }
+
+        // 恢复备份
+        async function restoreBackup(backupFilePath) {
+            if (!confirm('确定要恢复这个备份吗？当前数据将被覆盖！')) {
+                return;
+            }
+
+            try {
+                const result = await window.electronAPI.restoreBackup(backupFilePath);
+                if (result.success) {
+                    showNotification('备份恢复成功', '数据已恢复，应用将重新加载');
+                    // 重新加载数据
+                    setTimeout(async () => {
+                        await loadData();
+                        renderDashboard();
+                        renderTasks();
+                        renderProjects();
+                        renderDiaries();
+                        renderCalendar();
+                    }, 1000);
+                } else {
+                    alert('恢复备份失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('恢复备份失败:', error);
+                alert('恢复备份失败: ' + error.message);
+            }
+        }
+
+        // 删除备份
+        async function deleteBackup(backupFilePath) {
+            if (!confirm('确定要删除这个备份文件吗？此操作不可撤销！')) {
+                return;
+            }
+
+            try {
+                const result = await window.electronAPI.deleteBackup(backupFilePath);
+                if (result.success) {
+                    showNotification('备份已删除', '备份文件已成功删除');
+                    await refreshBackupList();
+                } else {
+                    alert('删除备份失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('删除备份失败:', error);
+                alert('删除备份失败: ' + error.message);
+            }
+        }
+
+        // 更新数据统计
+        async function updateDataStats() {
+            try {
+                const result = await window.electronAPI.getDataStats();
+                if (result.success) {
+                    const stats = result.stats;
+                    
+                    // 更新数据文件大小
+                    document.getElementById('data-file-size').textContent = 
+                        formatFileSize(stats.dataFileSize);
+                    
+                    // 更新状态
+                    document.getElementById('data-file-status').textContent = 
+                        stats.dataFileExists ? '文件正常' : '文件不存在';
+                    
+                    // 更新最后修改时间
+                    if (stats.lastModified) {
+                        document.getElementById('last-modified-date').textContent = 
+                            new Date(stats.lastModified).toLocaleDateString('zh-CN');
+                    }
+                }
+            } catch (error) {
+                console.error('获取数据统计失败:', error);
+            }
+        }
+
+        // 更新备份统计
+        function updateBackupStats(backups) {
+            const autoBackups = backups.filter(backup => backup.fileName.includes('auto-backup'));
+            const manualBackups = backups.filter(backup => !backup.fileName.includes('auto-backup'));
+            
+            document.getElementById('auto-backup-count').textContent = autoBackups.length;
+            document.getElementById('manual-backup-count').textContent = manualBackups.length;
+        }
+
+        // 显示数据统计详情
+        async function showDataStats() {
+            try {
+                const result = await window.electronAPI.getDataStats();
+                if (result.success) {
+                    const stats = result.stats;
+                    const info = `
+数据文件信息：
+• 文件状态: ${stats.dataFileExists ? '存在' : '不存在'}
+• 文件大小: ${formatFileSize(stats.dataFileSize)}
+• 最后修改: ${stats.lastModified ? new Date(stats.lastModified).toLocaleString('zh-CN') : '未知'}
+
+备份文件信息：
+• 自动备份文件: ${stats.backupFileExists ? '存在' : '不存在'}
+• 备份文件大小: ${formatFileSize(stats.backupFileSize)}
+
+当前数据统计：
+• 任务数量: ${appData.tasks.length}
+• 项目数量: ${appData.projects.length}
+• 日记数量: ${appData.diaries.length}
+                    `;
+                    alert(info);
+                }
+            } catch (error) {
+                console.error('获取数据统计失败:', error);
+                alert('获取数据统计失败: ' + error.message);
+            }
+        }
+
+        // 清理旧备份
+        async function cleanupOldBackups() {
+            if (!confirm('确定要清理7天前的旧备份文件吗？')) {
+                return;
+            }
+
+            try {
+                const result = await window.electronAPI.getBackups();
+                if (result.success) {
+                    const sevenDaysAgo = new Date();
+                    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+                    
+                    const oldBackups = result.backups.filter(backup => 
+                        new Date(backup.createdTime) < sevenDaysAgo
+                    );
+                    
+                    if (oldBackups.length === 0) {
+                        alert('没有找到7天前的备份文件');
+                        return;
+                    }
+
+                    let deleted = 0;
+                    for (const backup of oldBackups) {
+                        try {
+                            const deleteResult = await window.electronAPI.deleteBackup(backup.filePath);
+                            if (deleteResult.success) {
+                                deleted++;
+                            }
+                        } catch (error) {
+                            console.error('删除备份失败:', error);
+                        }
+                    }
+                    
+                    showNotification('清理完成', `已删除 ${deleted} 个旧备份文件`);
+                    await refreshBackupList();
+                } else {
+                    alert('获取备份列表失败: ' + result.error);
+                }
+            } catch (error) {
+                console.error('清理旧备份失败:', error);
+                alert('清理旧备份失败: ' + error.message);
+            }
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 显示通知
+        function showNotification(title, message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification success';
+            notification.innerHTML = `
+                <strong>${title}</strong><br>
+                ${message}
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 4px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
         // --- 标记修改状态 ---
         document.getElementById('addTaskForm').addEventListener('input', () => isAddTaskDirty = true);
         document.getElementById('editTaskForm').addEventListener('input', () => isEditTaskDirty = true);
+        document.getElementById('addDiaryForm').addEventListener('input', () => isDiaryDirty = true);
+        
+        // 为心情和天气选择也添加修改状态标记
+        document.querySelectorAll('.mood-option').forEach(el => {
+            el.addEventListener('click', () => isDiaryDirty = true);
+        });
+        document.querySelectorAll('.weather-option').forEach(el => {
+            el.addEventListener('click', () => isDiaryDirty = true);
+        });
     </script>
 </body>
 </html> 

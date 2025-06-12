@@ -7,6 +7,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
     loadData: () => ipcRenderer.invoke('load-data'),
     exportData: (data) => ipcRenderer.invoke('export-data', data),
     
+    // 备份相关
+    createBackup: (data) => ipcRenderer.invoke('create-backup', data),
+    getBackups: () => ipcRenderer.invoke('get-backups'),
+    restoreBackup: (backupFilePath) => ipcRenderer.invoke('restore-backup', backupFilePath),
+    deleteBackup: (backupFilePath) => ipcRenderer.invoke('delete-backup', backupFilePath),
+    getDataStats: () => ipcRenderer.invoke('get-data-stats'),
+    
     // 通知相关
     showNotification: (title, body, options) => ipcRenderer.invoke('show-notification', title, body, options),
     
