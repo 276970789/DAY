@@ -2,6 +2,13 @@ const { ipcMain } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
+// 简单的日志处理函数，避免中文输出到控制台
+const log = {
+    info: (message) => console.log(`[INFO] ${typeof message === 'string' && message.match(/[\u4e00-\u9fa5]/) ? 'Data operation executed' : message}`),
+    warn: (message) => console.warn(`[WARN] ${typeof message === 'string' && message.match(/[\u4e00-\u9fa5]/) ? 'Warning occurred' : message}`),
+    error: (message, error) => console.error(`[ERROR] ${error ? (error.message || error) : 'An error occurred'}`)
+};
+
 let dataPath;
 
 // 初始化数据路径
@@ -14,7 +21,7 @@ function registerDataHandlers(app) {
     // 数据保存处理器
     ipcMain.handle('save-data', async (event, data) => {
         try {
-            console.log('收到保存数据请求:', typeof data === 'object' ? Object.keys(data) : data);
+            log.info('收到保存数据请求:');
             
             // 验证数据完整性
             if (!data || typeof data !== 'object') {
@@ -27,9 +34,9 @@ function registerDataHandlers(app) {
                 try {
                     const currentData = fs.readFileSync(dataPath, 'utf8');
                     fs.writeFileSync(backupPath, currentData, 'utf8');
-                    console.log('数据备份已创建');
+                    log.info('数据备份已创建');
                 } catch (backupError) {
-                    console.warn('创建备份失败:', backupError);
+                    log.warn('创建备份失败:', backupError);
                 }
             }
             
@@ -42,7 +49,7 @@ function registerDataHandlers(app) {
             // 原子性重命名
             fs.renameSync(tempPath, dataPath);
             
-            console.log('数据保存成功:', typeof data === 'object' ? Object.keys(data) : data);
+            log.info('数据保存成功:');
             
             return { 
                 success: true, 
@@ -51,7 +58,7 @@ function registerDataHandlers(app) {
             };
             
         } catch (error) {
-            console.error('保存数据失败:', error);
+            log.error('保存数据失败:', error);
             return { 
                 success: false, 
                 error: error.message,
@@ -63,10 +70,10 @@ function registerDataHandlers(app) {
     // 数据加载处理器
     ipcMain.handle('load-data', async (event) => {
         try {
-            console.log('收到加载数据请求');
+            log.info('收到加载数据请求');
             
             if (!fs.existsSync(dataPath)) {
-                console.log('数据文件不存在，返回默认数据');
+                log.info('数据文件不存在，返回默认数据');
                 return { 
                     success: true, 
                     message: '数据文件不存在，使用默认数据',
@@ -82,7 +89,7 @@ function registerDataHandlers(app) {
             try {
                 fs.accessSync(dataPath, fs.constants.R_OK);
             } catch (accessError) {
-                console.error('数据文件无法读取:', accessError);
+                log.error('数据文件无法读取:', accessError);
                 return { 
                     success: false, 
                     error: '数据文件无法读取',
@@ -93,7 +100,7 @@ function registerDataHandlers(app) {
             const dataString = fs.readFileSync(dataPath, 'utf8');
             
             if (!dataString.trim()) {
-                console.log('数据文件为空，返回默认数据');
+                log.info('数据文件为空，返回默认数据');
                 return { 
                     success: true, 
                     message: '数据文件为空，使用默认数据',
@@ -106,7 +113,7 @@ function registerDataHandlers(app) {
             }
             
             const data = JSON.parse(dataString);
-            console.log('数据加载成功:', typeof data === 'object' ? Object.keys(data) : data);
+            log.info('数据加载成功:');
             
             return { 
                 success: true, 
@@ -116,19 +123,19 @@ function registerDataHandlers(app) {
             };
             
         } catch (error) {
-            console.error('加载数据失败:', error);
+            log.error('加载数据失败:', error);
             
             // 尝试从备份恢复
             const backupPath = path.join(app.getPath('userData'), 'day-data-backup.json');
             if (fs.existsSync(backupPath)) {
                 try {
-                    console.log('尝试从备份恢复数据...');
+                    log.info('尝试从备份恢复数据...');
                     const backupData = fs.readFileSync(backupPath, 'utf8');
                     const parsedBackup = JSON.parse(backupData);
                     
                     // 恢复备份到主文件
                     fs.writeFileSync(dataPath, backupData, 'utf8');
-                    console.log('从备份恢复数据成功');
+                    log.info('从备份恢复数据成功');
                     
                     return { 
                         success: true, 
@@ -137,12 +144,12 @@ function registerDataHandlers(app) {
                         timestamp: new Date().toISOString()
                     };
                 } catch (backupError) {
-                    console.error('备份恢复失败:', backupError);
+                    log.error('备份恢复失败:', backupError);
                 }
             }
             
             // 所有恢复方式都失败，返回默认数据
-            console.log('所有数据恢复方式都失败，返回默认数据');
+            log.info('所有数据恢复方式都失败，返回默认数据');
             return { 
                 success: true, 
                 data: {
@@ -182,7 +189,7 @@ function registerDataHandlers(app) {
             
             return { success: true, stats };
         } catch (error) {
-            console.error('获取数据统计失败:', error);
+            log.error('获取数据统计失败:', error);
             return { success: false, error: error.message };
         }
     });

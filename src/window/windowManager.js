@@ -49,7 +49,7 @@ function createMainWindow() {
         
         // 延迟执行非关键操作
         setTimeout(() => {
-            console.log('DAY应用已启动');
+            console.log('DAY app started');
         }, 1000);
     });
 

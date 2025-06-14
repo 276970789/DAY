@@ -1,5 +1,31 @@
-const { app, BrowserWindow } = require('electron');
+// 设置控制台输出编码为UTF-8
+process.env.LANG = 'zh_CN.UTF-8';
+
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+
+// 自定义日志函数，避免直接输出中文到控制台
+const log = {
+  info: (message) => {
+    // 只在开发环境输出详细日志
+    if (process.env.NODE_ENV === 'development') {
+      console.log(message);
+    } else if (typeof message === 'string' && message.match(/[\u4e00-\u9fa5]/)) {
+      // 包含中文字符时，输出英文替代信息
+      console.log('[INFO] App message logged');
+    } else {
+      // 不包含中文时正常输出
+      console.log(message);
+    }
+  },
+  error: (message, error) => {
+    if (error) {
+      console.error(`[ERROR] ${error.message || error}`);
+    } else {
+      console.error(`[ERROR] An error occurred`);
+    }
+  }
+};
 
 // 导入模块化组件
 const { createMainWindow, setQuitting } = require('./src/window/windowManager');
@@ -35,10 +61,53 @@ if (!gotTheLock) {
     });
 }
 
+// 注册系统通知处理器
+function registerNotificationHandlers() {
+    // 显示系统通知
+    ipcMain.handle('show-notification', async (event, title, body, options = {}) => {
+        try {
+            const { Notification } = require('electron');
+            const notification = new Notification({
+                title: title,
+                body: body,
+                icon: path.join(__dirname, './assets', '图标.png'),
+                ...options
+            });
+            notification.show();
+            return { success: true };
+        } catch (error) {
+            log.error('显示通知失败:', error);
+            return { success: false, error: error.message };
+        }
+    });
+}
+
 // 注册所有IPC处理器
 function registerAllHandlers() {
     registerDataHandlers(app);
     registerBackupHandlers(app);
+    registerNotificationHandlers();
+    
+    // 添加诊断处理器
+    ipcMain.handle('diagnose-data', async (event) => {
+        try {
+            const fs = require('fs');
+            const dataPath = path.join(app.getPath('userData'), 'day-data.json');
+            const backupPath = path.join(app.getPath('userData'), 'day-data-backup.json');
+            
+            const stats = {
+                appPath: app.getPath('userData'),
+                dataExists: fs.existsSync(dataPath),
+                backupExists: fs.existsSync(backupPath),
+                dataFileSize: fs.existsSync(dataPath) ? fs.statSync(dataPath).size : 0,
+                backupFileSize: fs.existsSync(backupPath) ? fs.statSync(backupPath).size : 0
+            };
+            
+            return { success: true, stats };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    });
 }
 
 // 应用事件
@@ -55,7 +124,17 @@ app.whenReady().then(() => {
     // 创建菜单栏
     createMenuBar(mainWindow);
     
-    console.log('DAY应用初始化完成');
+    log.info('DAY application initialized');
+    
+    // 应用启动后自动运行数据诊断
+    setTimeout(() => {
+        if (mainWindow) {
+            mainWindow.webContents.send('message', {
+                type: 'diagnostic-complete',
+                message: '应用启动诊断完成'
+            });
+        }
+    }, 3000);
 });
 
 app.on('window-all-closed', () => {

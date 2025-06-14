@@ -73,7 +73,7 @@ function createTray(mainWindow) {
             }
         } else {
             // 原图标无效，使用高质量后备图标
-            console.log('使用SVG后备图标');
+            console.log('Using SVG fallback icon');
             trayIcon = createHighQualityTrayIcon();
         }
     } catch (error) {
@@ -162,7 +162,7 @@ function createTray(mainWindow) {
         });
     }
 
-    console.log('托盘图标创建成功');
+    console.log('Tray icon created successfully');
     return tray;
 }
 

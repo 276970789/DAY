@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // 数据存储相关
     saveData: (data) => ipcRenderer.invoke('save-data', data),
     loadData: () => ipcRenderer.invoke('load-data'),
+    getData: () => ipcRenderer.invoke('load-data'),
     exportData: (data) => ipcRenderer.invoke('export-data', data),
     
     // 备份相关
@@ -28,6 +29,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onSetupReminders: (callback) => ipcRenderer.on('setup-reminders', callback),
     onShowTodayStats: (callback) => ipcRenderer.on('show-today-stats', callback),
     onCheckReminders: (callback) => ipcRenderer.on('check-reminders', callback),
+    onMessage: (callback) => ipcRenderer.on('message', callback),
     
     // 移除事件监听
     removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
