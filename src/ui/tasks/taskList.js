@@ -96,12 +96,20 @@ function renderTasks() {
             const dateString = task.dueDate instanceof Date 
                 ? task.dueDate.toLocaleDateString('zh-CN') 
                 : new Date(task.dueDate).toLocaleDateString('zh-CN');
+            
+            // 构建复选框或脉冲符号的HTML
+            let checkboxOrProgress = '';
+            if (task.status === 'in-progress') {
+                checkboxOrProgress = '<div class="task-progress-icon"></div>';
+            } else {
+                checkboxOrProgress = `<input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} onclick="toggleTask('${task.id}')">`;
+            }
                 
             return `
-                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
+                <div class="task-item ${task.status === 'completed' ? 'completed' : ''} ${task.status === 'in-progress' ? 'in-progress' : ''}" 
                      data-task-id="${task.id}">
-                    <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                           onclick="toggleTask('${task.id}')">
+                    <div class="task-drag-handle" title="拖拽排序">⋮⋮</div>
+                    ${checkboxOrProgress}
                     <div style="flex: 1;">
                         <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
                             ${task.title} 
@@ -131,12 +139,21 @@ function renderTasks() {
     } else {
         const undatedHtml = undatedTasks.map(task => {
             const description = task.description ? renderMarkdown(task.description) : '';
+            
+            // 构建复选框或脉冲符号的HTML
+            let checkboxOrProgress = '';
+            if (task.status === 'in-progress') {
+                checkboxOrProgress = '<div class="task-progress-icon"></div>';
+            } else {
+                checkboxOrProgress = `<input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} onclick="toggleTask('${task.id}')">`;
+            }
+            
             return `
-                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
+                <div class="task-item ${task.status === 'completed' ? 'completed' : ''} ${task.status === 'in-progress' ? 'in-progress' : ''}" 
                      draggable="true" 
                      data-task-id="${task.id}">
-                    <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                           onclick="toggleTask('${task.id}')">
+                    <div class="task-drag-handle" title="拖拽排序">⋮⋮</div>
+                    ${checkboxOrProgress}
                     <div style="flex: 1;">
                         <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
                             ${task.title} 
@@ -154,7 +171,7 @@ function renderTasks() {
     // 8. 为可拖拽列表设置拖拽事件
     setTimeout(setupDragAndDrop, 0);
     
-    // 9. 处理分组的折叠/展开功能
+    // 9. 处理分组的折叠展开功能
     document.querySelectorAll('.group-header').forEach(header => {
         header.addEventListener('click', () => {
             const groupContent = header.nextElementSibling;
@@ -209,7 +226,7 @@ function bindTaskItemEvents() {
 
     listsToBind.forEach(listSelector => {
         const items = document.querySelectorAll(`${listSelector} .task-item`);
-        console.log(`为 ${listSelector} 绑定拖拽事件, 找到 ${items.length} 个任务项`);
+        console.log(`为${listSelector} 绑定拖拽事件, 找到 ${items.length} 个任务项`);
         
         items.forEach(item => {
             // 只对无日期任务设置为可拖拽
@@ -331,7 +348,7 @@ function handleDragStart(event) {
         // 设置自定义拖拽图像
         event.dataTransfer.setDragImage(dragImage, 10, 10);
         
-        console.log('开始拖拽:', {
+        console.log('开始拖拽', {
             taskId: draggedTaskId,
             element: taskItem,
             sourceList: taskItem.closest('#undated-task-list')?.id
@@ -447,12 +464,12 @@ function handleDrop(event) {
         return;
     }
 
-    console.log('放置到容器:', container.id);
+    console.log('放置到容器', container.id);
 
     // 获取被拖拽的任务
     const draggedTaskIndex = appData.tasks.findIndex(t => t.id === draggedTaskId);
     if (draggedTaskIndex === -1) {
-        console.error("找不到被拖拽的任务: " + draggedTaskId);
+        console.error("找不到被拖拽的任务 " + draggedTaskId);
         return;
     }
     
@@ -468,7 +485,7 @@ function handleDrop(event) {
         const targetId = nextElement.dataset.taskId;
         const targetIndex = appData.tasks.findIndex(t => t.id === targetId);
         if (targetIndex !== -1) {
-            console.log(`将任务 ${draggedTask.id} 插入到任务 ${targetId} 之前`);
+            console.log(`将任务${draggedTask.id} 插入到任务${targetId} 之前`);
             appData.tasks.splice(targetIndex, 0, draggedTask);
         } else {
             console.log('目标任务不存在，放置到列表末尾');

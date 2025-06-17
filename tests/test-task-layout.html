@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务布局测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f7;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .task-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            padding-left: 35px; /* 为拖拽手柄留出空间 */
+        }
+        
+        .task-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 拖拽手柄样式 */
+        .task-drag-handle {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d1d1d6;
+            font-size: 14px;
+            cursor: grab;
+            opacity: 0.7;
+            transition: all 0.2s ease;
+        }
+        
+        .task-item:hover .task-drag-handle {
+            opacity: 1;
+            color: #007aff;
+        }
+        
+        /* 复选框样式 */
+        .task-item input[type="checkbox"] {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        /* 进行中状态 - 脉冲圆点 */
+        .task-progress-icon {
+            position: absolute;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #007aff;
+            z-index: 2;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        
+        .task-progress-icon::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            border: 2px solid #007aff;
+            animation: ripple 1.5s infinite ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-50%) scale(1); opacity: 1; }
+            50% { transform: translateY(-50%) scale(0.8); opacity: 0.7; }
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .task-item.in-progress {
+            padding-left: 60px; /* 为拖拽手柄和脉冲符号留出更多空间 */
+        }
+        
+        .task-item.in-progress .task-title {
+            color: #007aff;
+            font-weight: 600;
+        }
+        
+        .task-content {
+            flex: 1;
+            margin-left: 20px;
+        }
+        
+        .task-title {
+            font-size: 16px;
+            color: #333;
+            cursor: pointer;
+        }
+        
+        .task-title:hover {
+            color: #007aff;
+        }
+        
+        .task-description {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .delete-btn {
+            background: #ff3b30;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .delete-btn:hover {
+            background: #d70015;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>任务布局测试</h1>
+        
+        <div class="section">
+            <h2>普通任务（位置1：拖拽手柄，位置2：复选框）</h2>
+            <div class="task-item">
+                <div class="task-drag-handle" title="拖拽排序">⋮⋮</div>
+                <input type="checkbox">
+                <div class="task-content">
+                    <div class="task-title">完成项目报告</div>
+                    <div class="task-description">需要整理本月的项目进度和数据分析</div>
+                </div>
+                <button class="delete-btn">删除</button>
+            </div>
+            
+            <div class="task-item">
+                <div class="task-drag-handle" title="拖拽排序">⋮⋮</div>
+                <input type="checkbox" checked>
+                <div class="task-content">
+                    <div class="task-title">已完成的任务</div>
+                    <div class="task-description">这是一个已经完成的任务示例</div>
+                </div>
+                <button class="delete-btn">删除</button>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>进行中任务（位置1：拖拽手柄，位置2：脉冲符号）</h2>
+            <div class="task-item in-progress">
+                <div class="task-drag-handle" title="拖拽排序">⋮⋮</div>
+                <div class="task-progress-icon"></div>
+                <div class="task-content">
+                    <div class="task-title">正在进行的任务</div>
+                    <div class="task-description">这个任务正在进行中，显示脉冲动画</div>
+                </div>
+                <button class="delete-btn">删除</button>
+            </div>
+            
+            <div class="task-item in-progress">
+                <div class="task-drag-handle" title="拖拽排序">⋮⋮</div>
+                <div class="task-progress-icon"></div>
+                <div class="task-content">
+                    <div class="task-title">学习新技术</div>
+                    <div class="task-description">正在学习React和Vue的最新特性</div>
+                </div>
+                <button class="delete-btn">删除</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

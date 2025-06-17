@@ -261,6 +261,36 @@
             font-size: 24px;
             color: #333;
         }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .clear-myday-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+        
+        .clear-myday-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, #ff5252, #e53e3e);
+        }
+        
+        .clear-myday-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(255, 107, 107, 0.3);
+        }
 
         .btn {
             padding: 8px 16px;
@@ -353,72 +383,138 @@
             color: #999;
         }
 
-        /* 任务列表 */
-        .task-item {
+        /* 滴答清单风格的任务列表布局 */
+        .task-master-detail {
+            display: flex;
+            height: calc(100vh - 120px);
+            gap: 1px;
+            background: #e0e0e0;
+        }
+
+        /* 左侧分类列表 */
+        .task-categories {
+            width: 280px;
+            background: #ffffff;
+            border-radius: 8px 0 0 8px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .categories-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 8px 0 0 0;
+        }
+
+        .categories-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .category-list {
+            padding: 10px 0;
+        }
+
+        .category-item {
             display: flex;
             align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: #ffffff;
-            border-radius: 10px;
+            padding: 12px 20px;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--primary-color);
             transition: all 0.3s ease;
-            position: relative;
+            border-left: 4px solid transparent;
         }
 
-        .task-item:hover {
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-            transform: translateY(-2px);
+        .category-item:hover {
+            background: #f8f9fa;
+            border-left-color: var(--primary-light);
         }
 
-        .task-item input[type="checkbox"] {
+        .category-item.active {
+            background: var(--primary-light);
+            border-left-color: var(--primary-color);
+            box-shadow: inset 0 0 10px rgba(var(--primary-color-rgb), 0.1);
+        }
+
+        .category-icon {
+            font-size: 20px;
             margin-right: 12px;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
+            width: 28px;
+            display: flex;
+            justify-content: center;
         }
 
-        .task-item.completed {
-            opacity: 0.7;
-            border-left-color: #4CAF50;
-            background: #f9f9f9;
+        .category-info {
+            flex: 1;
         }
 
-        .task-item.completed .task-title {
-            text-decoration: line-through;
-            color: #888;
-        }
-
-        .task-title {
+        .category-name {
+            font-size: 15px;
             font-weight: 500;
-            font-size: 16px;
             color: #333;
-            transition: color 0.2s;
+            margin-bottom: 2px;
         }
 
-        .task-description {
-            margin-top: 8px;
+        .category-count {
+            font-size: 12px;
+            color: #666;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+            display: inline-block;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .category-item.active .category-count {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* 右侧任务详情 */
+        .task-detail {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-detail-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafbfc;
+            border-radius: 0 8px 0 0;
+        }
+
+        .task-detail-title h2 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .task-detail-date {
             font-size: 14px;
             color: #666;
-            max-height: 60px;
-            overflow: hidden;
         }
 
-        .task-item button {
-            opacity: 0;
-            padding: 5px 10px;
-            background: #f44336;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
+        .task-detail-content {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
         }
 
-        .task-item:hover button {
-            opacity: 1;
+        /* 任务列表容器 */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         /* 拖拽样式优化 */
@@ -439,6 +535,23 @@
             border-radius: 10px;
             margin: 10px 0;
             transition: all 0.3s ease;
+        }
+        
+        .drop-placeholder.date-change {
+            height: 80px;
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0.05) 100%);
+            border: 2px dashed #2196f3;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
         
         /* 任务列表容器改进 */
@@ -2126,6 +2239,200 @@
             content: '▼ ';
             font-size: 10px;
         }
+        
+        /* 统一任务卡片样式 - iOS风格紧凑型 */
+        .task-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 0.5px solid rgba(0,0,0,0.04);
+        }
+        
+        .task-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+        
+
+        
+        /* 复选框样式 */
+        .task-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            flex-shrink: 0;
+            align-self: flex-start;
+            margin-top: 1px;
+        }
+        
+
+        
+        .task-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .task-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .task-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .task-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .task-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1d1d1f;
+            line-height: 1.3;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .task-title:hover {
+            color: #007aff;
+        }
+        
+        .task-description {
+            font-size: 13px;
+            color: #86868b;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .task-date, .task-project {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .task-date {
+            background: #f2f2f7;
+            color: #86868b;
+        }
+        
+        .task-project {
+            /* 颜色将通过内联样式设置 */
+        }
+        
+        .task-actions {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        
+        .task-item:hover .task-actions {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-btn:hover {
+            background: #e3f2fd;
+        }
+        
+        .delete-btn:hover {
+            background: #ffebee;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-btn:hover {
+            background: #f2f2f7;
+        }
+        
+        .delete-btn:hover {
+            background: #ffebee;
+        }
+        
+
+        
+        /* 任务状态样式 */
+        .task-item.in-progress .task-title {
+            color: #007aff;
+            font-weight: 600;
+        }
+        
+        /* 完成状态 */
+        .task-item.completed {
+            opacity: 0.7;
+            background: #f9f9f9;
+        }
+        
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #86868b;
+        }
+        
+        /* MY DAY 任务特殊样式 */
+        .my-day-task {
+            border-left: 4px solid #ffab00;
+            background: linear-gradient(90deg, #ffab0005 0%, transparent 50%);
+        }
+        
+        /* 建议任务项样式 */
+        .suggested-task-item {
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .suggested-task-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -2150,7 +2457,7 @@
 
             <nav class="nav-menu">
                 <div class="nav-item">
-                    <a href="#" class="nav-link active" data-view="dashboard">📊 今日概览</a>
+                    <a href="#" class="nav-link active" data-view="dashboard">☀️ MY DAY</a>
                 </div>
                 <div class="nav-item">
                     <a href="#" class="nav-link" data-view="calendar">📅 日历视图</a>
@@ -2174,39 +2481,66 @@
 
         <!-- 主内容区 -->
         <div class="main-content">
-            <!-- 今日概览 -->
+            <!-- MY DAY -->
             <div id="dashboard" class="view active">
                 <div class="header">
-                    <h2>今日概览</h2>
-                    <span id="current-date"></span>
+                    <h2>MY DAY</h2>
+                    <div class="header-actions">
+                        <span id="current-date"></span>
+                        <button class="clear-myday-btn" onclick="manualClearMyDay()" title="清空MY DAY">
+                            🧹 清空
+                        </button>
+                    </div>
                 </div>
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <h3>今日待办</h3>
+                        <h3>MY DAY任务</h3>
                         <div class="stat-number" id="pending-tasks">0</div>
-                        <p>个今日任务待完成</p>
+                        <p>个MY DAY任务总数</p>
                     </div>
                     <div class="stat-card">
-                        <h3>今日已完成</h3>
+                        <h3>MY DAY进行中</h3>
+                        <div class="stat-number" id="in-progress-tasks">0</div>
+                        <p>个MY DAY任务进行中</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>MY DAY已完成</h3>
                         <div class="stat-number" id="completed-tasks">0</div>
-                        <p>个今日任务已完成</p>
+                        <p>个MY DAY任务已完成</p>
                     </div>
                     <div class="stat-card">
-                        <h3>活跃项目</h3>
-                        <div class="stat-number" id="active-projects">0</div>
-                        <p>个项目有待办任务</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>完成率</h3>
-                        <div class="stat-number" id="completion-rate">0%</div>
-                        <p>今日任务完成率</p>
+                        <h3>总任务数</h3>
+                        <div class="stat-number" id="total-tasks">0</div>
+                        <p>所有未完成任务数量</p>
                     </div>
                 </div>
 
-                <div>
-                    <h3>今日重要任务</h3>
-                    <div id="today-task-list" style="margin-left: 20px;"></div>
+                <div style="display: flex; gap: 30px; margin-top: 20px;">
+                    <!-- 左侧：MY DAY 任务 -->
+                    <div style="flex: 1;">
+                        <h3>MY DAY 任务</h3>
+                        <div id="today-task-list" style="margin-top: 15px;"></div>
+                    </div>
+                    
+                    <!-- 右侧：建议添加的任务 -->
+                    <div id="suggested-tasks-panel" style="flex: 0 0 350px; border-left: 1px solid #e0e0e0; padding-left: 30px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h3 style="color: #666; margin: 0;">建议添加</h3>
+                            <button id="toggle-suggested-tasks" 
+                                    onclick="toggleSuggestedTasks()" 
+                                    style="background: none; border: 1px solid #ddd; color: #666; cursor: pointer; font-size: 12px; padding: 6px 12px; border-radius: 6px; transition: all 0.2s; display: flex; align-items: center; gap: 4px;"
+                                    onmouseover="this.style.backgroundColor='#f8f9fa'; this.style.borderColor='#007aff'; this.style.color='#007aff'"
+                                    onmouseout="this.style.backgroundColor='transparent'; this.style.borderColor='#ddd'; this.style.color='#666'"
+                                    title="显示/隐藏建议任务">
+                                <span style="font-size: 14px;">👁️</span>
+                                <span>隐藏</span>
+                            </button>
+                        </div>
+                        <div id="suggested-tasks" style="margin-top: 15px; transition: opacity 0.3s ease, max-height 0.3s ease; overflow: hidden; opacity: 1; max-height: 1000px;">
+                            <!-- 建议的任务将在这里显示 -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2233,135 +2567,105 @@
 
             <!-- 任务列表 -->
             <div id="tasks" class="view">
-                <div class="header">
-                    <div class="header-left">
-                        <h1>任务列表</h1>
-                        <span class="today-date" id="task-list-date">今日：加载中...</span>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn-primary" onclick="showAddTaskModal()">
-                            <span class="btn-icon">+</span> 新建任务
-                        </button>
-                    </div>
-                </div>
-                <div id="tasks-container" class="task-list-container">
-                    <div class="task-column">
-                        <div class="column-header">
-                            <h2>有截止日期 (按日期排序)</h2>
-                            <span class="task-count" id="dated-task-count">0个任务</span>
+                <div class="task-master-detail">
+                    <!-- 左侧：时间段分类 -->
+                    <div class="task-categories">
+                        <div class="categories-header">
+                            <h3>分类</h3>
                         </div>
-                        <div id="dated-task-list" class="task-list-column">
-                            <!-- 今日任务 - 最重要，放在顶部 -->
-                            <div class="task-group today-group" id="today-tasks">
-                                <div class="group-header" onclick="toggleGroup('today-tasks')">
-                                    <div class="group-header-left">
-                                        <span class="group-collapse-icon">▼</span>
-                                        <span class="group-title">📅 今天</span>
-                                    </div>
-                                    <span class="group-count">0个任务</span>
-                                </div>
-                                <div class="group-tasks">
-                                    <!-- 今天的任务将在这里渲染 -->
+                        <div class="category-list">
+                            <div class="category-item active" data-category="all" onclick="switchTaskCategory('all')">
+                                <div class="category-icon">📋</div>
+                                <div class="category-info">
+                                    <div class="category-name">全部任务</div>
+                                    <div class="category-count" id="all-count">0</div>
                                 </div>
                             </div>
                             
-                            <!-- 最近7天 - 参考滴答清单 -->
-                            <div class="task-group recent-group" id="recent-tasks">
-                                <div class="group-header" onclick="toggleGroup('recent-tasks')">
-                                    <div class="group-header-left">
-                                        <span class="group-collapse-icon">▶</span>
-                                        <span class="group-title">📆 最近7天</span>
-                                    </div>
-                                    <span class="group-count">0个任务</span>
-                                </div>
-                                <div class="group-tasks" style="display: none;">
-                                    <!-- 最近7天的子分组 -->
-                                    <div class="sub-group" id="tomorrow-tasks">
-                                        <div class="sub-group-header">
-                                            <span class="sub-group-title">明天</span>
-                                            <span class="sub-group-count">0个任务</span>
-                                        </div>
-                                        <div class="sub-group-tasks">
-                                            <!-- 明天的任务 -->
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="sub-group" id="this-week-tasks">
-                                        <div class="sub-group-header">
-                                            <span class="sub-group-title">本周内</span>
-                                            <span class="sub-group-count">0个任务</span>
-                                        </div>
-                                        <div class="sub-group-tasks">
-                                            <!-- 本周内的任务 -->
-                                        </div>
-                                    </div>
+                            <div class="category-item" data-category="today" onclick="switchTaskCategory('today')">
+                                <div class="category-icon">📅</div>
+                                <div class="category-info">
+                                    <div class="category-name">今天</div>
+                                    <div class="category-count" id="today-count">0</div>
                                 </div>
                             </div>
                             
-                            <!-- 未来任务 -->
-                            <div class="task-group future-group" id="future-tasks">
-                                <div class="group-header" onclick="toggleGroup('future-tasks')">
-                                    <div class="group-header-left">
-                                        <span class="group-collapse-icon">▶</span>
-                                        <span class="group-title">📅 未来</span>
-                                    </div>
-                                    <span class="group-count">0个任务</span>
-                                </div>
-                                <div class="group-tasks" style="display: none;">
-                                    <!-- 未来的任务将在这里渲染 -->
+                            <div class="category-item" data-category="tomorrow" onclick="switchTaskCategory('tomorrow')">
+                                <div class="category-icon">📋</div>
+                                <div class="category-info">
+                                    <div class="category-name">明天</div>
+                                    <div class="category-count" id="tomorrow-count">0</div>
                                 </div>
                             </div>
                             
-                            <!-- 项目分组 - 参考滴答清单 -->
-                            <div class="task-group projects-group" id="project-tasks">
-                                <div class="group-header" onclick="toggleGroup('project-tasks')">
-                                    <div class="group-header-left">
-                                        <span class="group-collapse-icon">▶</span>
-                                        <span class="group-title">📋 项目任务</span>
-                                    </div>
-                                    <span class="group-count">0个任务</span>
-                                </div>
-                                <div class="group-tasks" style="display: none;">
-                                    <!-- 按项目分组的任务将在这里渲染 -->
+                            <div class="category-item" data-category="this-week" onclick="switchTaskCategory('this-week')">
+                                <div class="category-icon">📆</div>
+                                <div class="category-info">
+                                    <div class="category-name">最近7天</div>
+                                    <div class="category-count" id="this-week-count">0</div>
                                 </div>
                             </div>
                             
-                            <!-- 已完成任务 - 单独分组 -->
-                            <div class="task-group completed-group" id="completed-tasks">
-                                <div class="group-header" onclick="toggleGroup('completed-tasks')">
-                                    <div class="group-header-left">
-                                        <span class="group-collapse-icon">▶</span>
-                                        <span class="group-title">✅ 已完成</span>
-                                    </div>
-                                    <span class="group-count">0个任务</span>
-                                </div>
-                                <div class="group-tasks" style="display: none;">
-                                    <!-- 已完成的任务将在这里渲染 -->
+                            <div class="category-item" data-category="future" onclick="switchTaskCategory('future')">
+                                <div class="category-icon">🔮</div>
+                                <div class="category-info">
+                                    <div class="category-name">未来</div>
+                                    <div class="category-count" id="future-count">0</div>
                                 </div>
                             </div>
                             
-                            <!-- 过期任务 - 放在最下面，不常用 -->
-                            <div class="task-group overdue-group" id="overdue-tasks">
-                                <div class="group-header" onclick="toggleGroup('overdue-tasks')">
-                                    <div class="group-header-left">
-                                        <span class="group-collapse-icon">▶</span>
-                                        <span class="group-title">⚠️ 已过期</span>
-                                    </div>
-                                    <span class="group-count">0个任务</span>
+                            <div class="category-item" data-category="in-progress" onclick="switchTaskCategory('in-progress')">
+                                <div class="category-icon">🔄</div>
+                                <div class="category-info">
+                                    <div class="category-name">进行中</div>
+                                    <div class="category-count" id="in-progress-count">0</div>
                                 </div>
-                                <div class="group-tasks" style="display: none;">
-                                    <!-- 过期任务将在这里渲染 -->
+                            </div>
+                            
+                            <div class="category-item" data-category="no-date" onclick="switchTaskCategory('no-date')">
+                                <div class="category-icon">📝</div>
+                                <div class="category-info">
+                                    <div class="category-name">无日期</div>
+                                    <div class="category-count" id="no-date-count">0</div>
+                                </div>
+                            </div>
+                            
+                            <div class="category-item" data-category="completed" onclick="switchTaskCategory('completed')">
+                                <div class="category-icon">✅</div>
+                                <div class="category-info">
+                                    <div class="category-name">已完成</div>
+                                    <div class="category-count" id="completed-count">0</div>
+                                </div>
+                            </div>
+                            
+                            <div class="category-item" data-category="overdue" onclick="switchTaskCategory('overdue')">
+                                <div class="category-icon">⚠️</div>
+                                <div class="category-info">
+                                    <div class="category-name">已过期</div>
+                                    <div class="category-count" id="overdue-count">0</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="task-column">
-                        <div class="column-header">
-                            <h2>无截止日期 (可拖拽排序)</h2>
-                            <span class="task-count" id="undated-task-count">0个任务</span>
+                    
+                    <!-- 右侧：任务列表 -->
+                    <div class="task-detail">
+                        <div class="task-detail-header">
+                            <div class="task-detail-title">
+                                <h2 id="current-category-title">今天</h2>
+                                <span class="task-detail-date" id="current-category-date">今日任务</span>
+                            </div>
+                            <div class="task-detail-actions">
+                                <button class="btn btn-primary" onclick="showAddTaskModal()">
+                                    <span class="btn-icon">+</span> 新建任务
+                                </button>
+                            </div>
                         </div>
-                        <div id="undated-task-list" class="task-list-column">
-                            <!-- 无日期的任务将通过JavaScript动态生成 -->
+                        
+                        <div class="task-detail-content">
+                            <div id="current-task-list" class="task-list">
+                                <!-- 当前选中分类的任务将在这里显示 -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2506,6 +2810,7 @@
                     <input type="date" id="editTaskDueDate" name="dueDate" class="form-input">
                     <select id="editTaskStatus" name="status" class="form-select">
                         <option value="pending">待处理</option>
+                        <option value="in-progress">进行中</option>
                         <option value="completed">已完成</option>
                     </select>
                     <select id="editTaskProject" name="projectId" class="form-select">
@@ -2637,7 +2942,10 @@
         async function saveData() {
             try {
                 const dataToSave = {
-                    ...appData,
+                    tasks: appData.tasks || [],
+                    projects: appData.projects || [],
+                    diaries: appData.diaries || [],
+                    settings: appData.settings || {},
                     theme: currentTheme // 保存当前主题
                 };
                 
@@ -2688,20 +2996,85 @@
                     appData = {
                         tasks: savedData.tasks || [],
                         projects: savedData.projects || [],
-                        diaries: savedData.diaries || []
+                        diaries: savedData.diaries || [],
+                        settings: savedData.settings || {}
                     };
                     
-                    // 转换日期字符串为Date对象
+                    // 转换日期字符串为Date对象，确保统一标准化
                     appData.tasks.forEach(task => {
-                        if (task.dueDate) task.dueDate = new Date(task.dueDate);
+                        if (task.dueDate) {
+                            const dateValue = new Date(task.dueDate);
+                            dateValue.setHours(0, 0, 0, 0); // 标准化时间为0点
+                            task.dueDate = dateValue;
+                        }
                     });
                     appData.diaries.forEach(diary => {
-                        if (diary.date) diary.date = new Date(diary.date);
+                        if (diary.date) {
+                            const dateValue = new Date(diary.date);
+                            dateValue.setHours(0, 0, 0, 0); // 标准化时间为0点
+                            diary.date = dateValue;
+                        }
                     });
+                    
+                    // 每日自动清空MyDay功能
+                    checkAndClearMyDay();
                 }
             } catch (error) {
                 console.error('加载失败:', error);
                 console.log('使用默认数据结构');
+            }
+        }
+        
+        // 检查并清空MyDay任务（每日自动更新）
+        function checkAndClearMyDay() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // 标准化为当天0点
+            
+            // 获取上次检查的日期
+            const lastCheckDate = appData.settings.lastMyDayCheck;
+            let lastCheck = null;
+            
+            if (lastCheckDate) {
+                lastCheck = new Date(lastCheckDate);
+                lastCheck.setHours(0, 0, 0, 0);
+            }
+            
+            // 如果是新的一天，清空MyDay
+            if (!lastCheck || today.getTime() !== lastCheck.getTime()) {
+                console.log('🌅 检测到新的一天，开始清空MY DAY任务');
+                
+                // 统计被清空的任务数量
+                let clearedCount = 0;
+                
+                // 清空所有任务的myDay属性（但保留已完成的任务在MY DAY中）
+                appData.tasks.forEach(task => {
+                    if (task.myDay && task.status !== 'completed') {
+                        task.myDay = false;
+                        clearedCount++;
+                    }
+                });
+                
+                // 更新最后检查日期
+                if (!appData.settings) {
+                    appData.settings = {};
+                }
+                appData.settings.lastMyDayCheck = today.toISOString();
+                
+                // 保存数据
+                saveData();
+                
+                console.log(`✨ MY DAY已自动更新，清空了 ${clearedCount} 个未完成任务`);
+                
+                // 显示通知（延迟显示，确保UI已加载）
+                setTimeout(() => {
+                    if (clearedCount > 0) {
+                        showNotification('MY DAY已更新', `新的一天开始了！已清空 ${clearedCount} 个未完成任务，保留已完成任务`);
+                    } else {
+                        showNotification('MY DAY已更新', '新的一天开始了！');
+                    }
+                }, 1000);
+            } else {
+                console.log('📅 今日MY DAY已检查过，无需清空');
             }
         }
 
@@ -2885,13 +3258,20 @@
                         
                         // 点击编辑（防止拖拽时触发）
                         let dragTimeout;
-                        taskElement.addEventListener('mousedown', () => {
+                        taskElement.addEventListener('mousedown', (e) => {
+                            e.stopPropagation(); // 阻止事件冒泡到日历格
                             dragTimeout = setTimeout(() => {
                                 editTask(task.id);
                             }, 200);
                         });
-                        taskElement.addEventListener('dragstart', () => {
+                        taskElement.addEventListener('dragstart', (e) => {
+                            e.stopPropagation(); // 阻止事件冒泡
                             clearTimeout(dragTimeout);
+                        });
+                        
+                        // 添加点击事件处理，确保阻止冒泡
+                        taskElement.addEventListener('click', (e) => {
+                            e.stopPropagation(); // 阻止事件冒泡到日历格
                         });
                         
                         if (task.status === 'completed') {
@@ -2904,14 +3284,26 @@
                     if (dayTasks.length > 4) {
                         const more = document.createElement('div');
                         more.className = 'task-mini more';
-                        more.textContent = `+${dayTasks.length - 4}个更多任务`;
-                        more.title = `点击查看全部${dayTasks.length}个任务`;
-                        more.style.cssText = 'overflow: visible; z-index: 5; background-color: #f0f0f0; margin-top: 2px; padding: 2px 4px; border-radius: 4px; font-size: 12px; text-align: center; cursor: pointer;';
+                        more.textContent = `+${dayTasks.length - 4}个更多`;
+                        more.title = `点击展开全部${dayTasks.length}个任务`;
+                        more.style.cssText = `
+                            overflow: visible; 
+                            z-index: 5; 
+                            background-color: #e3f2fd; 
+                            margin-top: 2px; 
+                            padding: 2px 4px; 
+                            border-radius: 4px; 
+                            font-size: 11px; 
+                            text-align: center; 
+                            cursor: pointer;
+                            color: #1976d2;
+                            border: 1px solid #bbdefb;
+                        `;
                         
-                        // 点击更多显示所有任务
+                        // 点击更多在原地展开所有任务
                         more.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            showTasksForDate(cellDate);
+                            expandTasksInPlace(cellDate, tasksContainer, more);
                         });
                         
                         tasksContainer.appendChild(more);
@@ -2954,21 +3346,24 @@
                     }
                 });
 
-                // 点击事件 - 修改为支持日记写作
+                // 点击事件 - 直接创建任务，更符合用户期待
                 cell.addEventListener('click', (e) => {
                     if (e.target.classList.contains('diary-icon') || 
-                        e.target.classList.contains('task-mini')) return;
+                        e.target.classList.contains('task-mini') ||
+                        e.target.classList.contains('more') ||
+                        e.target.classList.contains('collapse')) return;
                     
                     // 确保使用正确的日期，创建新的日期对象避免引用问题
                     const exactDate = new Date(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
                     console.log('点击日期:', exactDate.toLocaleDateString(), '日:', exactDate.getDate());
                     
-                    // 如果已有日记，编辑日记；否则可以选择创建任务或日记
-                    if (dayDiary) {
+                    // 双击编辑日记，单击创建任务
+                    if (e.detail === 2 && dayDiary) {
+                        // 双击编辑日记
                         editDiary(dayDiary.id);
                     } else {
-                        // 传递精确的日期对象，避免日期偏移
-                        selectDateAction(exactDate);
+                        // 单击直接创建任务，避免多余的菜单
+                        showAddTaskModal(exactDate);
                     }
                 });
                 
@@ -2979,8 +3374,143 @@
         function getTasksForDate(date) {
             return appData.tasks.filter(task => {
                 if (!task.dueDate) return false;
-                return task.dueDate.toDateString() === date.toDateString();
+                
+                // 确保比较时只考虑年月日，忽略时间部分
+                const taskDate = new Date(task.dueDate);
+                const compareDate = new Date(date);
+                
+                // 将两个日期都设置为当天的0点，避免时区影响
+                taskDate.setHours(0, 0, 0, 0);
+                compareDate.setHours(0, 0, 0, 0);
+                
+                return taskDate.getTime() === compareDate.getTime();
             });
+        }
+
+        // 在原地展开任务列表
+        function expandTasksInPlace(cellDate, tasksContainer, moreButton) {
+            const allTasks = getTasksForDate(cellDate);
+            const hiddenTasks = allTasks.slice(4); // 获取隐藏的任务
+            
+            // 移除"更多"按钮
+            moreButton.remove();
+            
+            // 渲染隐藏的任务
+            hiddenTasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task-mini expanded';
+                
+                // 创建任务内容
+                const taskContent = document.createElement('div');
+                taskContent.style.cssText = 'display: flex; align-items: center; gap: 4px;';
+                
+                // 添加状态指示器
+                const statusCircle = document.createElement('span');
+                statusCircle.style.cssText = `
+                    display: inline-block;
+                    width: 8px; 
+                    height: 8px; 
+                    border-radius: 50%; 
+                    background: ${task.status === 'completed' ? '#9e9e9e' : '#4caf50'};
+                    margin-right: 3px;
+                `;
+                taskContent.appendChild(statusCircle);
+                
+                // 任务标题文本
+                const titleText = document.createElement('span');
+                titleText.textContent = task.title.length > 12 ? task.title.substring(0, 12) + '...' : task.title;
+                titleText.style.cssText = 'flex: 1; overflow: hidden; text-overflow: ellipsis;';
+                taskContent.appendChild(titleText);
+                
+                taskElement.appendChild(taskContent);
+                
+                // 设置其他属性
+                taskElement.title = task.title + ' (拖拽改变日期，点击编辑)';
+                taskElement.draggable = true;
+                taskElement.dataset.taskId = task.id;
+                
+                // 设置样式，添加展开动画
+                taskElement.style.cssText += `
+                    background: rgba(25, 118, 210, 0.1);
+                    border-left: 3px solid #1976d2;
+                    animation: slideIn 0.3s ease;
+                `;
+                
+                // 设置任务颜色，根据项目或优先级
+                if (task.projectId) {
+                    const projectColor = getProjectColor(task.projectId) || '#4caf50';
+                    taskElement.style.borderLeftColor = projectColor;
+                } else if (task.priority) {
+                    const priorityColors = {
+                        high: '#f44336',
+                        medium: '#ff9800',
+                        low: '#4caf50'
+                    };
+                    taskElement.style.borderLeftColor = priorityColors[task.priority] || '#4caf50';
+                }
+                
+                // 拖拽事件
+                taskElement.addEventListener('dragstart', (e) => {
+                    e.stopPropagation();
+                    draggedTaskId = task.id;
+                    taskElement.style.opacity = '0.5';
+                });
+                
+                taskElement.addEventListener('dragend', (e) => {
+                    e.stopPropagation();
+                    taskElement.style.opacity = '1';
+                    draggedTaskId = null;
+                });
+                
+                // 点击编辑
+                let dragTimeout;
+                taskElement.addEventListener('mousedown', (e) => {
+                    e.stopPropagation(); // 阻止事件冒泡到日历格
+                    dragTimeout = setTimeout(() => {
+                        editTask(task.id);
+                    }, 200);
+                });
+                taskElement.addEventListener('dragstart', (e) => {
+                    e.stopPropagation(); // 阻止事件冒泡
+                    clearTimeout(dragTimeout);
+                });
+                
+                // 添加点击事件处理，确保阻止冒泡
+                taskElement.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 阻止事件冒泡到日历格
+                });
+                
+                if (task.status === 'completed') {
+                    taskElement.classList.add('completed');
+                }
+                
+                tasksContainer.appendChild(taskElement);
+            });
+            
+            // 添加收起按钮
+            const collapseButton = document.createElement('div');
+            collapseButton.className = 'task-mini collapse';
+            collapseButton.textContent = '收起';
+            collapseButton.title = '收起任务列表';
+            collapseButton.style.cssText = `
+                background-color: #f5f5f5; 
+                margin-top: 2px; 
+                padding: 2px 4px; 
+                border-radius: 4px; 
+                font-size: 11px; 
+                text-align: center; 
+                cursor: pointer;
+                color: #666;
+                border: 1px solid #ddd;
+            `;
+            
+            collapseButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // 重新渲染这个日期的任务，恢复到折叠状态
+                renderCalendar();
+            });
+            
+            tasksContainer.appendChild(collapseButton);
         }
         
         // 获取项目颜色函数
@@ -3172,47 +3702,86 @@
             renderCalendar();
         }
 
+        // 统一任务卡片生成函数
+        function generateTaskCard(task, options = {}) {
+            const {
+                showDate = true,
+                showProject = true,
+                showActions = true,
+                showDescription = true,
+                isDraggable = false,
+                isMyDay = false
+            } = options;
+            
+            const description = task.description && showDescription ? renderMarkdown(task.description) : '';
+            const dateString = task.dueDate && showDate ? 
+                (task.dueDate instanceof Date ? task.dueDate : new Date(task.dueDate)).toLocaleDateString('zh-CN') : '';
+            
+            const project = task.projectId && showProject ? appData.projects.find(p => p.id === task.projectId) : null;
+            const projectName = project ? project.title : '';
+            
+            // 构建复选框HTML（进行中任务也使用复选框）
+            const checkboxHtml = `<input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} onclick="toggleTaskWithAnimation('${task.id}', this)">`;
+            
+            // 获取项目颜色
+            const projectColor = project ? (project.color || '#007aff') : '#007aff';
+            
+            return `
+                <div class="task-item ${task.status === 'completed' ? 'completed' : ''} ${task.status === 'in-progress' ? 'in-progress' : ''}" 
+                     data-task-id="${task.id}"
+                     ${isMyDay ? 'data-today-task="true"' : ''}
+                     onmouseenter="showTaskActions('${task.id}')"
+                     onmouseleave="hideTaskActions('${task.id}')">
+                    ${checkboxHtml}
+                    <div class="task-content">
+                        <div class="task-info">
+                            <div class="task-title-row">
+                                <div class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
+                                    ${task.title}
+                                </div>
+                            </div>
+                            ${description ? `<div class="task-description">${description}</div>` : ''}
+                            <div class="task-meta">
+                                ${dateString ? `<span class="task-date">📅 ${dateString}</span>` : ''}
+                                ${projectName ? `<span class="task-project" style="background: ${projectColor}15; color: ${projectColor};">📋 ${projectName}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    ${showActions ? `
+                        <div class="task-actions" id="actions-${task.id}">
+                            ${isMyDay ? `<button onclick="removeFromMyDay('${task.id}')" class="action-btn" title="从MY DAY移除">移除</button>` : ''}
+                            <button onclick="editTask('${task.id}')" class="action-btn edit-btn" title="编辑任务">✏️</button>
+                            <button onclick="deleteTaskWithConfirm('${task.id}')" class="action-btn delete-btn" title="删除任务">🗑️</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
         // 优化的仪表板渲染函数
         function renderDashboard() {
             const today = new Date();
             
-            // 区分今日任务和所有任务
-            const todayTasks = appData.tasks.filter(task => {
-                if (!task.dueDate) return false;
-                return task.dueDate.toDateString() === today.toDateString();
-            });
+            // 获取MY DAY任务（包括手动添加的和今天截止的）
+            const myDayTasks = getMyDayTasks();
             
-            // 今日待办任务数量
-            const todayPending = todayTasks.filter(t => t.status !== 'completed').length;
+            // MY DAY总任务数量（包括所有状态的任务）
+            const myDayTotal = myDayTasks.length;
             
-            // 今日已完成任务数量
-            const todayCompleted = todayTasks.filter(t => t.status === 'completed').length;
+            // MY DAY进行中任务数量
+            const myDayInProgress = myDayTasks.filter(t => t.status === 'in-progress').length;
             
-            // 今日任务总数
-            const todayTotal = todayTasks.length;
+            // MY DAY已完成任务数量
+            const myDayCompleted = myDayTasks.filter(t => t.status === 'completed').length;
             
-            // 今日完成率
-            const todayRate = todayTotal ? Math.round((todayCompleted / todayTotal) * 100) : 0;
-            
-            // 活跃项目：有关联的未完成任务的项目
-            // 首先检查每个项目是否有关联任务
-            const projectsWithTasks = appData.projects.filter(project => {
-                // 假设任务中有projectId字段关联到项目
-                // 如果没有这个字段，我们需要添加这个关联机制
-                const projectTasks = appData.tasks.filter(task => 
-                    task.projectId === project.id && task.status !== 'completed'
-                );
-                return projectTasks.length > 0;
-            });
-            
-            // 如果尚未实现项目-任务关联，则显示所有项目数量
-            const activeProjects = projectsWithTasks.length || appData.projects.length;
+            // 所有未完成任务总数
+            const allTasksTotal = appData.tasks.filter(t => t.status !== 'completed').length;
 
             // 更新统计卡片
-            document.getElementById('pending-tasks').textContent = todayPending;
-            document.getElementById('completed-tasks').textContent = todayCompleted;
-            document.getElementById('active-projects').textContent = activeProjects;
-            document.getElementById('completion-rate').textContent = todayRate + '%';
+            document.getElementById('pending-tasks').textContent = myDayTotal;
+            document.getElementById('in-progress-tasks').textContent = myDayInProgress;
+            document.getElementById('completed-tasks').textContent = myDayCompleted;
+            document.getElementById('total-tasks').textContent = allTasksTotal;
             
             // 显示当前日期
             document.getElementById('current-date').textContent = today.toLocaleDateString('zh-CN', {
@@ -3222,41 +3791,601 @@
                 weekday: 'long'
             });
 
-            // 对今日任务进行排序：未完成的在前，已完成的在后
-            const sortedTodayTasks = [...todayTasks].sort((a, b) => {
+            // 对MY DAY任务进行排序：未完成的在前，已完成的在后
+            const sortedMyDayTasks = [...myDayTasks].sort((a, b) => {
                 // 首先按状态排序（pending在前，completed在后）
                 if (a.status !== b.status) {
                     return a.status === 'pending' ? -1 : 1;
                 }
                 // 同状态内按创建时间排序（新的在前）
                 return parseInt(b.id) - parseInt(a.id);
-            }).slice(0, 5);
+            }).slice(0, 8); // 显示更多MY DAY任务
             
-            // 使用forceUseIndex来强制使用数组索引作为排序依据
-            const html = sortedTodayTasks.map((task, index) => `
-                <div class="task-item ${task.status === 'completed' ? 'completed' : ''}"
-                     draggable="true" 
-                     data-task-id="${task.id}"
-                     data-task-index="${index}"
-                     data-today-task="true">
-                    <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                           onclick="toggleTask('${task.id}')">
-                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                        ${task.title}
-                    </span>
-                    <div class="task-actions">
-                        <button onclick="deleteTask('${task.id}')" title="删除任务">删除</button>
-                    </div>
-                </div>
-            `).join('');
-            document.getElementById('today-task-list').innerHTML = html || '<p style="color: #999;">今天暂无任务</p>';
+            // 使用统一的任务卡片生成函数
+            const html = sortedMyDayTasks.map(task => 
+                generateTaskCard(task, {
+                    showDate: true,
+                    showProject: true,
+                    showActions: true,
+                    showDescription: true,
+                    isDraggable: true,
+                    isMyDay: true
+                })
+            ).join('');
+            document.getElementById('today-task-list').innerHTML = html || '<div style="text-align: center; padding: 40px; color: #999;"><p>暂无MY DAY任务</p><p style="font-size: 14px; margin-top: 10px;">从"全部任务"中选择重要任务添加到MY DAY</p></div>';
             
-            console.log('今日任务渲染完成，重新绑定拖拽事件');
-            // 渲染后重新绑定拖拽事件
+            console.log('MY DAY任务渲染完成，重新绑定事件');
+            // 渲染后重新绑定拖拽事件和MY DAY事件
             bindTaskItemEvents();
+            bindMyDayEvents();
+            
+            // 渲染建议任务
+            renderSuggestedTasks();
         }
 
+        // 滴答清单风格的分类切换功能
+        let currentTaskCategory = 'all';
+
+        function switchTaskCategory(category) {
+            // 更新左侧分类高亮
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // 更新当前分类
+            currentTaskCategory = category;
+            
+            // 渲染对应分类的任务
+            renderTasksByCategory(category);
+        }
+
+        function renderTasksByCategory(category) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+
+            let filteredTasks = [];
+            let categoryTitle = '';
+            let categoryDate = '';
+
+            switch (category) {
+                case 'all':
+                    filteredTasks = appData.tasks.filter(task => task.status !== 'completed');
+                    categoryTitle = '全部任务';
+                    categoryDate = `${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'today':
+                    filteredTasks = appData.tasks.filter(task => {
+                        if (!task.dueDate) return false;
+                        const taskDate = new Date(task.dueDate);
+                        taskDate.setHours(0, 0, 0, 0);
+                        return taskDate.getTime() === today.getTime() && task.status !== 'completed';
+                    });
+                    categoryTitle = '今天';
+                    categoryDate = `${today.toLocaleDateString('zh-CN')} · ${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'tomorrow':
+                    filteredTasks = appData.tasks.filter(task => {
+                        if (!task.dueDate) return false;
+                        const taskDate = new Date(task.dueDate);
+                        taskDate.setHours(0, 0, 0, 0);
+                        return taskDate.getTime() === tomorrow.getTime() && task.status !== 'completed';
+                    });
+                    categoryTitle = '明天';
+                    categoryDate = `${tomorrow.toLocaleDateString('zh-CN')} · ${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'this-week':
+                    filteredTasks = appData.tasks.filter(task => {
+                        if (!task.dueDate) return false;
+                        const taskDate = new Date(task.dueDate);
+                        taskDate.setHours(0, 0, 0, 0);
+                        return taskDate > tomorrow && taskDate < nextWeek && task.status !== 'completed';
+                    });
+                    categoryTitle = '最近7天';
+                    categoryDate = `${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'future':
+                    filteredTasks = appData.tasks.filter(task => {
+                        if (!task.dueDate) return false;
+                        const taskDate = new Date(task.dueDate);
+                        taskDate.setHours(0, 0, 0, 0);
+                        return taskDate >= nextWeek && task.status !== 'completed';
+                    });
+                    categoryTitle = '未来';
+                    categoryDate = `${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'no-date':
+                    filteredTasks = appData.tasks.filter(task => !task.dueDate && task.status !== 'completed');
+                    categoryTitle = '无日期';
+                    categoryDate = `${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'in-progress':
+                    filteredTasks = appData.tasks.filter(task => task.status === 'in-progress');
+                    categoryTitle = '进行中';
+                    categoryDate = `${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'completed':
+                    filteredTasks = appData.tasks.filter(task => task.status === 'completed');
+                    categoryTitle = '已完成';
+                    categoryDate = `${filteredTasks.length}个任务`;
+                    break;
+                    
+                case 'overdue':
+                    filteredTasks = appData.tasks.filter(task => {
+                        if (!task.dueDate || task.status === 'completed') return false;
+                        const taskDate = new Date(task.dueDate);
+                        taskDate.setHours(0, 0, 0, 0);
+                        return taskDate < today;
+                    });
+                    categoryTitle = '已过期';
+                    categoryDate = `${filteredTasks.length}个任务`;
+                    break;
+            }
+
+            // 更新标题和日期
+            document.getElementById('current-category-title').textContent = categoryTitle;
+            document.getElementById('current-category-date').textContent = categoryDate;
+
+            // 渲染任务列表
+            const taskListContainer = document.getElementById('current-task-list');
+            renderTaskList(taskListContainer, filteredTasks);
+            
+            // 更新左侧分类计数
+            updateCategoryCounts();
+        }
+
+        function renderTaskList(container, tasks) {
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 60px 20px; color: #999;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                        <h3 style="margin-bottom: 8px;">暂无任务</h3>
+                        <p>点击右上角"新建任务"开始规划吧！</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tasksHtml = tasks.map(task => 
+                generateTaskCard(task, {
+                    showDate: currentTaskCategory !== 'today' && currentTaskCategory !== 'tomorrow',
+                    showProject: true,
+                    showActions: true,
+                    showDescription: true,
+                    isDraggable: false,
+                    isMyDay: false
+                })
+            ).join('');
+            
+            container.innerHTML = tasksHtml;
+            
+            // 渲染完成后绑定拖拽事件和MY DAY功能
+            setTimeout(() => {
+                bindTaskItemEvents();
+                bindMyDayEvents();
+            }, 0);
+        }
+
+        function updateCategoryCounts() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const nextWeek = new Date(today);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+
+            // 计算各分类的任务数量
+            const counts = {
+                all: appData.tasks.filter(task => task.status !== 'completed').length,
+                
+                today: appData.tasks.filter(task => {
+                    if (!task.dueDate) return false;
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    return taskDate.getTime() === today.getTime() && task.status !== 'completed';
+                }).length,
+                
+                tomorrow: appData.tasks.filter(task => {
+                    if (!task.dueDate) return false;
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    return taskDate.getTime() === tomorrow.getTime() && task.status !== 'completed';
+                }).length,
+                
+                thisWeek: appData.tasks.filter(task => {
+                    if (!task.dueDate) return false;
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    return taskDate > tomorrow && taskDate < nextWeek && task.status !== 'completed';
+                }).length,
+                
+                future: appData.tasks.filter(task => {
+                    if (!task.dueDate) return false;
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    return taskDate >= nextWeek && task.status !== 'completed';
+                }).length,
+                
+                noDate: appData.tasks.filter(task => !task.dueDate && task.status !== 'completed').length,
+                
+                inProgress: appData.tasks.filter(task => task.status === 'in-progress').length,
+                
+                completed: appData.tasks.filter(task => task.status === 'completed').length,
+                
+                overdue: appData.tasks.filter(task => {
+                    if (!task.dueDate || task.status === 'completed') return false;
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    return taskDate < today;
+                }).length
+            };
+
+            // 更新计数显示
+            document.getElementById('all-count').textContent = counts.all;
+            document.getElementById('today-count').textContent = counts.today;
+            document.getElementById('tomorrow-count').textContent = counts.tomorrow;
+            document.getElementById('this-week-count').textContent = counts.thisWeek;
+            document.getElementById('future-count').textContent = counts.future;
+            document.getElementById('no-date-count').textContent = counts.noDate;
+            document.getElementById('in-progress-count').textContent = counts.inProgress;
+            document.getElementById('completed-count').textContent = counts.completed;
+            document.getElementById('overdue-count').textContent = counts.overdue;
+        }
+
+        // MY DAY 功能
+        function addToMyDay(taskId) {
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.myDay = true;
+                saveData();
+                renderTasks();
+                renderDashboard();
+                showNotification('任务已添加到MY DAY', `"${task.title}"已添加到MY DAY`);
+            }
+        }
+        
+        function removeFromMyDay(taskId) {
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.myDay = false;
+                saveData();
+                renderTasks();
+                renderDashboard();
+                showNotification('任务已从MY DAY移除', `"${task.title}"已从MY DAY移除`);
+            }
+        }
+        
+        function getMyDayTasks() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            return appData.tasks.filter(task => {
+                // 手动添加到MY DAY的任务（包括已完成的）
+                if (task.myDay) return true;
+                
+                // 进行中的任务自动加入MY DAY
+                if (task.status === 'in-progress') return true;
+                
+                // 自动包含今天截止的任务（但不包括已完成的，除非手动添加到MY DAY）
+                if (task.dueDate && task.status !== 'completed') {
+                    const taskDate = new Date(task.dueDate);
+                    taskDate.setHours(0, 0, 0, 0);
+                    return taskDate.getTime() === today.getTime();
+                }
+                
+                return false;
+            });
+        }
+        
+        function toggleMyDay(taskId) {
+            const task = appData.tasks.find(t => t.id === taskId);
+            if (task) {
+                if (task.myDay) {
+                    removeFromMyDay(taskId);
+                } else {
+                    addToMyDay(taskId);
+                }
+            }
+        }
+        
+        // 绑定MY DAY相关事件
+        function bindMyDayEvents() {
+            // 为任务项添加右键菜单
+            document.querySelectorAll('.task-item').forEach(item => {
+                const taskId = item.dataset.taskId;
+                if (!taskId) return;
+                
+                // 移除旧的事件监听器
+                item.removeEventListener('contextmenu', handleTaskContextMenu);
+                // 添加右键菜单事件
+                item.addEventListener('contextmenu', handleTaskContextMenu);
+                
+                // 添加MY DAY状态的视觉提示
+                const task = appData.tasks.find(t => t.id === taskId);
+                if (task && task.myDay) {
+                    item.classList.add('my-day-task');
+                    // 在标题前添加MY DAY标识
+                    const titleSpan = item.querySelector('.task-title');
+                    if (titleSpan && !titleSpan.textContent.startsWith('☀️')) {
+                        titleSpan.innerHTML = '☀️ ' + titleSpan.innerHTML;
+                    }
+                }
+            });
+        }
+        
+        // 手动清空MyDay（用于用户主动清空）
+        function manualClearMyDay() {
+            if (!confirm('确定要清空所有MY DAY任务吗？\n\n注意：\n• 未完成的任务将从MY DAY中移除\n• 已完成的任务将保留在MY DAY中\n• 此操作无法撤销')) {
+                return;
+            }
+            
+            let clearedCount = 0;
+            
+            // 清空所有未完成任务的myDay属性
+            appData.tasks.forEach(task => {
+                if (task.myDay && task.status !== 'completed') {
+                    task.myDay = false;
+                    clearedCount++;
+                }
+            });
+            
+            // 保存数据
+            saveData();
+            
+            // 刷新界面
+            renderDashboard();
+            renderTasks();
+            
+            // 显示通知
+            showNotification('MY DAY已清空', `已清空 ${clearedCount} 个未完成任务，保留已完成任务`);
+            
+            console.log(`🧹 手动清空MY DAY完成，清空了 ${clearedCount} 个未完成任务`);
+        }
+        
+        // 右键菜单处理
+        function handleTaskContextMenu(event) {
+            event.preventDefault();
+            const taskId = event.currentTarget.dataset.taskId;
+            const task = appData.tasks.find(t => t.id === taskId);
+            
+            if (!task) return;
+            
+            // 创建简单的上下文菜单
+            const menu = document.createElement('div');
+            menu.style.cssText = `
+                position: fixed;
+                top: ${event.clientY}px;
+                left: ${event.clientX}px;
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                z-index: 1000;
+                padding: 5px 0;
+                min-width: 150px;
+            `;
+            
+            const myDayOption = document.createElement('div');
+            myDayOption.style.cssText = `
+                padding: 8px 15px;
+                cursor: pointer;
+                font-size: 14px;
+            `;
+            myDayOption.textContent = task.myDay ? '从MY DAY移除' : '添加到MY DAY';
+            myDayOption.onclick = () => {
+                toggleMyDay(taskId);
+                document.body.removeChild(menu);
+            };
+            
+            myDayOption.onmouseover = () => myDayOption.style.backgroundColor = '#f0f0f0';
+            myDayOption.onmouseout = () => myDayOption.style.backgroundColor = '';
+            
+            menu.appendChild(myDayOption);
+            document.body.appendChild(menu);
+            
+            // 点击其他地方关闭菜单
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target)) {
+                    document.body.removeChild(menu);
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+                         setTimeout(() => document.addEventListener('click', closeMenu), 0);
+         }
+         
+         // 切换建议任务显示状态
+         function toggleSuggestedTasks() {
+             const isCurrentlyShown = appData.settings.showSuggestedTasks;
+             appData.settings.showSuggestedTasks = !isCurrentlyShown;
+             
+             // 保存设置
+             saveData();
+             
+             // 更新界面
+             updateSuggestedTasksVisibility();
+         }
+         
+         // 更新建议任务区域的显示状态
+         function updateSuggestedTasksVisibility() {
+             const suggestedTasksContainer = document.getElementById('suggested-tasks');
+             const toggleButton = document.getElementById('toggle-suggested-tasks');
+             const isShown = appData.settings.showSuggestedTasks;
+             
+             if (isShown) {
+                 // 显示建议任务
+                 suggestedTasksContainer.style.display = 'block';
+                 suggestedTasksContainer.style.opacity = '1';
+                 suggestedTasksContainer.style.maxHeight = '1000px';
+                 toggleButton.innerHTML = '<span style="font-size: 14px;">👁️</span><span>隐藏</span>';
+                 toggleButton.title = '隐藏建议任务';
+                 // 渲染建议任务
+                 renderSuggestedTasks();
+             } else {
+                 // 隐藏建议任务
+                 suggestedTasksContainer.style.opacity = '0';
+                 suggestedTasksContainer.style.maxHeight = '0';
+                 toggleButton.innerHTML = '<span style="font-size: 14px;">👁️‍🗨️</span><span>显示</span>';
+                 toggleButton.title = '显示建议任务';
+                 // 延迟隐藏以等待动画完成
+                 setTimeout(() => {
+                     if (!appData.settings.showSuggestedTasks) {
+                         suggestedTasksContainer.style.display = 'none';
+                     }
+                 }, 300);
+             }
+         }
+
+         // 渲染建议添加到MY DAY的任务
+         function renderSuggestedTasks() {
+             // 如果设置为不显示建议任务，直接返回
+             if (!appData.settings.showSuggestedTasks) {
+                 return;
+             }
+             
+             const today = new Date();
+             today.setHours(0, 0, 0, 0);
+             
+             const tomorrow = new Date(today);
+             tomorrow.setDate(tomorrow.getDate() + 1);
+             
+             // 获取建议任务（排除已经在MY DAY中的）
+             const myDayTaskIds = appData.tasks.filter(t => t.myDay).map(t => t.id);
+             const currentMyDayTasks = getMyDayTasks().map(t => t.id);
+             
+             const suggestedTasks = [];
+             
+             // 1. 今天到期但不在MY DAY中的任务
+             const todayDueTasks = appData.tasks.filter(task => {
+                 if (task.status === 'completed' || currentMyDayTasks.includes(task.id)) return false;
+                 if (!task.dueDate) return false;
+                 const taskDate = new Date(task.dueDate);
+                 taskDate.setHours(0, 0, 0, 0);
+                 return taskDate.getTime() === today.getTime();
+             });
+             
+             // 2. 过期的任务
+             const overdueTasks = appData.tasks.filter(task => {
+                 if (task.status === 'completed' || currentMyDayTasks.includes(task.id)) return false;
+                 if (!task.dueDate) return false;
+                 const taskDate = new Date(task.dueDate);
+                 taskDate.setHours(0, 0, 0, 0);
+                 return taskDate.getTime() < today.getTime();
+             });
+             
+             // 3. 进行中的任务
+             const inProgressTasks = appData.tasks.filter(task => {
+                 if (task.status !== 'in-progress' || currentMyDayTasks.includes(task.id)) return false;
+                 return true;
+             });
+             
+             // 4. 明天到期的重要任务
+             const tomorrowTasks = appData.tasks.filter(task => {
+                 if (task.status === 'completed' || currentMyDayTasks.includes(task.id)) return false;
+                 if (!task.dueDate) return false;
+                 const taskDate = new Date(task.dueDate);
+                 taskDate.setHours(0, 0, 0, 0);
+                 return taskDate.getTime() === tomorrow.getTime();
+             });
+             
+             // 组合建议任务并限制数量
+             if (overdueTasks.length > 0) {
+                 suggestedTasks.push({
+                     category: '⚠️ 过期任务',
+                     tasks: overdueTasks.slice(0, 3),
+                     color: '#f44336'
+                 });
+             }
+             
+             if (todayDueTasks.length > 0) {
+                 suggestedTasks.push({
+                     category: '📅 今日到期',
+                     tasks: todayDueTasks.slice(0, 3),
+                     color: '#ff9800'
+                 });
+             }
+             
+             if (inProgressTasks.length > 0) {
+                 suggestedTasks.push({
+                     category: '🔄 进行中',
+                     tasks: inProgressTasks.slice(0, 2),
+                     color: '#2196f3'
+                 });
+             }
+             
+             if (tomorrowTasks.length > 0) {
+                 suggestedTasks.push({
+                     category: '➡️ 明日到期',
+                     tasks: tomorrowTasks.slice(0, 2),
+                     color: '#4caf50'
+                 });
+             }
+             
+             // 渲染建议任务HTML
+             let html = '';
+             if (suggestedTasks.length === 0) {
+                 html = '<div style="text-align: center; padding: 30px; color: #999;"><p>暂无建议任务</p><p style="font-size: 12px;">所有重要任务都已在MY DAY中</p></div>';
+             } else {
+                 html = suggestedTasks.map(group => `
+                     <div style="margin-bottom: 20px;">
+                         <h4 style="color: ${group.color}; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid ${group.color}20; padding-bottom: 5px;">
+                             ${group.category}
+                         </h4>
+                         ${group.tasks.map(task => `
+                             <div class="suggested-task-item" style="
+                                 padding: 8px 12px; 
+                                 margin-bottom: 8px; 
+                                 background: #f9f9f9; 
+                                 border-radius: 6px; 
+                                 border-left: 3px solid ${group.color};
+                                 cursor: pointer;
+                                 transition: all 0.2s ease;
+                             " 
+                             data-task-id="${task.id}"
+                             onclick="addToMyDay('${task.id}')"
+                             onmouseover="this.style.backgroundColor='#f0f0f0'; this.style.transform='translateX(5px)'"
+                             onmouseout="this.style.backgroundColor='#f9f9f9'; this.style.transform='translateX(0)'">
+                                 <div style="font-weight: 500; font-size: 14px; margin-bottom: 4px;">
+                                     ${task.title}
+                                 </div>
+                                 <div style="font-size: 12px; color: #666;">
+                                     ${task.dueDate ? '📅 ' + new Date(task.dueDate).toLocaleDateString('zh-CN') : '📝 无日期'}
+                                     ${task.projectId ? ' • 📋 ' + getProjectName(task.projectId) : ''}
+                                 </div>
+                                 <div style="font-size: 11px; color: ${group.color}; margin-top: 4px;">
+                                     点击添加到MY DAY
+                                 </div>
+                             </div>
+                         `).join('')}
+                     </div>
+                 `).join('');
+             }
+             
+             document.getElementById('suggested-tasks').innerHTML = html;
+         }
+
         function renderTasks() {
+            // 更新分类计数
+            updateCategoryCounts();
+            // 渲染当前选中的分类
+            renderTasksByCategory(currentTaskCategory);
+        }
+
+        function renderTasksOld() {
             // 1. 将任务分为有日期和无日期两组
             const datedTasks = appData.tasks.filter(t => t.dueDate);
             const undatedTasks = appData.tasks.filter(t => !t.dueDate);
@@ -3385,41 +4514,14 @@
                     const project = task.projectId ? appData.projects.find(p => p.id === task.projectId) : null;
                     const projectColor = project ? (project.color || '#7BB3F0') : '#7BB3F0';
                         
-                    return `
-                        <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
-                             data-task-id="${task.id}"
-                             onmouseenter="showTaskActions('${task.id}')"
-                             onmouseleave="hideTaskActions('${task.id}')">
-                            <div class="task-checkbox">
-                                <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                                       onclick="toggleTaskWithAnimation('${task.id}', this)">
-                            </div>
-                            <div class="task-content">
-                                <div class="task-main">
-                                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                        ${task.title}
-                                    </span>
-                                    <div class="task-meta">
-                                        ${groupId !== 'today-tasks' && groupId !== 'tomorrow-tasks' ? 
-                                            `<span class="task-date">📅 ${dateString}</span>` : ''}
-                                        ${task.projectId ? 
-                                            `<span class="task-project" style="background-color: ${projectColor}20; color: ${projectColor}; border-left: 3px solid ${projectColor};">
-                                                📋 ${getProjectName(task.projectId)}
-                                            </span>` : ''}
-                                    </div>
-                                </div>
-                                ${description ? `<div class="task-description">${description}</div>` : ''}
-                            </div>
-                            <div class="task-actions" id="actions-${task.id}">
-                                <button onclick="editTask('${task.id}')" class="action-btn edit-btn" title="编辑任务">
-                                    ✏️
-                                </button>
-                                <button onclick="deleteTaskWithConfirm('${task.id}')" class="action-btn delete-btn" title="删除任务">
-                                    🗑️
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    return generateTaskCard(task, {
+                        showDate: groupId !== 'today-tasks' && groupId !== 'tomorrow-tasks',
+                        showProject: true,
+                        showActions: true,
+                        showDescription: true,
+                        isDraggable: false,
+                        isMyDay: false
+                    });
                 }).join('');
                 
                 taskContainer.innerHTML = tasksHtml;
@@ -3458,41 +4560,14 @@
                     const project = task.projectId ? appData.projects.find(p => p.id === task.projectId) : null;
                     const projectColor = project ? (project.color || '#7BB3F0') : '#7BB3F0';
                     
-                    return `
-                        <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
-                             draggable="true" 
-                             data-task-id="${task.id}"
-                             onmouseenter="showTaskActions('${task.id}')"
-                             onmouseleave="hideTaskActions('${task.id}')">
-                            <div class="task-drag-handle" title="拖拽排序">⋮⋮</div>
-                            <div class="task-checkbox">
-                                <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                                       onclick="toggleTaskWithAnimation('${task.id}', this)">
-                            </div>
-                            <div class="task-content">
-                                <div class="task-main">
-                                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                        ${task.title}
-                                    </span>
-                                    <div class="task-meta">
-                                        ${task.projectId ? 
-                                            `<span class="task-project" style="background-color: ${projectColor}20; color: ${projectColor}; border-left: 3px solid ${projectColor};">
-                                                📋 ${getProjectName(task.projectId)}
-                                            </span>` : ''}
-                                    </div>
-                                </div>
-                                ${description ? `<div class="task-description">${description}</div>` : ''}
-                            </div>
-                            <div class="task-actions" id="actions-${task.id}">
-                                <button onclick="editTask('${task.id}')" class="action-btn edit-btn" title="编辑任务">
-                                    ✏️
-                                </button>
-                                <button onclick="deleteTaskWithConfirm('${task.id}')" class="action-btn delete-btn" title="删除任务">
-                                    🗑️
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    return generateTaskCard(task, {
+                        showDate: false,
+                        showProject: true,
+                        showActions: true,
+                        showDescription: true,
+                        isDraggable: true,
+                        isMyDay: false
+                    });
                 }).join('');
                 undatedListContainer.innerHTML = undatedHtml;
             }
@@ -3526,40 +4601,14 @@
                 const project = task.projectId ? appData.projects.find(p => p.id === task.projectId) : null;
                 const projectColor = project ? (project.color || '#7BB3F0') : '#7BB3F0';
                     
-                return `
-                    <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
-                         data-task-id="${task.id}"
-                         onmouseenter="showTaskActions('${task.id}')"
-                         onmouseleave="hideTaskActions('${task.id}')">
-                        <div class="task-checkbox">
-                            <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                                   onclick="toggleTaskWithAnimation('${task.id}', this)">
-                        </div>
-                        <div class="task-content">
-                            <div class="task-main">
-                                <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                    ${task.title}
-                                </span>
-                                <div class="task-meta">
-                                    <span class="task-date">📅 ${dateString}</span>
-                                    ${task.projectId ? 
-                                        `<span class="task-project" style="background-color: ${projectColor}20; color: ${projectColor}; border-left: 3px solid ${projectColor};">
-                                            📋 ${getProjectName(task.projectId)}
-                                        </span>` : ''}
-                                </div>
-                            </div>
-                            ${description ? `<div class="task-description">${description}</div>` : ''}
-                        </div>
-                        <div class="task-actions" id="actions-${task.id}">
-                            <button onclick="editTask('${task.id}')" class="action-btn edit-btn" title="编辑任务">
-                                ✏️
-                            </button>
-                            <button onclick="deleteTaskWithConfirm('${task.id}')" class="action-btn delete-btn" title="删除任务">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                `;
+                return generateTaskCard(task, {
+                    showDate: true,
+                    showProject: true,
+                    showActions: true,
+                    showDescription: true,
+                    isDraggable: false,
+                    isMyDay: false
+                });
             }).join('');
             
             taskContainer.innerHTML = tasksHtml;
@@ -3600,36 +4649,14 @@
                         (task.dueDate instanceof Date ? task.dueDate.toLocaleDateString('zh-CN') : new Date(task.dueDate).toLocaleDateString('zh-CN'))
                         : '';
                         
-                    return `
-                        <div class="task-item ${task.status === 'completed' ? 'completed' : ''}" 
-                             data-task-id="${task.id}"
-                             onmouseenter="showTaskActions('${task.id}')"
-                             onmouseleave="hideTaskActions('${task.id}')">
-                            <div class="task-checkbox">
-                                <input type="checkbox" ${task.status === 'completed' ? 'checked' : ''} 
-                                       onclick="toggleTaskWithAnimation('${task.id}', this)">
-                            </div>
-                            <div class="task-content">
-                                <div class="task-main">
-                                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                        ${task.title}
-                                    </span>
-                                    <div class="task-meta">
-                                        ${dateString ? `<span class="task-date">📅 ${dateString}</span>` : ''}
-                                    </div>
-                                </div>
-                                ${description ? `<div class="task-description">${description}</div>` : ''}
-                            </div>
-                            <div class="task-actions" id="actions-${task.id}">
-                                <button onclick="editTask('${task.id}')" class="action-btn edit-btn" title="编辑任务">
-                                    ✏️
-                                </button>
-                                <button onclick="deleteTaskWithConfirm('${task.id}')" class="action-btn delete-btn" title="删除任务">
-                                    🗑️
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    return generateTaskCard(task, {
+                        showDate: true,
+                        showProject: false, // 项目任务不显示项目标签，因为已经在分组中
+                        showActions: true,
+                        showDescription: true,
+                        isDraggable: false,
+                        isMyDay: false
+                    });
                 }).join('');
                 
                 return `
@@ -3695,16 +4722,16 @@
                                 ${pendingTasks.length > 0 ? `
                                     <div class="task-section">
                                         <h4 class="task-section-title">待完成任务</h4>
-                                        ${pendingTasks.map(task => `
-                                            <div class="task-item">
-                                                <input type="checkbox" onclick="toggleTask('${task.id}')">
-                                                <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                                    ${task.title} 
-                                                    ${task.dueDate ? `<span class="task-date">📅 ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
-                                                </span>
-                                                <button class="task-delete-btn" onclick="deleteTask('${task.id}')" title="删除任务">🗑️</button>
-                                            </div>
-                                        `).join('')}
+                                        ${pendingTasks.map(task => 
+                                            generateTaskCard(task, {
+                                                showDate: true,
+                                                showProject: false, // 项目页面不显示项目标签，因为已经在项目分组中
+                                                showActions: true,
+                                                showDescription: true,
+                                                isDraggable: false,
+                                                isMyDay: false
+                                            })
+                                        ).join('')}
                                     </div>
                                 ` : ''}
                                 
@@ -3712,28 +4739,28 @@
                                     <div class="task-section">
                                         <h4 class="task-section-title">已完成任务</h4>
                                         <div class="completed-tasks ${completedTasks.length > 3 ? 'collapsible' : ''}" data-collapsed="true">
-                                            ${completedTasks.slice(0, 3).map(task => `
-                                                <div class="task-item completed">
-                                                    <input type="checkbox" checked onclick="toggleTask('${task.id}')">
-                                                    <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                                        ${task.title}
-                                                        ${task.dueDate ? `<span class="task-date">📅 ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
-                                                    </span>
-                                                    <button class="task-delete-btn" onclick="deleteTask('${task.id}')" title="删除任务">🗑️</button>
-                                                </div>
-                                            `).join('')}
+                                            ${completedTasks.slice(0, 3).map(task => 
+                                                generateTaskCard(task, {
+                                                    showDate: true,
+                                                    showProject: false, // 项目页面不显示项目标签，因为已经在项目分组中
+                                                    showActions: true,
+                                                    showDescription: true,
+                                                    isDraggable: false,
+                                                    isMyDay: false
+                                                })
+                                            ).join('')}
                                             ${completedTasks.length > 3 ? `
                                                 <div class="more-tasks" style="display: none;">
-                                                    ${completedTasks.slice(3).map(task => `
-                                                        <div class="task-item completed">
-                                                            <input type="checkbox" checked onclick="toggleTask('${task.id}')">
-                                                            <span class="task-title" onclick="editTask('${task.id}')" title="点击编辑任务">
-                                                                ${task.title}
-                                                                ${task.dueDate ? `<span class="task-date">📅 ${new Date(task.dueDate).toLocaleDateString()}</span>` : ''}
-                                                            </span>
-                                                            <button class="task-delete-btn" onclick="deleteTask('${task.id}')" title="删除任务">🗑️</button>
-                                                        </div>
-                                                    `).join('')}
+                                                    ${completedTasks.slice(3).map(task => 
+                                                        generateTaskCard(task, {
+                                                            showDate: true,
+                                                            showProject: false,
+                                                            showActions: true,
+                                                            showDescription: true,
+                                                            isDraggable: false,
+                                                            isMyDay: false
+                                                        })
+                                                    ).join('')}
                                                 </div>
                                                 <button class="show-more-btn" onclick="toggleCompletedTasks(this)">
                                                     显示更多 (${completedTasks.length - 3}个)
@@ -3757,6 +4784,12 @@
             
             document.getElementById('project-list').innerHTML = html || 
                 '<div class="empty-projects"><p style="color: #999; text-align: center; padding: 40px;">暂无项目，点击"新建项目"开始 📋</p></div>';
+            
+            // 渲染完成后绑定任务卡片事件
+            setTimeout(() => {
+                bindTaskItemEvents();
+                bindMyDayEvents();
+            }, 0);
         }
 
         // 在任务模态框中预选项目
@@ -4729,8 +5762,13 @@
             
             // 如果指定了日期参数，则设置任务截止日期
             if (date) {
-                const dateString = date.toISOString().split('T')[0];
+                // 使用本地日期格式，避免时区偏移
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const dateString = `${year}-${month}-${day}`;
                 document.getElementById('addTaskDueDate').value = dateString;
+                console.log('设置任务日期:', dateString, '原始日期:', date.toLocaleDateString());
             }
         }
         
@@ -4776,7 +5814,13 @@
         function deleteCurrentTask() {
             if (!currentEditingTaskId) return;
             
-            if (confirm('确定要删除这个任务吗？')) {
+            const task = appData.tasks.find(t => t.id === currentEditingTaskId);
+            if (!task) return;
+            
+            showDeleteConfirmDialog(
+                '删除任务',
+                `确定要删除任务"${task.title}"吗？此操作无法撤销。`,
+                () => {
                 // 删除任务
                 appData.tasks = appData.tasks.filter(t => t.id !== currentEditingTaskId);
                 saveData();
@@ -4814,7 +5858,8 @@
                 
                 // 重置当前编辑任务ID
                 currentEditingTaskId = null;
-            }
+                }
+            );
         }
 
         let currentEditingTaskId = null;
@@ -4859,7 +5904,15 @@
             if (task) {
                 task.title = formData.get('title');
                 task.description = formData.get('description');
-                task.dueDate = formData.get('dueDate') ? new Date(formData.get('dueDate')) : null;
+                // 确保日期设置为当天的0点，避免时区问题
+            if (formData.get('dueDate')) {
+                const dateStr = formData.get('dueDate');
+                const dateValue = new Date(dateStr);
+                dateValue.setHours(0, 0, 0, 0);
+                task.dueDate = dateValue;
+            } else {
+                task.dueDate = null;
+            }
                 task.status = formData.get('status');
                 task.projectId = formData.get('projectId') || null; // 更新项目关联
                 
@@ -4884,7 +5937,12 @@
                 id: Date.now().toString(),
                 title: formData.get('title'),
                 description: formData.get('description'),
-                dueDate: formData.get('dueDate') ? new Date(formData.get('dueDate')) : null,
+                dueDate: formData.get('dueDate') ? (() => {
+                const dateStr = formData.get('dueDate');
+                const dateValue = new Date(dateStr);
+                dateValue.setHours(0, 0, 0, 0);
+                return dateValue;
+            })() : null,
                 status: 'pending',
                 projectId: projectId || null // 保存项目关联
             };
@@ -4901,7 +5959,32 @@
         function toggleTask(id) {
             const task = appData.tasks.find(t => t.id === id);
             if (task) {
-                task.status = task.status === 'completed' ? 'pending' : 'completed';
+                if (task.status === 'completed') {
+                    // 取消完成：恢复到原来的状态
+                    if (task.originalStatus) {
+                        task.status = task.originalStatus;
+                        delete task.originalStatus;
+                    } else {
+                        task.status = 'pending';
+                    }
+                    
+                    // 如果任务原本不在MY DAY中，则从MY DAY中移除
+                    if (task.wasNotInMyDay) {
+                        task.myDay = false;
+                        delete task.wasNotInMyDay;
+                    }
+                } else {
+                    // 完成任务：记录原始状态
+                    task.originalStatus = task.status;
+                    task.status = 'completed';
+                    
+                    // 如果任务不在MY DAY中，添加到MY DAY并标记
+                    if (!task.myDay) {
+                        task.myDay = true;
+                        task.wasNotInMyDay = true;
+                    }
+                }
+                
                 saveData();
                 renderDashboard();
                 renderTasks();
@@ -4910,13 +5993,20 @@
         }
 
         function deleteTask(id) {
-            if (confirm('确定删除？')) {
-                appData.tasks = appData.tasks.filter(t => t.id !== id);
-                saveData();
-                renderDashboard();
-                renderTasks();
-                renderCalendar(); // 刷新日历
-            }
+            const task = appData.tasks.find(t => t.id === id);
+            if (!task) return;
+            
+            showDeleteConfirmDialog(
+                '删除任务',
+                `确定要删除任务"${task.title}"吗？此操作无法撤销。`,
+                () => {
+                    appData.tasks = appData.tasks.filter(t => t.id !== id);
+                    saveData();
+                    renderDashboard();
+                    renderTasks();
+                    renderCalendar(); // 刷新日历
+                }
+            );
         }
 
         // 项目管理相关变量
@@ -5074,35 +6164,42 @@
         }
 
         function deleteDiary(id) {
-            if (confirm('确定要删除这篇日记吗？')) {
-                appData.diaries = appData.diaries.filter(d => d.id !== id);
-                saveData();
-                renderDiaries();
-                renderCalendar(); // 刷新日历视图
-                
-                // 显示删除成功提示
-                const notification = document.createElement('div');
-                notification.className = 'notification success';
-                notification.textContent = '日记已删除';
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: #4caf50;
-                    color: white;
-                    padding: 12px 24px;
-                    border-radius: 4px;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-                    z-index: 10000;
-                    animation: slideIn 0.3s ease;
-                `;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => {
-                    notification.style.animation = 'slideOut 0.3s ease';
-                    setTimeout(() => notification.remove(), 300);
-                }, 2000);
-            }
+            const diary = appData.diaries.find(d => d.id === id);
+            if (!diary) return;
+            
+            showDeleteConfirmDialog(
+                '删除日记',
+                `确定要删除日记"${diary.title || '无标题'}"吗？此操作无法撤销。`,
+                () => {
+                    appData.diaries = appData.diaries.filter(d => d.id !== id);
+                    saveData();
+                    renderDiaries();
+                    renderCalendar(); // 刷新日历视图
+                    
+                    // 显示删除成功提示
+                    const notification = document.createElement('div');
+                    notification.className = 'notification success';
+                    notification.textContent = '日记已删除';
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        background: #4caf50;
+                        color: white;
+                        padding: 12px 24px;
+                        border-radius: 4px;
+                        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                        z-index: 10000;
+                        animation: slideIn 0.3s ease;
+                    `;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.style.animation = 'slideOut 0.3s ease';
+                        setTimeout(() => notification.remove(), 300);
+                    }, 2000);
+                }
+            );
         }
 
         function saveDiary(event) {
@@ -5269,9 +6366,9 @@
             // 如果没有正在拖拽的任务，则退出
             if (!draggedTaskId) return;
             
-            // 获取容器元素（今日任务列表或无日期任务列表）
-            const container = event.target.closest('#today-task-list, #undated-task-list');
-            if (!container) return; // 只在可拖拽的容器内响应
+            // 获取容器元素
+            const container = event.target.closest('#today-task-list, #undated-task-list, #current-task-list');
+            if (!container) return;
 
             // 设置拖拽效果
             event.dataTransfer.dropEffect = 'move';
@@ -5279,38 +6376,51 @@
             // 移除旧的占位符
             document.querySelectorAll('.drop-placeholder').forEach(p => p.remove());
 
-            // 确定放置位置
+            // 检查容器类型，决定拖拽行为
+            const isDateBasedContainer = container.id === 'today-task-list' || container.id === 'current-task-list';
             const targetItem = event.target.closest('.task-item');
             
-            // 判断是否拖拽到了任务项上还是容器空白处
-            if (targetItem && !targetItem.classList.contains('dragging')) {
-                // 创建占位符
+            if (isDateBasedContainer) {
+                // 对于有日期逻辑的容器，显示日期变更提示
                 const placeholder = document.createElement('div');
-                placeholder.className = 'drop-placeholder';
+                placeholder.className = 'drop-placeholder date-change';
+                placeholder.innerHTML = `
+                    <div style="text-align: center; padding: 10px; color: #2196f3; font-size: 14px;">
+                        <span>📅 </span>
+                        ${container.id === 'today-task-list' ? '设置为今日任务' : '修改任务日期'}
+                    </div>
+                `;
                 
-                // 根据鼠标位置决定放在任务上方还是下方
-                const rect = targetItem.getBoundingClientRect();
-                const isTopHalf = event.clientY < rect.top + rect.height / 2;
-
-                if (isTopHalf) {
-                    // 放在目标任务上方
-                    targetItem.parentNode.insertBefore(placeholder, targetItem);
+                if (targetItem && !targetItem.classList.contains('dragging')) {
+                    const rect = targetItem.getBoundingClientRect();
+                    const isTopHalf = event.clientY < rect.top + rect.height / 2;
+                    if (isTopHalf) {
+                        targetItem.parentNode.insertBefore(placeholder, targetItem);
+                    } else {
+                        targetItem.parentNode.insertBefore(placeholder, targetItem.nextSibling);
+                    }
                 } else {
-                    // 放在目标任务下方
-                    targetItem.parentNode.insertBefore(placeholder, targetItem.nextSibling);
+                    container.appendChild(placeholder);
                 }
-                
-                console.log('拖拽到任务上', {
-                    targetId: targetItem.dataset.taskId,
-                    position: isTopHalf ? '上方' : '下方'
-                });
-            } else if (!targetItem || targetItem.classList.contains('dragging')) {
-                // 如果鼠标在容器空白处或拖拽到自己上面，则在列表末尾显示占位符
-                const placeholder = document.createElement('div');
-                placeholder.className = 'drop-placeholder';
-                container.appendChild(placeholder);
-                
-                console.log('拖拽到列表末尾');
+            } else {
+                // 对于无日期容器，支持顺序调整
+                if (targetItem && !targetItem.classList.contains('dragging')) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'drop-placeholder';
+                    
+                    const rect = targetItem.getBoundingClientRect();
+                    const isTopHalf = event.clientY < rect.top + rect.height / 2;
+
+                    if (isTopHalf) {
+                        targetItem.parentNode.insertBefore(placeholder, targetItem);
+                    } else {
+                        targetItem.parentNode.insertBefore(placeholder, targetItem.nextSibling);
+                    }
+                } else {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'drop-placeholder';
+                    container.appendChild(placeholder);
+                }
             }
         }
         
@@ -5338,8 +6448,8 @@
                 return;
             }
 
-            // 获取容器类型（今日任务列表还是无日期任务列表）
-            const container = placeholder.closest('#today-task-list, #undated-task-list');
+            // 获取容器
+            const container = placeholder.closest('#today-task-list, #undated-task-list, #current-task-list');
             if (!container) {
                 console.warn('找不到容器元素，取消放置');
                 return;
@@ -5357,34 +6467,57 @@
             // 从数组中取出被拖拽的任务
             const [draggedTask] = appData.tasks.splice(draggedTaskIndex, 1);
             
-            // 如果拖放到今日任务列表，确保任务有今日日期
+            // 根据目标容器类型处理任务
             if (container.id === 'today-task-list') {
-                // 设置为今日日期（如果尚未设置）
+                // 拖拽到今日任务 - 设置为今日日期
                 const today = new Date();
-                today.setHours(0, 0, 0, 0); // 设置为当天的0点
+                today.setHours(0, 0, 0, 0);
                 draggedTask.dueDate = today;
                 console.log('设置任务日期为今日:', today);
+            } else if (container.id === 'current-task-list') {
+                // 拖拽到当前分类视图 - 根据当前分类设置日期
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                switch (currentTaskCategory) {
+                    case 'today':
+                        draggedTask.dueDate = today;
+                        break;
+                    case 'tomorrow':
+                        const tomorrow = new Date(today);
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        draggedTask.dueDate = tomorrow;
+                        break;
+                    case 'no-date':
+                        draggedTask.dueDate = null;
+                        break;
+                    // 其他分类保持原有日期或不做修改
+                }
             }
+            // 对于 undated-task-list，不修改日期，只调整顺序
             
-            // 确定放置位置
-            const nextElement = placeholder.nextElementSibling;
-            placeholder.remove(); // 移除占位符
+            // 移除占位符
+            placeholder.remove();
             
-            // 确定插入位置并插入任务
-            if (nextElement && nextElement.dataset.taskId) {
-                // 放在下一个元素之前
-                const targetId = nextElement.dataset.taskId;
-                const targetIndex = appData.tasks.findIndex(t => t.id === targetId);
-                if (targetIndex !== -1) {
-                    console.log(`将任务 ${draggedTask.id} 插入到任务 ${targetId} 之前`);
-                    appData.tasks.splice(targetIndex, 0, draggedTask);
+            // 重新插入任务到数组
+            // 对于有日期逻辑的列表，插入后会按日期重新排序
+            // 对于无日期列表，保持拖拽顺序
+            if (container.id === 'undated-task-list') {
+                // 无日期列表支持自定义排序
+                const nextElement = placeholder.nextElementSibling;
+                if (nextElement && nextElement.dataset.taskId) {
+                    const targetId = nextElement.dataset.taskId;
+                    const targetIndex = appData.tasks.findIndex(t => t.id === targetId);
+                    if (targetIndex !== -1) {
+                        appData.tasks.splice(targetIndex, 0, draggedTask);
+                    } else {
+                        appData.tasks.push(draggedTask);
+                    }
                 } else {
-                    console.log('目标任务不存在，放置到列表末尾');
                     appData.tasks.push(draggedTask);
                 }
             } else {
-                // 放在列表末尾
-                console.log('放置到列表末尾');
+                // 有日期逻辑的列表，直接添加到数组末尾，让渲染函数按日期排序
                 appData.tasks.push(draggedTask);
             }
 
@@ -5393,8 +6526,29 @@
             renderDashboard();
             renderTasks();
             
+            // 重新渲染当前分类（如果在分类视图中）
+            if (currentTaskCategory) {
+                renderTasksByCategory(currentTaskCategory);
+            }
+            
             // 确保拖拽事件正确设置
             setTimeout(setupDragAndDrop, 0);
+            
+            // 显示操作成功提示
+            showNotification('任务移动成功', `任务已移动到${getContainerDisplayName(container.id)}`);
+        }
+        
+        // 获取容器显示名称
+        function getContainerDisplayName(containerId) {
+            switch (containerId) {
+                case 'today-task-list': return '今日任务';
+                case 'undated-task-list': return '无日期任务';
+                case 'current-task-list': 
+                    return currentTaskCategory === 'today' ? '今日任务' : 
+                           currentTaskCategory === 'tomorrow' ? '明日任务' : 
+                           currentTaskCategory === 'no-date' ? '无日期任务' : '当前分类';
+                default: return '目标列表';
+            }
         }
 
         function handleDragEnd(event) {
@@ -5527,8 +6681,21 @@
             // 初始化任务列表日期显示
             updateTaskListDate();
             
+            // 初始化建议任务显示状态
+            updateSuggestedTasksVisibility();
+            
             // 为任务项添加全局拖拽事件监听
             setupDragAndDrop();
+            
+            // 注册全局快捷键事件监听
+            if (window.electronAPI && window.electronAPI.onSwitchToDashboard) {
+                window.electronAPI.onSwitchToDashboard(() => {
+                    // 切换到MY DAY页面
+                    showView('dashboard');
+                    // 显示通知
+                    showNotification('DAY应用', '已切换到MY DAY页面', 'info');
+                });
+            }
         });
         
         // 更新任务列表日期显示
@@ -5582,27 +6749,231 @@
             }
         }
 
+        // 现代化删除确认对话框
+        function showDeleteConfirmDialog(title, message, onConfirm) {
+            // 创建模态遮罩
+            const overlay = document.createElement('div');
+            overlay.className = 'delete-confirm-overlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(4px);
+                animation: fadeIn 0.2s ease;
+            `;
+            
+            // 创建对话框
+            const dialog = document.createElement('div');
+            dialog.className = 'delete-confirm-dialog';
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                padding: 24px;
+                max-width: 400px;
+                width: 90%;
+                transform: scale(0.9);
+                animation: slideIn 0.2s ease forwards;
+                border: 1px solid #e0e0e0;
+            `;
+            
+            // 创建图标
+            const icon = document.createElement('div');
+            icon.style.cssText = `
+                width: 48px;
+                height: 48px;
+                background: #ffebee;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 16px;
+                color: #f44336;
+                font-size: 24px;
+            `;
+            icon.innerHTML = '🗑️';
+            
+            // 创建标题
+            const titleEl = document.createElement('h3');
+            titleEl.textContent = title;
+            titleEl.style.cssText = `
+                margin: 0 0 12px;
+                text-align: center;
+                font-size: 18px;
+                font-weight: 600;
+                color: #333;
+            `;
+            
+            // 创建消息
+            const messageEl = document.createElement('p');
+            messageEl.textContent = message;
+            messageEl.style.cssText = `
+                margin: 0 0 24px;
+                text-align: center;
+                color: #666;
+                line-height: 1.5;
+            `;
+            
+            // 创建按钮容器
+            const buttonContainer = document.createElement('div');
+            buttonContainer.style.cssText = `
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+            `;
+            
+            // 取消按钮
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent = '取消';
+            cancelBtn.style.cssText = `
+                padding: 10px 24px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                background: white;
+                color: #666;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.2s;
+                min-width: 80px;
+            `;
+            
+            // 确认按钮
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = '删除';
+            confirmBtn.style.cssText = `
+                padding: 10px 24px;
+                border: none;
+                border-radius: 6px;
+                background: #f44336;
+                color: white;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.2s;
+                min-width: 80px;
+            `;
+            
+            // 按钮hover效果
+            cancelBtn.addEventListener('mouseenter', () => {
+                cancelBtn.style.background = '#f5f5f5';
+                cancelBtn.style.borderColor = '#bbb';
+            });
+            cancelBtn.addEventListener('mouseleave', () => {
+                cancelBtn.style.background = 'white';
+                cancelBtn.style.borderColor = '#ddd';
+            });
+            
+            confirmBtn.addEventListener('mouseenter', () => {
+                confirmBtn.style.background = '#d32f2f';
+            });
+            confirmBtn.addEventListener('mouseleave', () => {
+                confirmBtn.style.background = '#f44336';
+            });
+            
+            // 事件处理
+            const closeDialog = () => {
+                overlay.style.animation = 'fadeOut 0.2s ease';
+                dialog.style.animation = 'slideOut 0.2s ease';
+                setTimeout(() => {
+                    if (overlay.parentNode) {
+                        overlay.parentNode.removeChild(overlay);
+                    }
+                }, 200);
+            };
+            
+            cancelBtn.addEventListener('click', closeDialog);
+            
+            confirmBtn.addEventListener('click', () => {
+                closeDialog();
+                if (onConfirm) onConfirm();
+            });
+            
+            // 点击遮罩关闭
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    closeDialog();
+                }
+            });
+            
+            // ESC键关闭
+            const handleKeyDown = (e) => {
+                if (e.key === 'Escape') {
+                    closeDialog();
+                    document.removeEventListener('keydown', handleKeyDown);
+                }
+            };
+            document.addEventListener('keydown', handleKeyDown);
+            
+            // 组装对话框
+            buttonContainer.appendChild(cancelBtn);
+            buttonContainer.appendChild(confirmBtn);
+            
+            dialog.appendChild(icon);
+            dialog.appendChild(titleEl);
+            dialog.appendChild(messageEl);
+            dialog.appendChild(buttonContainer);
+            
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+            
+            // 添加动画样式
+            if (!document.getElementById('delete-confirm-styles')) {
+                const style = document.createElement('style');
+                style.id = 'delete-confirm-styles';
+                style.textContent = `
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes fadeOut {
+                        from { opacity: 1; }
+                        to { opacity: 0; }
+                    }
+                    @keyframes slideIn {
+                        from { transform: scale(0.9); opacity: 0; }
+                        to { transform: scale(1); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: scale(1); opacity: 1; }
+                        to { transform: scale(0.9); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
         // 带确认的删除任务
         function deleteTaskWithConfirm(taskId) {
             const task = appData.tasks.find(t => t.id === taskId);
             if (!task) return;
             
-            const confirmMessage = `确定要删除任务"${task.title}"吗？`;
-            if (confirm(confirmMessage)) {
-                // 添加删除动画
-                const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
-                if (taskItem) {
-                    taskItem.style.transition = 'all 0.3s ease';
-                    taskItem.style.transform = 'translateX(-100%)';
-                    taskItem.style.opacity = '0';
-                    
-                    setTimeout(() => {
+            showDeleteConfirmDialog(
+                '删除任务',
+                `确定要删除任务"${task.title}"吗？此操作无法撤销。`,
+                () => {
+                    // 添加删除动画
+                    const taskItem = document.querySelector(`[data-task-id="${taskId}"]`);
+                    if (taskItem) {
+                        taskItem.style.transition = 'all 0.3s ease';
+                        taskItem.style.transform = 'translateX(-100%)';
+                        taskItem.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            deleteTask(taskId);
+                        }, 300);
+                    } else {
                         deleteTask(taskId);
-                    }, 300);
-                } else {
-                    deleteTask(taskId);
+                    }
                 }
-            }
+            );
         }
 
         // 分组折叠/展开功能
@@ -5726,15 +7097,19 @@
         function bindTaskItemEvents() {
             console.log('正在绑定任务项拖拽事件...');
             
-            // 重要：仅绑定无日期任务列表的拖拽功能
-            const listsToBind = ['#undated-task-list'];
+            // 扩展拖拽功能到所有任务列表
+            const listsToBind = [
+                '#today-task-list', 
+                '#undated-task-list', 
+                '#current-task-list'
+            ];
 
             listsToBind.forEach(listSelector => {
                 const items = document.querySelectorAll(`${listSelector} .task-item`);
                 console.log(`为 ${listSelector} 绑定拖拽事件, 找到 ${items.length} 个任务项`);
                 
                 items.forEach(item => {
-                    // 只对无日期任务设置为可拖拽
+                    // 设置为可拖拽
                     item.draggable = true;
                     
                     // 移除旧的事件监听器，防止重复绑定
@@ -5754,7 +7129,6 @@
             });
             
             // 同时设置容器的事件监听器
-            // 注意：仅为无日期任务列表启用拖放功能
             listsToBind.forEach(listSelector => {
                 const container = document.querySelector(listSelector);
                 if (container) {
@@ -5783,7 +7157,7 @@
         function globalDragOverHandler(event) {
             // 只有在拖拽过程中才处理拖拽经过事件
             if (draggedTaskId) {
-                const target = event.target.closest('.task-item[draggable="true"], #today-task-list, #undated-task-list');
+                const target = event.target.closest('.task-item[draggable="true"], #today-task-list, #undated-task-list, #current-task-list');
                 if (target) {
                     handleDragOver(event);
                 }
@@ -5793,7 +7167,7 @@
         function globalDragLeaveHandler(event) {
             // 只有在拖拽过程中才处理拖拽离开事件
             if (draggedTaskId) {
-                const container = event.target.closest('#today-task-list, #undated-task-list');
+                const container = event.target.closest('#today-task-list, #undated-task-list, #current-task-list');
                 if (container) {
                     handleDragLeave(event);
                 }
@@ -5803,7 +7177,7 @@
         function globalDropHandler(event) {
             // 只有在拖拽过程中才处理放置事件
             if (draggedTaskId) {
-                const target = event.target.closest('#today-task-list, #undated-task-list, .task-item');
+                const target = event.target.closest('#today-task-list, #undated-task-list, #current-task-list, .task-item');
                 if (target) {
                     console.log('全局放置被触发');
                     handleDrop(event);
@@ -5972,9 +7346,12 @@
 
         // 删除备份
         async function deleteBackup(backupFilePath) {
-            if (!confirm('确定要删除这个备份文件吗？此操作不可撤销！')) {
-                return;
-            }
+            const fileName = backupFilePath.split(/[/\\]/).pop(); // 获取文件名
+            
+            showDeleteConfirmDialog(
+                '删除备份文件',
+                `确定要删除备份文件"${fileName}"吗？此操作无法撤销。`,
+                async () => {
 
             try {
                 const result = await window.electronAPI.deleteBackup(backupFilePath);
@@ -5988,6 +7365,8 @@
                 console.error('删除备份失败:', error);
                 alert('删除备份失败: ' + error.message);
             }
+                }
+            );
         }
 
         // 更新数据统计

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>进行中状态图标测试 - 改进版</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .demo-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #ffffff;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border-left: 4px solid #ccc;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .task-item.in-progress {
+            border-left: 4px solid #2196f3;
+            background: linear-gradient(90deg, #2196f308 0%, transparent 50%);
+        }
+        
+        /* 方案1：圆形边框 + SVG箭头 */
+        .task-progress-icon-v1 {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #e3f2fd;
+            border-top: 2px solid #2196f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            z-index: 2;
+            animation: borderSpin 2s infinite linear;
+        }
+        
+        .progress-arrow-v1 {
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 6px solid #2196f3;
+            animation: arrowSpin 1.5s infinite linear;
+        }
+        
+        @keyframes borderSpin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        @keyframes arrowSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 方案2：纯CSS圆形加载器 */
+        .task-progress-icon-v2 {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #e3f2fd;
+            border-top: 2px solid #2196f3;
+            border-right: 2px solid #2196f3;
+            background: white;
+            z-index: 2;
+            animation: spin 1s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        /* 方案3：脉冲圆点 */
+        .task-progress-icon-v3 {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2196f3;
+            z-index: 2;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        
+        .task-progress-icon-v3::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            border: 2px solid #2196f3;
+            animation: ripple 1.5s infinite ease-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: translateY(-50%) scale(1); opacity: 1; }
+            50% { transform: translateY(-50%) scale(0.8); opacity: 0.7; }
+        }
+        
+        @keyframes ripple {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        /* 方案4：Material Design风格 */
+        .task-progress-icon-v4 {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            z-index: 2;
+        }
+        
+        .progress-circle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #2196f3 0deg, #2196f3 90deg, #e3f2fd 90deg, #e3f2fd 360deg);
+            animation: rotate 1s infinite linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress-circle::before {
+            content: '';
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: white;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 方案5：简洁的旋转圆环 */
+        .task-progress-icon-v5 {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e3f2fd;
+            border-top: 2px solid #2196f3;
+            border-radius: 50%;
+            z-index: 2;
+            animation: simpleRotate 0.8s infinite linear;
+        }
+        
+        @keyframes simpleRotate {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        .task-item.in-progress .task-checkbox {
+            margin-left: 35px;
+        }
+        
+        .task-item.in-progress .task-title {
+            font-weight: 600;
+            color: #1976d2;
+        }
+        
+        .task-checkbox input {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .task-title {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #2196f3;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <h1>进行中状态图标设计方案</h1>
+    
+    <div class="demo-section">
+        <h2>方案1：圆形边框 + 旋转三角箭头</h2>
+        <div class="description">外圈旋转，内部三角形箭头也旋转，双重动画效果</div>
+        <div class="task-item in-progress">
+            <div class="task-progress-icon-v1">
+                <div class="progress-arrow-v1"></div>
+            </div>
+            <div class="task-checkbox">
+                <input type="checkbox">
+            </div>
+            <div class="task-title">英语pre</div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>方案2：经典加载圆环</h2>
+        <div class="description">简洁的圆环加载器，类似系统原生样式</div>
+        <div class="task-item in-progress">
+            <div class="task-progress-icon-v2"></div>
+            <div class="task-checkbox">
+                <input type="checkbox">
+            </div>
+            <div class="task-title">英语pre</div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>方案3：脉冲圆点</h2>
+        <div class="description">圆点脉冲效果，带有扩散波纹</div>
+        <div class="task-item in-progress">
+            <div class="task-progress-icon-v3"></div>
+            <div class="task-checkbox">
+                <input type="checkbox">
+            </div>
+            <div class="task-title">英语pre</div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>方案4：Material Design风格</h2>
+        <div class="description">使用conic-gradient的现代风格加载器</div>
+        <div class="task-item in-progress">
+            <div class="task-progress-icon-v4">
+                <div class="progress-circle"></div>
+            </div>
+            <div class="task-checkbox">
+                <input type="checkbox">
+            </div>
+            <div class="task-title">英语pre</div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>方案5：简洁圆环（推荐）</h2>
+        <div class="description">最简洁优雅的设计，快速旋转，视觉干净</div>
+        <div class="task-item in-progress">
+            <div class="task-progress-icon-v5"></div>
+            <div class="task-checkbox">
+                <input type="checkbox">
+            </div>
+            <div class="task-title">英语pre</div>
+        </div>
+        
+        <div class="task-item in-progress">
+            <div class="task-progress-icon-v5"></div>
+            <div class="task-checkbox">
+                <input type="checkbox">
+            </div>
+            <div class="task-title">继续academic</div>
+        </div>
+    </div>
+    
+    <div class="demo-section">
+        <h2>对比：普通任务</h2>
+        <div class="task-item">
+            <div class="task-checkbox">
+                <input type="checkbox">
+            </div>
+            <div class="task-title">普通任务示例</div>
+        </div>
+    </div>
+</body>
+</html> 

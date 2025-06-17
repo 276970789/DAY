@@ -1,7 +1,7 @@
 // 设置控制台输出编码为UTF-8
 process.env.LANG = 'zh_CN.UTF-8';
 
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
 const path = require('path');
 
 // 自定义日志函数，避免直接输出中文到控制台
@@ -28,7 +28,7 @@ const log = {
 };
 
 // 导入模块化组件
-const { createMainWindow, setQuitting } = require('./src/window/windowManager');
+const { createMainWindow, setQuitting, showMainWindow, getMainWindow } = require('./src/window/windowManager');
 const { createTray } = require('./src/tray/trayManager');
 const { createMenuBar } = require('./src/menu/menuManager');
 const { initDataPath, registerDataHandlers } = require('./src/ipc/dataHandlers');
@@ -82,6 +82,61 @@ function registerNotificationHandlers() {
     });
 }
 
+// 注册全局快捷键
+function registerGlobalShortcuts() {
+    try {
+        // 注册全局快捷键 Ctrl+Shift+D 来快速唤出DAY应用
+        const ret = globalShortcut.register('CommandOrControl+Shift+D', () => {
+            const mainWindow = getMainWindow();
+            if (mainWindow) {
+                if (mainWindow.isVisible()) {
+                    // 如果窗口已显示，则隐藏
+                    mainWindow.hide();
+                } else {
+                    // 如果窗口隐藏，则显示并切换到MY DAY页面
+                    showMainWindow();
+                    // 发送消息切换到MY DAY页面
+                    setTimeout(() => {
+                        mainWindow.webContents.send('switch-to-dashboard');
+                    }, 100);
+                }
+            } else {
+                // 如果窗口不存在，创建新窗口
+                const newWindow = createMainWindow();
+                createTray(newWindow);
+                createMenuBar(newWindow);
+                setTimeout(() => {
+                    newWindow.webContents.send('switch-to-dashboard');
+                }, 500);
+            }
+        });
+
+        if (!ret) {
+            log.error('全局快捷键注册失败');
+        } else {
+            log.info('全局快捷键 Ctrl+Shift+D 注册成功');
+        }
+
+        // 注册第二个快捷键 Ctrl+Alt+D 作为备选
+        const ret2 = globalShortcut.register('CommandOrControl+Alt+D', () => {
+            const mainWindow = getMainWindow();
+            if (mainWindow) {
+                showMainWindow();
+                setTimeout(() => {
+                    mainWindow.webContents.send('switch-to-dashboard');
+                }, 100);
+            }
+        });
+
+        if (ret2) {
+            log.info('备选快捷键 Ctrl+Alt+D 注册成功');
+        }
+
+    } catch (error) {
+        log.error('注册全局快捷键时出错:', error);
+    }
+}
+
 // 注册所有IPC处理器
 function registerAllHandlers() {
     registerDataHandlers(app);
@@ -114,6 +169,9 @@ function registerAllHandlers() {
 app.whenReady().then(() => {
     // 注册IPC处理器
     registerAllHandlers();
+    
+    // 注册全局快捷键
+    registerGlobalShortcuts();
     
     // 创建主窗口
     const mainWindow = createMainWindow();
@@ -153,6 +211,11 @@ app.on('activate', () => {
 
 app.on('before-quit', () => {
     setQuitting(true);
+});
+
+app.on('will-quit', () => {
+    // 注销所有全局快捷键
+    globalShortcut.unregisterAll();
 });
 
 // 内存管理

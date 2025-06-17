@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onShowTodayStats: (callback) => ipcRenderer.on('show-today-stats', callback),
     onCheckReminders: (callback) => ipcRenderer.on('check-reminders', callback),
     onMessage: (callback) => ipcRenderer.on('message', callback),
+    onSwitchToDashboard: (callback) => ipcRenderer.on('switch-to-dashboard', callback),
     
     // 移除事件监听
     removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),

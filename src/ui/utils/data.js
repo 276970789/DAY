@@ -9,7 +9,8 @@ let appData = {
     diaries: [],
     settings: {
         theme: 'blue',
-        notifications: true
+        notifications: true,
+        showSuggestedTasks: true  // 控制是否显示建议任务
     }
 };
 
@@ -78,6 +79,14 @@ async function loadData() {
             // 恢复主题设置
             if (data.theme && typeof changeTheme === 'function') {
                 changeTheme(data.theme, true);
+            }
+            
+            // 确保设置对象存在并设置默认值
+            if (!data.settings) {
+                data.settings = {};
+            }
+            if (data.settings.showSuggestedTasks === undefined) {
+                data.settings.showSuggestedTasks = true;
             }
             
             // 更新应用数据

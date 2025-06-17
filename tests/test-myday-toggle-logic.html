@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY DAY 任务切换逻辑测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .tasks-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .task-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .task-list h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        
+        .task-item {
+            background: white;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .task-item.completed {
+            opacity: 0.7;
+            text-decoration: line-through;
+        }
+        
+        .task-item.in-progress .task-title {
+            color: #007aff;
+            font-weight: 600;
+        }
+        
+        .task-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .task-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .task-tag {
+            background: #007aff15;
+            color: #007aff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .myday-tag {
+            background: #ff9500;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .btn {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        .btn:hover {
+            background: #0056b3;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MY DAY 任务切换逻辑测试</h1>
+        
+        <div class="stats-section">
+            <div class="stat-card">
+                <h3>MY DAY任务</h3>
+                <div class="stat-number" id="pending-tasks">0</div>
+                <p>个MY DAY任务总数</p>
+            </div>
+            <div class="stat-card">
+                <h3>MY DAY进行中</h3>
+                <div class="stat-number" id="in-progress-tasks">0</div>
+                <p>个MY DAY任务进行中</p>
+            </div>
+            <div class="stat-card">
+                <h3>MY DAY已完成</h3>
+                <div class="stat-number" id="completed-tasks">0</div>
+                <p>个MY DAY任务已完成</p>
+            </div>
+            <div class="stat-card">
+                <h3>总任务数</h3>
+                <div class="stat-number" id="total-tasks">0</div>
+                <p>所有未完成任务数量</p>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="addTestTask()">添加测试任务</button>
+            <button class="btn" onclick="clearTasks()">清空任务</button>
+            <button class="btn" onclick="resetTest()">重置测试</button>
+        </div>
+        
+        <div class="tasks-section">
+            <div class="task-list">
+                <h3>MY DAY 任务</h3>
+                <div id="myday-tasks"></div>
+            </div>
+            <div class="task-list">
+                <h3>其他任务</h3>
+                <div id="other-tasks"></div>
+            </div>
+        </div>
+        
+        <div class="log" id="log">
+            <strong>操作日志：</strong><br>
+        </div>
+    </div>
+
+    <script>
+        // 模拟任务数据
+        let tasks = [
+            {
+                id: '1',
+                title: 'MY DAY中的待办任务',
+                status: 'pending',
+                myDay: true,
+                project: 'work'
+            },
+            {
+                id: '2',
+                title: 'MY DAY中的进行中任务',
+                status: 'in-progress',
+                myDay: true,
+                project: 'personal'
+            },
+            {
+                id: '3',
+                title: '普通待办任务',
+                status: 'pending',
+                myDay: false,
+                project: 'work'
+            },
+            {
+                id: '4',
+                title: '普通进行中任务',
+                status: 'in-progress',
+                myDay: false,
+                project: 'study'
+            }
+        ];
+        
+        let taskIdCounter = 5;
+        
+        function log(message) {
+            const logEl = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logEl.innerHTML += `[${time}] ${message}<br>`;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+        
+        function getMyDayTasks() {
+            return tasks.filter(task => task.myDay);
+        }
+        
+        function updateStats() {
+            const myDayTasks = getMyDayTasks();
+            const myDayTotal = myDayTasks.length;
+            const myDayInProgress = myDayTasks.filter(t => t.status === 'in-progress').length;
+            const myDayCompleted = myDayTasks.filter(t => t.status === 'completed').length;
+            const allTasksTotal = tasks.filter(t => t.status !== 'completed').length;
+            
+            document.getElementById('pending-tasks').textContent = myDayTotal;
+            document.getElementById('in-progress-tasks').textContent = myDayInProgress;
+            document.getElementById('completed-tasks').textContent = myDayCompleted;
+            document.getElementById('total-tasks').textContent = allTasksTotal;
+        }
+        
+        function renderTasks() {
+            const myDayTasks = getMyDayTasks();
+            const otherTasks = tasks.filter(task => !task.myDay);
+            
+            // 渲染MY DAY任务
+            const myDayContainer = document.getElementById('myday-tasks');
+            myDayContainer.innerHTML = myDayTasks.map(task => `
+                <div class="task-item ${task.status}">
+                    <input type="checkbox" class="task-checkbox" 
+                           ${task.status === 'completed' ? 'checked' : ''} 
+                           onchange="toggleTask('${task.id}')">
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span class="task-tag">${task.project}</span>
+                            <span class="myday-tag">MY DAY</span>
+                            <span>状态: ${task.status}</span>
+                            ${task.originalStatus ? `<span>原状态: ${task.originalStatus}</span>` : ''}
+                            ${task.wasNotInMyDay ? '<span style="color: red;">临时添加</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // 渲染其他任务
+            const otherContainer = document.getElementById('other-tasks');
+            otherContainer.innerHTML = otherTasks.map(task => `
+                <div class="task-item ${task.status}">
+                    <input type="checkbox" class="task-checkbox" 
+                           ${task.status === 'completed' ? 'checked' : ''} 
+                           onchange="toggleTask('${task.id}')">
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span class="task-tag">${task.project}</span>
+                            <span>状态: ${task.status}</span>
+                            ${task.originalStatus ? `<span>原状态: ${task.originalStatus}</span>` : ''}
+                            ${task.wasNotInMyDay ? '<span style="color: red;">临时添加</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateStats();
+        }
+        
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                const wasInMyDay = task.myDay;
+                const oldStatus = task.status;
+                
+                if (task.status === 'completed') {
+                    // 取消完成：恢复到原来的状态
+                    if (task.originalStatus) {
+                        task.status = task.originalStatus;
+                        delete task.originalStatus;
+                        log(`任务 "${task.title}" 取消完成，恢复到状态: ${task.status}`);
+                    } else {
+                        task.status = 'pending';
+                        log(`任务 "${task.title}" 取消完成，恢复到待办状态`);
+                    }
+                    
+                    // 如果任务原本不在MY DAY中，则从MY DAY中移除
+                    if (task.wasNotInMyDay) {
+                        task.myDay = false;
+                        delete task.wasNotInMyDay;
+                        log(`任务 "${task.title}" 从MY DAY中移除（原本不在MY DAY中）`);
+                    }
+                } else {
+                    // 完成任务：记录原始状态
+                    task.originalStatus = task.status;
+                    task.status = 'completed';
+                    log(`任务 "${task.title}" 标记为完成，原状态: ${task.originalStatus}`);
+                    
+                    // 如果任务不在MY DAY中，添加到MY DAY并标记
+                    if (!task.myDay) {
+                        task.myDay = true;
+                        task.wasNotInMyDay = true;
+                        log(`任务 "${task.title}" 添加到MY DAY（临时）`);
+                    } else {
+                        log(`任务 "${task.title}" 在MY DAY中完成`);
+                    }
+                }
+                
+                renderTasks();
+            }
+        }
+        
+        function addTestTask() {
+            const statuses = ['pending', 'in-progress'];
+            const projects = ['work', 'personal', 'study'];
+            const isMyDay = Math.random() > 0.5;
+            
+            const task = {
+                id: taskIdCounter.toString(),
+                title: `测试任务 ${taskIdCounter}`,
+                status: statuses[Math.floor(Math.random() * statuses.length)],
+                myDay: isMyDay,
+                project: projects[Math.floor(Math.random() * projects.length)]
+            };
+            
+            tasks.push(task);
+            taskIdCounter++;
+            
+            log(`添加测试任务: "${task.title}" (${task.status}, ${task.myDay ? 'MY DAY' : '普通'})`);
+            renderTasks();
+        }
+        
+        function clearTasks() {
+            tasks = [];
+            log('清空所有任务');
+            renderTasks();
+        }
+        
+        function resetTest() {
+            tasks = [
+                {
+                    id: '1',
+                    title: 'MY DAY中的待办任务',
+                    status: 'pending',
+                    myDay: true,
+                    project: 'work'
+                },
+                {
+                    id: '2',
+                    title: 'MY DAY中的进行中任务',
+                    status: 'in-progress',
+                    myDay: true,
+                    project: 'personal'
+                },
+                {
+                    id: '3',
+                    title: '普通待办任务',
+                    status: 'pending',
+                    myDay: false,
+                    project: 'work'
+                },
+                {
+                    id: '4',
+                    title: '普通进行中任务',
+                    status: 'in-progress',
+                    myDay: false,
+                    project: 'study'
+                }
+            ];
+            taskIdCounter = 5;
+            log('重置测试数据');
+            renderTasks();
+        }
+        
+        // 初始化
+        renderTasks();
+        log('测试页面初始化完成');
+        log('测试说明：');
+        log('1. 在MY DAY中完成任务，任务会保留在MY DAY中');
+        log('2. 普通任务完成时会临时添加到MY DAY中');
+        log('3. 取消完成时，任务会恢复到原来的状态和位置');
+    </script>
+</body>
+</html> 

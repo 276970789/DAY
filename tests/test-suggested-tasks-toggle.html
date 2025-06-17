@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建议任务切换功能测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f7;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        h1 {
+            color: #1d1d1f;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .toggle-button {
+            background: none;
+            border: 1px solid #ddd;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .toggle-button:hover {
+            background-color: #f8f9fa;
+            border-color: #007aff;
+            color: #007aff;
+        }
+        
+        .suggested-tasks {
+            margin-top: 15px;
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+            overflow: hidden;
+            opacity: 1;
+            max-height: 1000px;
+        }
+        
+        .suggested-task-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            border-left: 3px solid #007aff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .suggested-task-item:hover {
+            background-color: #f0f0f0;
+            transform: translateX(5px);
+        }
+        
+        .task-title {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .task-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .task-action {
+            font-size: 11px;
+            color: #007aff;
+            margin-top: 4px;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            background: #e8f4fd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>建议任务</h1>
+            <button id="toggle-suggested-tasks" class="toggle-button" onclick="toggleSuggestedTasks()" title="显示/隐藏建议任务">
+                <span style="font-size: 14px;">👁️</span>
+                <span>隐藏</span>
+            </button>
+        </div>
+        
+        <div id="suggested-tasks" class="suggested-tasks">
+            <div class="suggested-task-item">
+                <div class="task-title">完成项目报告</div>
+                <div class="task-meta">📅 2025/6/14 • 📋 工作项目</div>
+                <div class="task-action">点击添加到MY DAY</div>
+            </div>
+            
+            <div class="suggested-task-item">
+                <div class="task-title">准备会议材料</div>
+                <div class="task-meta">📅 2025/6/14 • 📋 工作项目</div>
+                <div class="task-action">点击添加到MY DAY</div>
+            </div>
+            
+            <div class="suggested-task-item">
+                <div class="task-title">回复客户邮件</div>
+                <div class="task-meta">📅 2025/6/13 • 📋 沟通</div>
+                <div class="task-action">点击添加到MY DAY</div>
+            </div>
+        </div>
+        
+        <div class="status" id="status">
+            状态：建议任务已显示
+        </div>
+    </div>
+
+    <script>
+        // 模拟应用数据
+        let appData = {
+            settings: {
+                showSuggestedTasks: true
+            }
+        };
+        
+        // 切换建议任务显示状态
+        function toggleSuggestedTasks() {
+            const isCurrentlyShown = appData.settings.showSuggestedTasks;
+            appData.settings.showSuggestedTasks = !isCurrentlyShown;
+            
+            // 更新界面
+            updateSuggestedTasksVisibility();
+            
+            // 更新状态显示
+            updateStatus();
+        }
+        
+        // 更新建议任务区域的显示状态
+        function updateSuggestedTasksVisibility() {
+            const suggestedTasksContainer = document.getElementById('suggested-tasks');
+            const toggleButton = document.getElementById('toggle-suggested-tasks');
+            const isShown = appData.settings.showSuggestedTasks;
+            
+            if (isShown) {
+                // 显示建议任务
+                suggestedTasksContainer.style.display = 'block';
+                suggestedTasksContainer.style.opacity = '1';
+                suggestedTasksContainer.style.maxHeight = '1000px';
+                toggleButton.innerHTML = '<span style="font-size: 14px;">👁️</span><span>隐藏</span>';
+                toggleButton.title = '隐藏建议任务';
+            } else {
+                // 隐藏建议任务
+                suggestedTasksContainer.style.opacity = '0';
+                suggestedTasksContainer.style.maxHeight = '0';
+                toggleButton.innerHTML = '<span style="font-size: 14px;">👁️‍🗨️</span><span>显示</span>';
+                toggleButton.title = '显示建议任务';
+                // 延迟隐藏以等待动画完成
+                setTimeout(() => {
+                    if (!appData.settings.showSuggestedTasks) {
+                        suggestedTasksContainer.style.display = 'none';
+                    }
+                }, 300);
+            }
+        }
+        
+        // 更新状态显示
+        function updateStatus() {
+            const statusElement = document.getElementById('status');
+            const isShown = appData.settings.showSuggestedTasks;
+            statusElement.textContent = `状态：建议任务已${isShown ? '显示' : '隐藏'}`;
+            statusElement.style.background = isShown ? '#e8f4fd' : '#fff2e8';
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSuggestedTasksVisibility();
+            updateStatus();
+        });
+    </script>
+</body>
+</html> 

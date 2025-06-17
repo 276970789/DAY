@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日历日期测试</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            padding: 20px; 
+            line-height: 1.6;
+        }
+        .test-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            margin: 20px 0; 
+        }
+        .test-section { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .result { 
+            margin: 8px 0; 
+            padding: 8px; 
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { background: #e8f5e8; border-left: 4px solid #4caf50; }
+        .error { background: #ffeaea; border-left: 4px solid #f44336; }
+        .warning { background: #fff3cd; border-left: 4px solid #ffc107; }
+        .info { background: #e7f3ff; border-left: 4px solid #2196f3; }
+        
+        .calendar-demo {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin: 10px 0;
+            max-width: 350px;
+        }
+        .calendar-cell {
+            aspect-ratio: 1;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-size: 12px;
+        }
+        .calendar-cell.has-task {
+            background: #e3f2fd;
+            font-weight: bold;
+        }
+        .calendar-header {
+            font-weight: bold;
+            background: #2196f3;
+            color: white;
+        }
+        
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #1976d2; }
+        
+        input, select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📅 日历日期偏移诊断工具</h1>
+    
+    <div class="test-section">
+        <h2>快速测试</h2>
+        <p>输入一个任务截止日期，看看它会显示在日历的哪一天：</p>
+        <input type="date" id="testTaskDate" value="2024-06-07">
+        <button onclick="runQuickTest()">测试日期位置</button>
+        <div id="quickTestResult"></div>
+    </div>
+
+    <div class="test-grid">
+        <div class="test-section">
+            <h3>1. 系统时区信息</h3>
+            <button onclick="testSystemTimezone()">检查时区</button>
+            <div id="timezoneResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. 日期字符串解析</h3>
+            <button onclick="testDateParsing()">测试日期解析</button>
+            <div id="parsingResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. 日期比较逻辑</h3>
+            <button onclick="testDateComparison()">测试比较逻辑</button>
+            <div id="comparisonResults"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. 日历网格生成</h3>
+            <select id="testMonth">
+                <option value="0">1月</option>
+                <option value="1">2月</option>
+                <option value="2">3月</option>
+                <option value="3">4月</option>
+                <option value="4">5月</option>
+                <option value="5" selected>6月</option>
+                <option value="6">7月</option>
+                <option value="7">8月</option>
+                <option value="8">9月</option>
+                <option value="9">10月</option>
+                <option value="10">11月</option>
+                <option value="11">12月</option>
+            </select>
+            <input type="number" id="testYear" value="2024" min="2020" max="2030">
+            <button onclick="generateCalendarTest()">生成日历测试</button>
+            <div id="calendarResults"></div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. 模拟日历显示</h3>
+        <p>这里显示一个简化的日历，蓝色表示有任务的日期：</p>
+        <div id="calendarDemo"></div>
+    </div>
+
+    <script>
+        function addResult(containerId, text, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = text;
+            container.appendChild(div);
+        }
+
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+        }
+
+        function runQuickTest() {
+            clearResults('quickTestResult');
+            
+            const inputDate = document.getElementById('testTaskDate').value;
+            if (!inputDate) {
+                addResult('quickTestResult', '请选择一个日期', 'error');
+                return;
+            }
+
+            addResult('quickTestResult', `测试日期: ${inputDate}`, 'info');
+
+            // 模拟任务创建
+            const taskDate = new Date(inputDate);
+            taskDate.setHours(0, 0, 0, 0);
+            addResult('quickTestResult', `任务日期对象: ${taskDate.toString()}`, 'info');
+            addResult('quickTestResult', `本地表示: ${taskDate.toLocaleDateString('zh-CN')}`, 'info');
+
+            // 模拟日历中的日期匹配
+            const year = taskDate.getFullYear();
+            const month = taskDate.getMonth();
+            const date = taskDate.getDate();
+
+            addResult('quickTestResult', `年: ${year}, 月: ${month + 1}, 日: ${date}`, 'info');
+
+            // 创建日历中对应的日期
+            const calendarDate = new Date(year, month, date);
+            addResult('quickTestResult', `日历日期: ${calendarDate.toString()}`, 'info');
+            addResult('quickTestResult', `日历本地表示: ${calendarDate.toLocaleDateString('zh-CN')}`, 'info');
+
+            // 检查是否匹配
+            const matches = taskDate.getTime() === calendarDate.getTime();
+            addResult('quickTestResult', `日期匹配: ${matches ? '✅ 是' : '❌ 否'}`, matches ? 'success' : 'error');
+
+            if (!matches) {
+                const diff = taskDate.getTime() - calendarDate.getTime();
+                const diffHours = diff / (1000 * 60 * 60);
+                addResult('quickTestResult', `时间差: ${diff}ms (${diffHours}小时)`, 'warning');
+            }
+        }
+
+        function testSystemTimezone() {
+            clearResults('timezoneResults');
+            
+            const now = new Date();
+            addResult('timezoneResults', `当前时间: ${now.toString()}`);
+            addResult('timezoneResults', `时区偏移: ${now.getTimezoneOffset()}分钟`);
+            addResult('timezoneResults', `本地时区: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
+            
+            // 测试关键日期
+            const testDate = new Date('2024-06-07');
+            addResult('timezoneResults', `字符串日期'2024-06-07': ${testDate.toString()}`);
+            
+            const utcDate = new Date('2024-06-07T00:00:00Z');
+            addResult('timezoneResults', `UTC日期: ${utcDate.toString()}`);
+            
+            const localDate = new Date('2024-06-07T00:00:00');
+            addResult('timezoneResults', `本地日期: ${localDate.toString()}`);
+        }
+
+        function testDateParsing() {
+            clearResults('parsingResults');
+            
+            const testFormats = [
+                '2024-06-07',
+                '2024-06-07T00:00:00',
+                '2024-06-07T12:00:00Z',
+                'June 7, 2024',
+                '6/7/2024'
+            ];
+
+            testFormats.forEach(format => {
+                try {
+                    const parsed = new Date(format);
+                    const normalized = new Date(parsed);
+                    normalized.setHours(0, 0, 0, 0);
+                    
+                    addResult('parsingResults', 
+                        `${format} → ${parsed.toLocaleDateString('zh-CN')} → ${normalized.toLocaleDateString('zh-CN')}`);
+                } catch (e) {
+                    addResult('parsingResults', `${format} → 错误: ${e.message}`, 'error');
+                }
+            });
+        }
+
+        function testDateComparison() {
+            clearResults('comparisonResults');
+            
+            // 创建测试日期
+            const date1 = new Date('2024-06-07');
+            const date2 = new Date(2024, 5, 7); // 月份从0开始
+            const date3 = new Date('2024-06-07T12:00:00');
+
+            addResult('comparisonResults', `字符串创建: ${date1.toLocaleDateString('zh-CN')}`);
+            addResult('comparisonResults', `构造函数创建: ${date2.toLocaleDateString('zh-CN')}`);
+            addResult('comparisonResults', `带时间创建: ${date3.toLocaleDateString('zh-CN')}`);
+
+            // 标准化比较
+            const norm1 = new Date(date1);
+            const norm2 = new Date(date2);
+            const norm3 = new Date(date3);
+
+            norm1.setHours(0, 0, 0, 0);
+            norm2.setHours(0, 0, 0, 0);
+            norm3.setHours(0, 0, 0, 0);
+
+            const match12 = norm1.getTime() === norm2.getTime();
+            const match13 = norm1.getTime() === norm3.getTime();
+
+            addResult('comparisonResults', `字符串 vs 构造函数: ${match12 ? '✅' : '❌'}`, match12 ? 'success' : 'error');
+            addResult('comparisonResults', `字符串 vs 带时间: ${match13 ? '✅' : '❌'}`, match13 ? 'success' : 'error');
+        }
+
+        function generateCalendarTest() {
+            clearResults('calendarResults');
+            
+            const year = parseInt(document.getElementById('testYear').value);
+            const month = parseInt(document.getElementById('testMonth').value);
+
+            addResult('calendarResults', `生成 ${year}年${month + 1}月 的日历`);
+
+            // 模拟日历生成逻辑
+            const firstDay = new Date(year, month, 1);
+            const startDay = new Date(year, month, 1 - firstDay.getDay());
+
+            addResult('calendarResults', `月份第一天: ${firstDay.toString()}`);
+            addResult('calendarResults', `日历起始: ${startDay.toString()}`);
+
+            // 生成前7天作为示例
+            for (let i = 0; i < 7; i++) {
+                const targetDate = new Date(startDay);
+                targetDate.setDate(startDay.getDate() + i);
+                
+                const cellDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+                
+                const isCurrentMonth = cellDate.getMonth() === month;
+                addResult('calendarResults', 
+                    `第${i + 1}天: ${cellDate.getDate()}日 (${isCurrentMonth ? '本月' : '其他月'})`,
+                    isCurrentMonth ? 'success' : 'warning');
+            }
+        }
+
+        function generateCalendarDemo() {
+            const container = document.getElementById('calendarDemo');
+            container.innerHTML = '';
+
+            // 创建日历演示
+            const calendarGrid = document.createElement('div');
+            calendarGrid.className = 'calendar-demo';
+
+            // 星期标题
+            const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+            weekdays.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-cell calendar-header';
+                header.textContent = day;
+                calendarGrid.appendChild(header);
+            });
+
+            // 生成6月的日历
+            const year = 2024;
+            const month = 5; // 6月 (从0开始)
+            const firstDay = new Date(year, month, 1);
+            const startDay = new Date(year, month, 1 - firstDay.getDay());
+
+            // 模拟任务日期
+            const taskDates = [new Date(2024, 5, 7), new Date(2024, 5, 14), new Date(2024, 5, 21)];
+
+            for (let i = 0; i < 42; i++) {
+                const targetDate = new Date(startDay);
+                targetDate.setDate(startDay.getDate() + i);
+                
+                const cellDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+                
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell';
+                if (cellDate.getMonth() !== month) {
+                    cell.style.opacity = '0.3';
+                }
+
+                // 检查是否有任务
+                const hasTask = taskDates.some(taskDate => {
+                    const normalizedTask = new Date(taskDate);
+                    normalizedTask.setHours(0, 0, 0, 0);
+                    const normalizedCell = new Date(cellDate);
+                    normalizedCell.setHours(0, 0, 0, 0);
+                    return normalizedTask.getTime() === normalizedCell.getTime();
+                });
+
+                if (hasTask) {
+                    cell.classList.add('has-task');
+                }
+
+                cell.textContent = cellDate.getDate();
+                cell.title = `${cellDate.toLocaleDateString('zh-CN')} ${hasTask ? '(有任务)' : ''}`;
+                
+                calendarGrid.appendChild(cell);
+            }
+
+            container.appendChild(calendarGrid);
+
+            // 添加说明
+            const info = document.createElement('div');
+            info.className = 'result info';
+            info.innerHTML = '蓝色日期表示有任务。如果6月7日、14日、21日不是蓝色，说明日期匹配有问题。';
+            container.appendChild(info);
+        }
+
+        // 页面加载时自动运行一些测试
+        window.onload = function() {
+            testSystemTimezone();
+            generateCalendarDemo();
+        };
+    </script>
+</body>
+</html> 

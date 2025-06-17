@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复后的任务卡片测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f5f5f7;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1d1d1f;
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        /* 统一任务卡片样式 - iOS风格紧凑型 */
+        .task-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 0.5px solid rgba(0,0,0,0.04);
+        }
+        
+        .task-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+        }
+        
+        /* 复选框样式 */
+        .task-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            flex-shrink: 0;
+            align-self: flex-start;
+            margin-top: 1px;
+        }
+        
+        .task-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .task-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .task-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .task-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1d1d1f;
+            line-height: 1.3;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .task-title:hover {
+            color: #007aff;
+        }
+        
+        .task-description {
+            font-size: 13px;
+            color: #86868b;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        
+        .task-date, .task-project {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .task-date {
+            background: #f2f2f7;
+            color: #86868b;
+        }
+        
+        .task-project {
+            /* 颜色将通过内联样式设置 */
+        }
+        
+        .task-actions {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        
+        .task-item:hover .task-actions {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .edit-btn:hover {
+            background: #e3f2fd;
+        }
+        
+        .delete-btn:hover {
+            background: #ffebee;
+        }
+        
+        /* 任务状态样式 */
+        .task-item.in-progress .task-title {
+            color: #007aff;
+            font-weight: 600;
+        }
+        
+        /* 完成状态 */
+        .task-item.completed {
+            opacity: 0.7;
+            background: #f9f9f9;
+        }
+        
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #86868b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>修复后的任务卡片测试</h1>
+        
+        <div class="test-section">
+            <div class="section-title">1. 普通任务</div>
+            <div class="task-item">
+                <input type="checkbox">
+                <div class="task-content">
+                    <div class="task-info">
+                        <div class="task-title-row">
+                            <div class="task-title">acadreason文档写作问题</div>
+                        </div>
+                        <div class="task-description">需要完成学术论文的文档整理和格式调整</div>
+                        <div class="task-meta">
+                            <span class="task-date">📅 2025/6/14</span>
+                            <span class="task-project" style="background: #ff9f0a15; color: #ff9f0a;">📋 acadreason</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="action-btn edit-btn">✏️</button>
+                    <button class="action-btn delete-btn">🗑️</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="section-title">2. 进行中任务（蓝色标题，无脉冲）</div>
+            <div class="task-item in-progress">
+                <input type="checkbox">
+                <div class="task-content">
+                    <div class="task-info">
+                        <div class="task-title-row">
+                            <div class="task-title">英语pre</div>
+                        </div>
+                        <div class="task-description">ppt题目：Skills we need in the AI era</div>
+                        <div class="task-meta">
+                            <span class="task-date">📅 2025/6/17</span>
+                            <span class="task-project" style="background: #34c75915; color: #34c759;">📋 期末考试</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="action-btn edit-btn">✏️</button>
+                    <button class="action-btn delete-btn">🗑️</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="section-title">3. 已完成任务</div>
+            <div class="task-item completed">
+                <input type="checkbox" checked>
+                <div class="task-content">
+                    <div class="task-info">
+                        <div class="task-title-row">
+                            <div class="task-title">量子考试</div>
+                        </div>
+                        <div class="task-description">6.13学一下</div>
+                        <div class="task-meta">
+                            <span class="task-date">📅 2025/6/17</span>
+                            <span class="task-project" style="background: #af52de15; color: #af52de;">📋 期末考试</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="action-btn edit-btn">✏️</button>
+                    <button class="action-btn delete-btn">🗑️</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <div class="section-title">4. 不同项目颜色测试</div>
+            <div class="task-item">
+                <input type="checkbox">
+                <div class="task-content">
+                    <div class="task-info">
+                        <div class="task-title-row">
+                            <div class="task-title">政治考试</div>
+                        </div>
+                        <div class="task-description">找张成问资料</div>
+                        <div class="task-meta">
+                            <span class="task-date">📅 2025/6/17</span>
+                            <span class="task-project" style="background: #ff384215; color: #ff3842;">📋 期末考试</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="action-btn edit-btn">✏️</button>
+                    <button class="action-btn delete-btn">🗑️</button>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding: 15px; background: #e8f4fd; border-radius: 8px;">
+            <h3 style="margin: 0 0 10px 0; color: #1976d2;">修复说明</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #666;">
+                <li>✅ 移除了进行中任务的脉冲效果，改为蓝色标题</li>
+                <li>✅ 项目标签使用对应项目的颜色</li>
+                <li>✅ 复选框垂直居中对齐</li>
+                <li>✅ 移除了拖拽手柄（六个点）</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html> 
